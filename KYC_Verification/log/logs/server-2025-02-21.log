@@ -1,0 +1,178 @@
+2025-02-21 14:06:44 [INFO]: Server running on port 9090
+2025-02-21 14:08:37 [INFO]: Server running on port 9090
+2025-02-21 14:10:47 [INFO]: Server running on port 9090
+2025-02-21 15:26:49 [INFO]: Server running on port 9090
+2025-02-21 15:47:41 [INFO]: Server running on port 9090
+2025-02-21 15:48:11 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:49:16 [INFO]: Server running on port 9090
+2025-02-21 15:49:21 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:50:03 [INFO]: Server running on port 9090
+2025-02-21 15:50:07 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:50:15 [ERROR]: sendOTP Error: sendOTP_Schema is not defined
+2025-02-21 15:50:51 [INFO]: Server running on port 9090
+2025-02-21 15:51:04 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:51:06 [ERROR]: Validation errors: [{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"loginDetails"},"message":"must have required property 'loginDetails'"},{"instancePath":"","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"mobile_number"},"message":"must NOT have additional properties"}]
+2025-02-21 15:52:05 [INFO]: Server running on port 9090
+2025-02-21 15:52:12 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:52:14 [ERROR]: Validation errors: [{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"sendOTPDetails"},"message":"must have required property 'sendOTPDetails'"},{"instancePath":"","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"mobile_number"},"message":"must NOT have additional properties"}]
+2025-02-21 15:53:32 [INFO]: Server running on port 9090
+2025-02-21 15:53:41 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:53:46 [INFO]: sendOTP data is valid!
+2025-02-21 15:54:05 [ERROR]: sendOTP Error: Internal server error
+2025-02-21 15:58:43 [INFO]: Server running on port 9090
+2025-02-21 15:58:51 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:58:54 [INFO]: sendOTP data is valid!
+2025-02-21 15:59:15 [ERROR]: sendOTP Error: undefined
+2025-02-21 15:59:52 [INFO]: Server running on port 9090
+2025-02-21 15:59:57 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 15:59:58 [INFO]: sendOTP data is valid!
+2025-02-21 16:00:00 [INFO]: sendOTP successful for 7896541230
+2025-02-21 16:12:20 [INFO]: Server running on port 9090
+2025-02-21 16:12:31 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:12:32 [INFO]: sendOTP data is valid!
+2025-02-21 16:12:32 [INFO]: sendOTP successful for 7896541230
+2025-02-21 16:15:57 [INFO]: Server running on port 9090
+2025-02-21 16:16:02 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:16:06 [INFO]: sendOTP data is valid!
+2025-02-21 16:16:19 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 16:18:41 [INFO]: Server running on port 9090
+2025-02-21 16:18:47 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:18:47 [INFO]: sendOTP data is valid!
+2025-02-21 16:18:47 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 16:20:25 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:20:29 [INFO]: sendOTP data is valid!
+2025-02-21 16:20:52 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 16:22:20 [INFO]: Server running on port 9090
+2025-02-21 16:22:25 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:23:36 [INFO]: Server running on port 9090
+2025-02-21 16:23:56 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:23:59 [INFO]: sendOTP data is valid!
+2025-02-21 16:24:04 [ERROR]: sendOTP Error: generateOTP is not defined
+2025-02-21 16:51:27 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 16:51:28 [INFO]: sendOTP data is valid!
+2025-02-21 16:51:28 [ERROR]: sendOTP Error: generateOTP is not defined
+2025-02-21 16:56:24 [INFO]: Server running on port 9090
+2025-02-21 16:56:34 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:03:17 [INFO]: sendOTP data is valid!
+2025-02-21 17:03:19 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 17:03:34 [INFO]: Server running on port 9090
+2025-02-21 17:05:22 [INFO]: Server running on port 9090
+2025-02-21 17:05:25 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:05:30 [INFO]: sendOTP data is valid!
+2025-02-21 17:07:08 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 17:07:10 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:07:11 [INFO]: sendOTP data is valid!
+2025-02-21 17:07:11 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 17:13:05 [INFO]: Server running on port 9090
+2025-02-21 17:13:15 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:13:19 [INFO]: sendOTP data is valid!
+2025-02-21 17:14:19 [ERROR]: sendOTP Error: generateOTP is not a function
+2025-02-21 17:15:11 [INFO]: Server running on port 9090
+2025-02-21 17:15:23 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:15:27 [INFO]: sendOTP data is valid!
+2025-02-21 17:15:38 [INFO]: otp 428105
+2025-02-21 17:16:05 [ERROR]: sendOTP Error: undefined
+2025-02-21 17:16:44 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:17:14 [INFO]: sendOTP data is valid!
+2025-02-21 17:17:14 [INFO]: otp 190388
+2025-02-21 17:17:14 [ERROR]: sendOTP Error: undefined
+2025-02-21 17:17:19 [INFO]: Server running on port 9090
+2025-02-21 17:17:25 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:17:26 [INFO]: sendOTP data is valid!
+2025-02-21 17:17:26 [INFO]: otp 796200
+2025-02-21 17:17:26 [INFO]: sendOTP successful for 7896541230
+2025-02-21 17:18:17 [INFO]: Server running on port 9090
+2025-02-21 17:18:39 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:18:40 [INFO]: sendOTP data is valid!
+2025-02-21 17:18:40 [ERROR]: sendOTP Error: Assignment to constant variable.
+2025-02-21 17:19:01 [INFO]: Server running on port 9090
+2025-02-21 17:19:06 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 17:19:06 [INFO]: sendOTP data is valid!
+2025-02-21 17:19:06 [INFO]: otp 111111
+2025-02-21 17:19:06 [INFO]: sendOTP successful for 7896541230
+2025-02-21 17:19:32 [INFO]: Server running on port 9090
+2025-02-21 17:27:37 [INFO]: Server running on port 9090
+2025-02-21 17:29:01 [INFO]: Server running on port 9090
+2025-02-21 17:30:11 [INFO]: Server running on port 9090
+2025-02-21 17:30:37 [INFO]: Server running on port 9090
+2025-02-21 17:33:43 [INFO]: Server running on port 9090
+2025-02-21 17:33:51 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:33:56 [INFO]: validateOTP data is valid!
+2025-02-21 17:34:05 [INFO]: validateOTP successful for 7896541230
+2025-02-21 17:37:13 [INFO]: Server running on port 9090
+2025-02-21 17:37:15 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:37:18 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:37:20 [INFO]: validateOTP data is valid!
+2025-02-21 17:37:21 [ERROR]: Validation null
+2025-02-21 17:38:18 [INFO]: Server running on port 9090
+2025-02-21 17:38:19 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:38:23 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:38:27 [INFO]: validateOTP data is valid!
+2025-02-21 17:38:31 [ERROR]: Validation null
+2025-02-21 17:39:35 [INFO]: Server running on port 9090
+2025-02-21 17:39:36 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:39:39 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:39:40 [INFO]: validateOTP data is valid!
+2025-02-21 17:39:41 [ERROR]: Validation undefined
+2025-02-21 17:40:10 [INFO]: Server running on port 9090
+2025-02-21 17:40:11 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:40:13 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 17:40:14 [INFO]: validateOTP data is valid!
+2025-02-21 17:40:15 [ERROR]: Validation {"errorCode":"OTP_EXPIRED","errorDesc":"OTP has expired"}
+2025-02-21 18:28:39 [INFO]: Server running on port 9090
+2025-02-21 18:28:39 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:28:42 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:28:42 [INFO]: validateOTP data is valid!
+2025-02-21 18:28:44 [ERROR]: Validation {"errorCode":"OTP_EXPIRED","errorDesc":"OTP has expired"}
+2025-02-21 18:28:44 [ERROR]: validateOTP Error: res is not defined
+2025-02-21 18:29:13 [INFO]: Server running on port 9090
+2025-02-21 18:29:18 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:29:21 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:29:22 [INFO]: validateOTP data is valid!
+2025-02-21 18:29:23 [ERROR]: Validation {"errorCode":"OTP_EXPIRED","errorDesc":"OTP has expired"}
+2025-02-21 18:34:14 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 18:34:14 [ERROR]: sendOTP Error: sendOTP_schema is not a function
+2025-02-21 18:35:18 [INFO]: Server running on port 9090
+2025-02-21 18:35:19 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 18:35:19 [ERROR]: sendOTP Error: sendOTP_schema is not a function
+2025-02-21 18:36:57 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 18:38:19 [INFO]: Server running on port 9090
+2025-02-21 18:38:20 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 18:38:35 [ERROR]: sendOTP Error: sendOTP_Schema is not a function
+2025-02-21 18:38:59 [INFO]: Server running on port 9090
+2025-02-21 18:39:00 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 18:39:05 [INFO]: sendOTP data is valid!
+2025-02-21 18:39:07 [INFO]: otp 111111
+2025-02-21 18:39:09 [INFO]: sendOTP successful for 7896541230
+2025-02-21 18:39:21 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:39:23 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:39:25 [INFO]: validateOTP data is valid!
+2025-02-21 18:39:33 [ERROR]: Validation {"errorCode":"OTP_VALID","errorDesc":"OTP validated successfully"}
+2025-02-21 18:39:42 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:39:46 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 18:39:47 [INFO]: validateOTP data is valid!
+2025-02-21 18:39:48 [ERROR]: Validation {"errorCode":"OTP_NOT_FOUND","errorDesc":"No OTP found for this phone number"}
+2025-02-21 19:04:04 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 19:04:11 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 19:04:11 [INFO]: validateOTP data is valid!
+2025-02-21 19:04:12 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 19:04:12 [INFO]: sendOTP data is valid!
+2025-02-21 19:04:12 [INFO]: otp 111111
+2025-02-21 19:04:12 [ERROR]: Validation {"errorCode":"OTP_NOT_FOUND","errorDesc":"No OTP found for this phone number"}
+2025-02-21 19:04:12 [INFO]: sendOTP successful for 7896541230
+2025-02-21 19:05:06 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 19:05:11 [INFO]: sendOTP data is valid!
+2025-02-21 19:05:11 [INFO]: otp 111111
+2025-02-21 19:05:11 [INFO]: sendOTP successful for 7896541230
+2025-02-21 19:05:20 [INFO]: sendOTP request: {"mobile_number":"7896541230"}
+2025-02-21 19:05:23 [INFO]: sendOTP data is valid!
+2025-02-21 19:05:23 [INFO]: otp 111111
+2025-02-21 19:05:23 [INFO]: sendOTP successful for 7896541230
+2025-02-21 19:05:31 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 19:05:37 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 19:05:37 [INFO]: validateOTP data is valid!
+2025-02-21 19:05:38 [ERROR]: Validation {"errorCode":"OTP_VALID","errorDesc":"OTP validated successfully"}
+2025-02-21 19:05:43 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 19:05:45 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-21 19:05:46 [INFO]: validateOTP data is valid!
+2025-02-21 19:05:47 [ERROR]: Validation {"errorCode":"OTP_NOT_FOUND","errorDesc":"No OTP found for this phone number"}

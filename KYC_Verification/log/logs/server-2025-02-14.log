@@ -1,0 +1,193 @@
+[2025-02-14 11:36:09] info: Server running on port 5000
+[2025-02-14 11:36:09] info: Database connection test successful
+[2025-02-14 11:36:09] info: Database connection released back to the pool
+[2025-02-14 11:45:53] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 11:46:16] error: Validation errors: undefined
+[2025-02-14 11:54:25] info: Server running on port 5000
+[2025-02-14 11:54:25] info: Database connection test successful
+[2025-02-14 11:54:25] info: Database connection released back to the pool
+[2025-02-14 11:54:28] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 11:54:28] error: Validation errors: undefined
+[2025-02-14 11:54:55] info: Server running on port 5000
+[2025-02-14 11:54:56] info: Database connection test successful
+[2025-02-14 11:54:56] info: Database connection released back to the pool
+[2025-02-14 11:55:03] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 11:55:20] error: Validation errors: undefined
+[2025-02-14 12:01:26] info: Server running on port 5000
+[2025-02-14 12:01:26] info: Database connection test successful
+[2025-02-14 12:01:26] info: Database connection released back to the pool
+[2025-02-14 12:05:01] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 12:05:01] error: Registration Error: Error: strict mode: unknown keyword: "errorMessage"
+[2025-02-14 12:05:32] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 12:05:44] error: Registration Error: Error: strict mode: unknown keyword: "errorMessage"
+[2025-02-14 12:05:56] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 12:06:08] error: Registration Error: Error: strict mode: unknown keyword: "errorMessage"
+[2025-02-14 12:06:33] info: Server running on port 5000
+[2025-02-14 12:06:33] info: Database connection test successful
+[2025-02-14 12:06:33] info: Database connection released back to the pool
+[2025-02-14 12:06:39] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-14 12:07:35] error: Validation errors: [{"instancePath":"/password","schemaPath":"#/properties/password/minLength","keyword":"minLength","params":{"limit":6},"message":"must NOT have fewer than 6 characters"}]
+[2025-02-14 12:07:37] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:07:47] info: Registration data is valid!
+[2025-02-14 12:10:03] error: Registration Error: TypeError: VendorOnboardingDB is not a function
+[2025-02-14 12:10:11] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:10:16] info: Registration data is valid!
+[2025-02-14 12:10:49] error: Registration Error: TypeError: VendorOnboardingDB is not a function
+[2025-02-14 12:16:43] info: Server running on port 5000
+[2025-02-14 12:16:43] info: Database connection test successful
+[2025-02-14 12:16:43] info: Database connection released back to the pool
+[2025-02-14 12:16:52] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:16:52] info: Registration data is valid!
+[2025-02-14 12:16:54] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 12:19:23] info: Server running on port 5000
+[2025-02-14 12:19:24] info: Database connection test successful
+[2025-02-14 12:19:24] info: Database connection released back to the pool
+[2025-02-14 12:20:00] info: Server running on port 5000
+[2025-02-14 12:20:00] info: Database connection test successful
+[2025-02-14 12:20:00] info: Database connection released back to the pool
+[2025-02-14 12:20:02] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:20:02] info: Registration data is valid!
+[2025-02-14 12:20:08] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 12:20:52] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:20:52] info: Registration data is valid!
+[2025-02-14 12:21:53] info: Server running on port 5000
+[2025-02-14 12:21:53] info: Database connection test successful
+[2025-02-14 12:21:53] info: Database connection released back to the pool
+[2025-02-14 12:21:56] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:21:56] info: Registration data is valid!
+[2025-02-14 12:23:08] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 12:24:18] info: Server running on port 5000
+[2025-02-14 12:24:18] info: Database connection test successful
+[2025-02-14 12:24:18] info: Database connection released back to the pool
+[2025-02-14 12:24:55] info: Server running on port 5000
+[2025-02-14 12:24:55] info: Database connection test successful
+[2025-02-14 12:24:55] info: Database connection released back to the pool
+[2025-02-14 12:24:57] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:24:57] info: Registration data is valid!
+[2025-02-14 12:48:30] info: Server running on port 5000
+[2025-02-14 12:48:31] info: Database connection test successful
+[2025-02-14 12:48:31] info: Database connection released back to the pool
+[2025-02-14 12:49:08] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:49:08] info: Registration data is valid!
+[2025-02-14 12:49:27] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 12:50:12] info: Server running on port 5000
+[2025-02-14 12:50:12] info: Database connection test successful
+[2025-02-14 12:50:12] info: Database connection released back to the pool
+[2025-02-14 12:51:03] info: Server running on port 5000
+[2025-02-14 12:51:03] info: Database connection test successful
+[2025-02-14 12:51:03] info: Database connection released back to the pool
+[2025-02-14 12:51:08] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:51:08] info: Registration data is valid!
+[2025-02-14 12:51:51] info: Server running on port 5000
+[2025-02-14 12:51:51] info: Database connection test successful
+[2025-02-14 12:51:51] info: Database connection released back to the pool
+[2025-02-14 12:51:57] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 12:51:57] info: Registration data is valid!
+[2025-02-14 12:52:24] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:00:25] info: Server running on port 5000
+[2025-02-14 13:00:25] info: Database connection test successful
+[2025-02-14 13:00:25] info: Database connection released back to the pool
+[2025-02-14 13:00:58] info: Server running on port 5000
+[2025-02-14 13:00:58] info: Database connection test successful
+[2025-02-14 13:00:58] info: Database connection released back to the pool
+[2025-02-14 13:01:18] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:01:19] info: Registration data is valid!
+[2025-02-14 13:01:40] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:04:50] info: Server running on port 5000
+[2025-02-14 13:04:50] info: Database connection test successful
+[2025-02-14 13:04:50] info: Database connection released back to the pool
+[2025-02-14 13:04:54] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:04:54] info: Registration data is valid!
+[2025-02-14 13:04:56] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:05:22] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:05:22] info: Registration data is valid!
+[2025-02-14 13:05:56] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:06:06] info: Server running on port 5000
+[2025-02-14 13:06:06] info: Database connection test successful
+[2025-02-14 13:06:06] info: Database connection released back to the pool
+[2025-02-14 13:06:16] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:06:16] info: Registration data is valid!
+[2025-02-14 13:11:11] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:23:12] info: Server running on port 5000
+[2025-02-14 13:23:12] info: Database connection test successful
+[2025-02-14 13:23:12] info: Database connection released back to the pool
+[2025-02-14 13:23:16] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:23:16] info: Registration data is valid!
+[2025-02-14 13:23:30] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:31:13] info: Server running on port 5000
+[2025-02-14 13:31:13] info: Database connection test successful
+[2025-02-14 13:31:13] info: Database connection released back to the pool
+[2025-02-14 13:31:27] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:31:27] info: Registration data is valid!
+[2025-02-14 13:31:31] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:38:37] info: Server running on port 5000
+[2025-02-14 13:38:38] info: Database connection test successful
+[2025-02-14 13:38:38] info: Database connection released back to the pool
+[2025-02-14 13:38:48] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:38:48] info: Registration data is valid!
+[2025-02-14 13:38:52] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:44:15] info: Server running on port 5000
+[2025-02-14 13:44:17] error: Database connection test failed: Failed to connect to motohost:1433 - getaddrinfo ENOTFOUND motohost
+[2025-02-14 13:44:42] info: Server running on port 5000
+[2025-02-14 13:44:44] error: Database connection test failed: Failed to connect to motohost:1433 - getaddrinfo ENOTFOUND motohost
+[2025-02-14 13:45:16] info: Server running on port 5000
+[2025-02-14 13:45:16] info: Database connection test successful
+[2025-02-14 13:45:16] info: Database connection released back to the pool
+[2025-02-14 13:45:20] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:45:20] info: Registration data is valid!
+[2025-02-14 13:45:20] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:46:35] info: Server running on port 5000
+[2025-02-14 13:46:35] error: Database connection test failed: Failed to connect to 103.30.74.27:1433 - self-signed certificate
+[2025-02-14 13:47:05] info: Server running on port 5000
+[2025-02-14 13:47:05] info: Database connection test successful
+[2025-02-14 13:47:05] info: Database connection released back to the pool
+[2025-02-14 13:47:10] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:47:10] info: Registration data is valid!
+[2025-02-14 13:47:10] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:47:58] info: Server running on port 5000
+[2025-02-14 13:47:58] info: Database connection test successful
+[2025-02-14 13:47:58] info: Database connection released back to the pool
+[2025-02-14 13:48:03] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:48:03] info: Registration data is valid!
+[2025-02-14 13:48:04] error: Registration Error: SQL Error: TypeError: The "config.server" property is required and must be of type string.
+[2025-02-14 13:54:05] info: Server running on port 5000
+[2025-02-14 13:54:29] info: Server running on port 5000
+[2025-02-14 13:54:53] info: Server running on port 5000
+[2025-02-14 13:55:02] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:55:02] info: Registration data is valid!
+[2025-02-14 13:55:02] error: Registration Error: SQL Error: RequestError: Procedure or function InsertRegistration has too many arguments specified.
+[2025-02-14 13:55:38] info: Server running on port 5000
+[2025-02-14 13:55:42] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:55:42] info: Registration data is valid!
+[2025-02-14 13:56:16] info: Server running on port 5000
+[2025-02-14 13:56:20] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 13:56:20] info: Registration data is valid!
+[2025-02-14 13:56:25] info: Registration successful
+[2025-02-14 15:50:16] info: Server running on port 5000
+[2025-02-14 15:50:21] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"123565"}
+[2025-02-14 15:50:21] info: Registration data is valid!
+[2025-02-14 15:50:26] error: Registration Error: SQL Error: RequestError: Email or Username already exists.
+[2025-02-14 15:57:16] info: registration req_body = {"firstname":"fvd","lastname":"fvvd","username":"fvdv","email":"pv@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 15:57:16] info: Registration data is valid!
+[2025-02-14 15:57:29] info: Registration successful
+[2025-02-14 15:59:28] info: Server running on port 5000
+[2025-02-14 15:59:36] info: registration req_body = {"firstname":"ffvd","lastname":"fvvd","username":"fvfdv","email":"pv@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 15:59:36] info: Registration data is valid!
+[2025-02-14 15:59:45] error: Registration Error: SQL Error: RequestError: Procedure or function InsertRegistration has too many arguments specified.
+[2025-02-14 16:00:19] info: Server running on port 5000
+[2025-02-14 16:00:23] info: registration req_body = {"firstname":"ffvd","lastname":"fvvd","username":"fvfdv","email":"pv@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 16:00:23] info: Registration data is valid!
+[2025-02-14 16:00:30] error: Registration Error: SQL Error: RequestError: Procedure or function InsertRegistration has too many arguments specified.
+[2025-02-14 16:07:44] info: registration req_body = {"firstname":"ffvd","lastname":"fvvd","username":"fvfdv","email":"pv@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 16:07:44] info: Registration data is valid!
+[2025-02-14 16:07:51] error: Registration Error: SQL Error: RequestError: Procedure or function InsertRegistration has too many arguments specified.
+[2025-02-14 16:10:00] info: registration req_body = {"firstname":"ffvd","lastname":"fvvd","username":"fvfdv","email":"pv@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 16:10:00] info: Registration data is valid!
+[2025-02-14 16:10:15] error: Registration Error: SQL Error: RequestError: Could not find stored procedure 'InsertRegistration'.
+[2025-02-14 16:15:04] info: Server running on port 5000
+[2025-02-14 16:15:14] info: registration req_body = {"firstname":"ffvd","lastname":"fvvd","username":"fvfdv","email":"pv@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 16:15:14] info: Registration data is valid!
+[2025-02-14 16:15:22] error: Registration failed: Email or Username already exists.
+[2025-02-14 16:15:40] info: registration req_body = {"firstname":"ffvd","lastname":"fvvd","username":"fdvfdv","email":"pvd@gmail.com","mobailno":"8965351478","password":"123565"}
+[2025-02-14 16:15:40] info: Registration data is valid!
+[2025-02-14 16:15:46] error: Registration failed: Success

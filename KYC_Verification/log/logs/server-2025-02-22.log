@@ -1,0 +1,5 @@
+2025-02-22 12:28:34 [INFO]: Server running on port 9090
+2025-02-22 12:28:35 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-22 12:28:40 [INFO]: validateOTP request: {"mobile_number":"7896541230","otp":"111111"}
+2025-02-22 12:28:41 [INFO]: validateOTP data is valid!
+2025-02-22 12:28:42 [ERROR]: Validation {"errorCode":"OTP_NOT_FOUND","errorDesc":"No OTP found for this phone number"}

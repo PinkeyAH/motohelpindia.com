@@ -1,0 +1,47 @@
+2025-02-13T07:09:55.881Z info: Server running on port 5000
+2025-02-13T07:53:00.612Z info: Server running on port 5000
+2025-02-13T07:55:24.340Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T07:55:59.305Z error: Registration Error: ReferenceError: VendorOnboarding_schema is not defined
+2025-02-13T07:58:03.172Z info: Server running on port 5000
+2025-02-13T07:58:07.202Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T07:58:16.136Z error: Registration Error: ReferenceError: VendorOnboarding_schema is not defined
+2025-02-13T07:59:58.516Z info: Server running on port 5000
+2025-02-13T08:00:07.642Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T08:01:24.901Z info: Server running on port 5000
+2025-02-13T08:01:29.351Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T08:10:17.333Z info: Server running on port 5000
+2025-02-13T08:10:30.954Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T08:10:30.954Z error: Registration Error: ReferenceError: validate is not defined
+2025-02-13T08:22:08.048Z info: Server running on port 5000
+2025-02-13T08:22:12.613Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T08:22:12.613Z error: Registration Error: ReferenceError: VendorOnboarding_schema is not defined
+2025-02-13T08:22:44.451Z info: Server running on port 5000
+2025-02-13T08:22:51.404Z info: registration req_body = {"name":"Add your name in the body"}
+2025-02-13T08:23:09.032Z error: Validation errors: undefined
+2025-02-13T08:24:34.036Z info: registration req_body = {"firstname":"","lastname":"","username":"","email":"","mobailno":"","password":""}
+2025-02-13T08:24:53.080Z info: Server running on port 5000
+2025-02-13T08:24:57.871Z info: registration req_body = {"firstname":"","lastname":"","username":"","email":"","mobailno":"","password":""}
+2025-02-13T08:25:01.580Z error: Validation errors: undefined
+2025-02-13T09:44:04.571Z info: Server running on port 5000
+2025-02-13T09:44:52.838Z info: Server running on port 5000
+[2025-02-13 16:01:32] info: Server running on port 5000
+[2025-02-13 16:06:02] info: Server running on port 5000
+[2025-02-13 16:10:56] info: Server running on port 5000
+[2025-02-13 16:11:40] info: Server running on port 5000
+[2025-02-13 16:12:10] info: Server running on port 5000
+[2025-02-13 16:13:04] info: Server running on port 5000
+[2025-02-13 16:22:48] info: DB
+[2025-02-13 16:23:12] info: Server running on port 5000
+[2025-02-13 16:44:38] info: Server running on port 5000
+[2025-02-13 16:44:38] info: Database connection test successful
+[2025-02-13 16:44:38] info: Database connection released back to the pool
+[2025-02-13 16:46:03] info: Server running on port 5000
+[2025-02-13 16:46:10] info: Database connection test successful
+[2025-02-13 16:46:10] info: Database connection released back to the pool
+[2025-02-13 16:54:10] info: registration req_body = {"firstname":"","lastname":"","username":"","email":"","mobailno":"","password":""}
+[2025-02-13 16:54:14] error: Validation errors: undefined
+[2025-02-13 16:55:14] info: registration req_body = {"firstname":"fd","lastname":"fvd","username":"fvd","email":"p@gmail.com","mobailno":"8965321478","password":"12365"}
+[2025-02-13 16:55:37] error: Validation errors: undefined
+[2025-02-13 17:02:03] info: Server running on port 5000
+[2025-02-13 17:02:03] info: Database connection test successful
+[2025-02-13 17:02:03] info: Database connection released back to the pool
