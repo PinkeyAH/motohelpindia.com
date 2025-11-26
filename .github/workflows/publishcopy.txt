@@ -43,6 +43,33 @@ jobs:
          mkdir -p vendor-service/log/logs
          mkdir -p KYC_Verification/log/logs  
     
+     - name: Build Docker images
+       run: |
+         docker build -t api-gateway:${{ github.sha }} -f api-gateway/Dockerfile api-gateway
+         docker build -t vendor-service:${{ github.sha }} -f vendor-service/Dockerfile vendor-service
+         docker build -t driver-service:${{ github.sha }} -f driver-service/Dockerfile driver-service
+         docker build -t customer-service:${{ github.sha }} -f customer-service/Dockerfile customer-service
+  
+
+     - name: Log in to Docker Hub
+       uses: docker/login-action@v2
+       with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+     
+     - name: Push Images
+       run: |
+         docker tag api-gateway:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{ github.sha }}
+         docker tag vendor-service:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/vendor-service:${{ github.sha }}
+         docker tag driver-service:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/driver-service:${{ github.sha }}
+         docker tag customer-service:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/customer-service:${{ github.sha }}
+
+         docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{ github.sha }}
+         docker push ${{ secrets.DOCKER_USERNAME }}/vendor-service:${{ github.sha }}
+         docker push ${{ secrets.DOCKER_USERNAME }}/driver-service:${{ github.sha }}
+         docker push ${{ secrets.DOCKER_USERNAME }}/customer-service:${{ github.sha }}
+
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
