@@ -1,0 +1,66 @@
+name: MotoHelp Docker CI/CD
+
+on:
+  push:
+    branches: [ motohelp ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build & Push All Microservice Images (With Cache)
+      run: |
+        SERVICES="api-gateway vendor-service driver-service customer-service KYC_Verification"
+
+        for S in $SERVICES; do
+          echo "---- Building $S ----"
+
+          docker build \
+            --cache-from ${{ secrets.DOCKER_USERNAME }}/$S:latest \
+            -t ${{ secrets.DOCKER_USERNAME }}/$S:${{ github.sha }} \
+            -t ${{ secrets.DOCKER_USERNAME }}/$S:latest \
+            $S
+
+          docker push ${{ secrets.DOCKER_USERNAME }}/$S:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/$S:latest
+        done
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+
+    - name: Deploy on Linux Server
+      env:
+        SSHPASS: ${{ secrets.LINUXPASSWORD }}
+      run: |
+        sshpass -e ssh -o StrictHostKeyChecking=no -p ${{ secrets.LINUXPORT }} \
+        ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+
+        cd /var/www/motohelpindia.com
+
+        echo "Updating docker-compose.yml"
+        docker compose pull
+        docker compose down
+        docker compose up -d --remove-orphans
+
+        echo "Deployment Completed"
+        EOF

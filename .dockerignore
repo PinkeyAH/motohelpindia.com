@@ -1,9 +1,12 @@
 node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
 .git
-actions-runner
-uploads
+.gitignore
+.env
 logs
-*.log
-*.env
-*.md
+.vscode
 .DS_Store
+dist
+coverage

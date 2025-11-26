@@ -10,16 +10,65 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+     - name: Checkout code
+       uses: actions/checkout@v3 
+     - name: Set up Node.js
+       uses: actions/setup-node@v3
+       with:
+         node-version: 20 
+     - name: Install dependencies for all services
+       shell: cmd
+       run: |
+         set services=api-gateway vendor-service driver-service customer-service KYC_Verification
+         for %%s in (%services%) do (
+           if exist %%s\package.json (
+             echo Installing dependencies for %%s...
+             cd %%s
+             npm install
+             cd ..
+           ) else (
+             echo No package.json found in %%s, skipping...
+           )
+         )
+      
+     
+     - name: Create logs directories
+       run: |
+         mkdir -p admin-service/log/logs
+         mkdir -p api-gateway/log/logs
+         mkdir -p customer-service/log/logs
+         mkdir -p driver-service/log/logs
+         mkdir -p vendor-service/log/logs
+         mkdir -p KYC_Verification/log/logs  
+    
+     - name: Build Docker images
+       run: |
+         docker build -t api-gateway:${{ github.sha }} -f api-gateway/Dockerfile api-gateway
+         docker build -t vendor-service:${{ github.sha }} -f vendor-service/Dockerfile vendor-service
+         docker build -t driver-service:${{ github.sha }} -f driver-service/Dockerfile driver-service
+         docker build -t customer-service:${{ github.sha }} -f customer-service/Dockerfile customer-service
+  
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+     - name: Log in to Docker Hub
+       uses: docker/login-action@v2
+       with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+     
+     - name: Push Images
+       run: |
+         docker tag api-gateway:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{ github.sha }}
+         docker tag vendor-service:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/vendor-service:${{ github.sha }}
+         docker tag driver-service:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/driver-service:${{ github.sha }}
+         docker tag customer-service:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/customer-service:${{ github.sha }}
+
+         docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:${{ github.sha }}
+         docker push ${{ secrets.DOCKER_USERNAME }}/vendor-service:${{ github.sha }}
+         docker push ${{ secrets.DOCKER_USERNAME }}/driver-service:${{ github.sha }}
+         docker push ${{ secrets.DOCKER_USERNAME }}/customer-service:${{ github.sha }}
+
 
   deploy:
     needs: build
@@ -75,37 +124,118 @@ jobs:
 
         echo "------ Restarting Services with PM2 ------"
 
-        # START gateway
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} "
-          cd /var/www/motohelpindia.com/api-gateway &&
-          npm install &&
-          pm2 restart index.js || pm2 start index.js
-        "
+        # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/api-gateway
+          echo "Starting deployment..."
 
-        # START vendor
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} "
-          cd /var/www/motohelpindia.com/vendor-service &&
-          npm install &&
-          pm2 restart index.js || pm2 start index.js
-        "
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
 
-        # START driver
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} "
-          cd /var/www/motohelpindia.com/driver-service &&
-          npm install &&
-          pm2 restart index.js || pm2 start index.js
-        "
+          node --version
+          echo "node --version"
 
-        # START customer
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} "
-          cd /var/www/motohelpindia.com/customer-service &&
-          npm install &&
-          pm2 restart index.js || pm2 start index.js
-        "
+          npm install
+          npm --version
+          echo "npm -version"
+          
 
-        # START KYC service
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} "
-          cd /var/www/motohelpindia.com/KYC_Verification &&
-          npm install &&
+          echo "Starting api-gateway application with PM2..."
           pm2 restart index.js || pm2 start index.js
-        "
+
+          EOF
+
+           # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/vendor-service
+          echo "Starting vendor deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting vendor-service application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+          EOF
+
+
+          # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/driver-service
+          echo "Starting driver deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting driver-service application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+
+          EOF
+
+          # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/customer-service
+          echo "Starting customer deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting customer-service application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+                    
+          EOF
+
+          # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/KYC_Verification
+          echo "Starting KYC_Verification deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting customer-service application with PM2..."
+          
+                    
+          EOF
+
+
+
+
+
+          
