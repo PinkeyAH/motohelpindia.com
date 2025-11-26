@@ -205,7 +205,6 @@ jobs:
           npm install
           npm --version
           echo "npm -version"
-          
 
           echo "Starting customer-service application with PM2..."
                       
