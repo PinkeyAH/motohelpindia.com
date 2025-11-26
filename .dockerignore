@@ -1,0 +1,9 @@
+node_modules
+.git
+actions-runner
+uploads
+logs
+*.log
+*.env
+*.md
+.DS_Store
