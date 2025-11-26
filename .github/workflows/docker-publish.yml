@@ -45,8 +45,8 @@ jobs:
  
      - name: Build Docker image
        run: |
-        docker build -t motohelpindia.com:${{ github.sha }} motohelpindia.com \
-          -f motohelpindia.com/Dockerfile
+         docker build -t motohelpindia.com:${{ github.sha }} -f motohelpindia.com/Dockerfile motohelpindia.com
+
   
 
      - name: Log in to Docker Hub
