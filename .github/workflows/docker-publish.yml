@@ -70,21 +70,21 @@ jobs:
       - name: Deploy via SSH using password
         run: |
           # Set the password as an environment variable (use GitHub Secrets for security)
-          export SSHPASS='##c99232101'
+          export SSHPASS=${{ secrets.LINUXPASSWORD }}
           # Execute commands on the remote server using sshpass
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
           echo "Starting deployment..."
-           mkdir -p /var/www/neotechnet.com/Moto_Help_Microservices
+           mkdir -p /var/www/motohelpindia.com
           EOF
 
           # Copy the new application files using rsync
-          sshpass -e rsync -avz -e "ssh -p ${{ secrets.LINUXPORT }}" "$GITHUB_WORKSPACE/" ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }}:/var/www/neotechnet.com/Moto_Help_Microservices
+          sshpass -e rsync -avz -e "ssh -p ${{ secrets.LINUXPORT }}" "$GITHUB_WORKSPACE/" ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }}:/var/www/motohelpindia.com
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
           EOF
           
           # Create .env file remotely
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cat > /var/www/neotechnet.com/Moto_Help_Microservices/.env << 'REMOTE_ENV'
+          cat > /var/www/motohelpindia.com/.env << 'REMOTE_ENV'
           DB_HOST=${{ secrets.DB_HOST }}
           DB_USER=${{ secrets.DB_USER }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
@@ -105,7 +105,7 @@ jobs:
           
            # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/neotechnet.com/Moto_Help_Microservices/api-gateway
+          cd /var/www/motohelpindia.com/api-gateway
           echo "Starting deployment..."
 
           npm install pm2
@@ -127,7 +127,7 @@ jobs:
 
            # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/neotechnet.com/Moto_Help_Microservices/vendor-service
+          cd /var/www/motohelpindia.com/vendor-service
           echo "Starting vendor deployment..."
 
           npm install pm2
@@ -149,7 +149,7 @@ jobs:
 
           # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/neotechnet.com/Moto_Help_Microservices/driver-service
+          cd /var/www/motohelpindia.com/driver-service
           echo "Starting driver deployment..."
 
           npm install pm2
@@ -171,7 +171,7 @@ jobs:
 
           # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/neotechnet.com/Moto_Help_Microservices/customer-service
+          cd /var/www/motohelpindia.com/customer-service
           echo "Starting customer deployment..."
 
           npm install pm2
@@ -193,7 +193,7 @@ jobs:
 
           # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/neotechnet.com/Moto_Help_Microservices/KYC_Verification
+          cd /var/www/motohelpindia.com/KYC_Verification
           echo "Starting KYC_Verification deployment..."
 
           npm install pm2
