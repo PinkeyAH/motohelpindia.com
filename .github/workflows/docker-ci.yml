@@ -21,7 +21,7 @@ jobs:
 
     - name: Build & Push All Microservice Images (With Cache)
       run: |
-        SERVICES="api-gateway vendor-service driver-service customer-service KYC_Verification"
+        SERVICES="api-gateway vendor-service driver-service customer-service"
 
         for S in $SERVICES; do
           echo "---- Building $S ----"
