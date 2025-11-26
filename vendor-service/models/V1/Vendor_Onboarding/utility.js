@@ -436,6 +436,7 @@ exports.updateVendorDetailsDB = (VendorDetails) => {
                 // Outputs
                 request.output('bstatus_code', sql.NVarChar(255));
                 request.output('bmessage_desc', sql.NVarChar(255));
+                request.output("userDetails", sql.NVarChar(sql.MAX));
 
                 // Call the stored procedure
                 return request.execute('VendorDetailsUpdate');
@@ -443,7 +444,8 @@ exports.updateVendorDetailsDB = (VendorDetails) => {
             .then(result => {
                 const output = {
                     bstatus_code: result.output.bstatus_code,
-                    bmessage_desc: result.output.bmessage_desc
+                    bmessage_desc: result.output.bmessage_desc,
+                    userDetails: result.output.userDetails
                 };
                 resolve(output);
             })
