@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    env_file: .env
+    ports:
+      - "${APIPORT}:${APIPORT}"
+    restart: always
+
+  vendor-service:
+    build: ./vendor-service
+    container_name: vendor-service
+    env_file: .env
+    ports:
+      - "${VENDORPORT}:${VENDORPORT}"
+    restart: always
+
+  driver-service:
+    build: ./driver-service
+    container_name: driver-service
+    env_file: .env
+    ports:
+      - "${DRIVERPORT}:${DRIVERPORT}"
+    restart: always
+
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    env_file: .env
+    ports:
+      - "${CUSTOMERPORT}:${CUSTOMERPORT}"
+    restart: always
+
+  kyc-service:
+    build: ./KYC_Verification
+    container_name: kyc-service
+    env_file: .env
+    ports:
+      - "${KYCPORT}:${KYCPORT}"
+    restart: always
