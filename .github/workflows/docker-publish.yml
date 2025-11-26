@@ -3,103 +3,109 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - motohelp
+      - microservices
+      - feature/deploy-*
   pull_request:
     branches:
-      - motohelp
+      - microservices
 
 jobs:
   build:
-    runs-on: self-hosted 
+    runs-on: self-hosted
+
     steps:
-     - name: Checkout code
-       uses: actions/checkout@v3 
-     - name: Set up Node.js
-       uses: actions/setup-node@v3
-       with:
-         node-version: 20 
-     - name: Install dependencies for all services
-       shell: cmd
-       run: |
-         set services=api-gateway vendor-service driver-service customer-service KYC_Verification
-         for %%s in (%services%) do (
-           if exist %%s\package.json (
-             echo Installing dependencies for %%s...
-             cd %%s
-             npm install
-             cd ..
-           ) else (
-             echo No package.json found in %%s, skipping...
-           )
-         )
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies for all services
+        shell: cmd
+        run: |
+          set services=api-gateway vendor-service driver-service customer-service KYC_Verification
+          for %%s in (%services%) do (
+            if exist %%s\package.json (
+              echo Installing dependencies for %%s...
+              cd %%s
+              npm install
+              cd ..
+            ) else (
+              echo No package.json found in %%s, skipping...
+            )
+          )
       
-     
-     - name: Create logs directories
-       run: |
-         mkdir -p admin-service/log/logs
-         mkdir -p api-gateway/log/logs
-         mkdir -p customer-service/log/logs
-         mkdir -p driver-service/log/logs
-         mkdir -p vendor-service/log/logs
-         mkdir -p KYC_Verification/log/logs  
-    
+
+      
+      - name: Create logs directories
+        run: |
+          mkdir -p admin-service/log/logs
+          mkdir -p api-gateway/log/logs
+          mkdir -p customer-service/log/logs
+          mkdir -p driver-service/log/logs
+          mkdir -p vendor-service/log/logs
+          mkdir -p KYC_Verification/log/logs
+
+
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    needs: build  # Ensure build completes first
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install sshpass
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y sshpass
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
 
-    - name: Add SSH known hosts
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXIP }} >> ~/.ssh/known_hosts
+      - name: Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXIP }} >> ~/.ssh/known_hosts
 
-    - name: Deploy to Linux Server
-      env:
-        SSHPASS: ${{ secrets.LINUXPASSWORD }}
-      run: |
-
-        echo "------ Creating Folder if not exists ------"
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} \
-        "mkdir -p /var/www/motohelpindia.com"
-
-        echo "------ Uploading project ------"
-        sshpass -e rsync -avz -e "ssh -p ${{ secrets.LINUXPORT }}" \
-        "$GITHUB_WORKSPACE/" \
-        ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }}:/var/www/motohelpindia.com
-
-        echo "------ Creating .env file ------"
-        sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-                  cat > /var/www/motohelpindia.com/.env << 'ENV_END'
-                  DB_HOST=${{ secrets.DB_HOST }}
-                  DB_USER=${{ secrets.DB_USER }}
-                  DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-                  DB_NAME=${{ secrets.DB_NAME }}
-                  PORT=${{ secrets.PORT }}
-                  APIPORT=${{ secrets.APIPORT }}
-                  ADMINPORT=${{ secrets.ADMINPORT }}
-                  VENDORPORT=${{ secrets.VENDORPORT }}
-                  DRIVERPORT=${{ secrets.DRIVERPORT }}
-                  CUSTOMERPORT=${{ secrets.CUSTOMERPORT }}
-                  ADMIN_SERVICE_URL=${{ secrets.ADMIN_SERVICE_URL }}
-                  VENDOR_SERVICE_URL=${{ secrets.VENDOR_SERVICE_URL }}
-                  DRIVER_SERVICE_URL=${{ secrets.DRIVER_SERVICE_URL }}
-                  CUSTOMER_SERVICE_URL=${{ secrets.CUSTOMER_SERVICE_URL }}
-                  ENV_END
-                  EOF
-
-        echo "------ Restarting Services with PM2 ------"
-
-        # Install dependencies and start the application
+      - name: Deploy via SSH using password
+        run: |
+          # Set the password as an environment variable (use GitHub Secrets for security)
+          export SSHPASS='##c99232101'
+          # Execute commands on the remote server using sshpass
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/motohelpindia.com/api-gateway
+          echo "Starting deployment..."
+           mkdir -p /var/www/neotechnet.com/Moto_Help_Microservices
+          EOF
+
+          # Copy the new application files using rsync
+          sshpass -e rsync -avz -e "ssh -p ${{ secrets.LINUXPORT }}" "$GITHUB_WORKSPACE/" ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }}:/var/www/neotechnet.com/Moto_Help_Microservices
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          EOF
+          
+          # Create .env file remotely
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cat > /var/www/neotechnet.com/Moto_Help_Microservices/.env << 'REMOTE_ENV'
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          PORT = ${{ secrets.PORT }}
+          APIPORT = ${{ secrets.APIPORT }}
+          ADMINPORT = ${{ secrets.ADMINPORT }}
+          VENDORPORT = ${{ secrets.VENDORPORT }}
+          DRIVERPORT = ${{ secrets.DRIVERPORT }}
+          CUSTOMERPORT = ${{ secrets.CUSTOMERPORT }}
+          ADMIN_SERVICE_URL = ${{ secrets.ADMIN_SERVICE_URL }}
+          VENDOR_SERVICE_URL = ${{ secrets.VENDOR_SERVICE_URL }}
+          DRIVER_SERVICE_URL = ${{ secrets.DRIVER_SERVICE_URL }}
+          CUSTOMER_SERVICE_URL = ${{ secrets.CUSTOMER_SERVICE_URL }}
+          
+          REMOTE_ENV
+          EOF
+          
+           # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/neotechnet.com/Moto_Help_Microservices/api-gateway
           echo "Starting deployment..."
 
           npm install pm2
@@ -121,7 +127,7 @@ jobs:
 
            # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/motohelpindia.com/vendor-service
+          cd /var/www/neotechnet.com/Moto_Help_Microservices/vendor-service
           echo "Starting vendor deployment..."
 
           npm install pm2
@@ -143,7 +149,7 @@ jobs:
 
           # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/motohelpindia.com/driver-service
+          cd /var/www/neotechnet.com/Moto_Help_Microservices/driver-service
           echo "Starting driver deployment..."
 
           npm install pm2
@@ -165,7 +171,7 @@ jobs:
 
           # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/motohelpindia.com/customer-service
+          cd /var/www/neotechnet.com/Moto_Help_Microservices/customer-service
           echo "Starting customer deployment..."
 
           npm install pm2
@@ -187,7 +193,7 @@ jobs:
 
           # Install dependencies and start the application
           sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
-          cd /var/www/motohelpindia.com/KYC_Verification
+          cd /var/www/neotechnet.com/Moto_Help_Microservices/KYC_Verification
           echo "Starting KYC_Verification deployment..."
 
           npm install pm2
