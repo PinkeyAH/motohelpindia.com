@@ -2,8 +2,7 @@ version: "3.8"
 
 services:
   api-gateway:
-    build:
-      context: ./api-gateway
+    build: ./api-gateway
     container_name: api-gateway
     env_file: .env
     ports:
@@ -11,8 +10,7 @@ services:
     restart: always
 
   vendor-service:
-    build:
-      context: ./vendor-service
+    build: ./vendor-service
     container_name: vendor-service
     env_file: .env
     ports:
@@ -20,8 +18,7 @@ services:
     restart: always
 
   driver-service:
-    build:
-      context: ./driver-service
+    build: ./driver-service
     container_name: driver-service
     env_file: .env
     ports:
@@ -29,8 +26,7 @@ services:
     restart: always
 
   customer-service:
-    build:
-      context: ./customer-service
+    build: ./customer-service
     container_name: customer-service
     env_file: .env
     ports:
@@ -38,8 +34,7 @@ services:
     restart: always
 
   kyc-service:
-    build:
-      context: ./KYC_Verification
+    build: ./KYC_Verification
     container_name: kyc-service
     env_file: .env
     ports:

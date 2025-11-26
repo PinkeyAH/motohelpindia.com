@@ -45,12 +45,8 @@ jobs:
  
      - name: Build Docker images
        run: |
-         docker build -t api-gateway:${{ github.sha }} -f api-gateway/Dockerfile api-gateway
-         docker build -t vendor-service:${{ github.sha }} -f vendor-service/Dockerfile vendor-service
-         docker build -t driver-service:${{ github.sha }} -f driver-service/Dockerfile driver-service
-         docker build -t customer-service:${{ github.sha }} -f customer-service/Dockerfile customer-service
-         docker build -t admin-service:${{ github.sha }} -f admin-service/Dockerfile admin-service
-         docker build -t KYC_Verification:${{ github.sha }} -f KYC_Verification/Dockerfile KYC_Verification
+         docker build -t motohelpindia.com:${{ github.sha }} .
+         
   
 
      - name: Log in to Docker Hub
