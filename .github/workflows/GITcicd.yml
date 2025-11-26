@@ -206,6 +206,7 @@ jobs:
           npm --version
           echo "npm -version"
 
+          
           echo "Starting customer-service application with PM2..."
                       
           EOF
