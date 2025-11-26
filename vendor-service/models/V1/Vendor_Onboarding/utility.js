@@ -15,6 +15,7 @@ exports.VendorOnboardingDB = (data, vendorid, VendorEmployeeDetails, vehicle_Det
                 tvp.columns.add('emailid', sql.NVarChar(255));
                 tvp.columns.add('website', sql.NVarChar(255));
                 tvp.columns.add('designation', sql.NVarChar(100));
+                tvp.columns.add('customDesignation', sql.NVarChar(100));
                 tvp.columns.add('username', sql.NVarChar(100));
                 tvp.columns.add('password', sql.NVarChar(100));
 
@@ -26,6 +27,7 @@ exports.VendorOnboardingDB = (data, vendorid, VendorEmployeeDetails, vehicle_Det
                         cd.emailid,
                         cd.website,
                         cd.designation,
+                        cd.customDesignation,
                         cd.username,
                         cd.password
                     );
@@ -310,10 +312,10 @@ exports.getVehicleDB = (data) => {
                 const detailsQuery = data.vehicleid
                     // ? `SELECT * FROM VehicleDetailsNew WHERE verify_flag = 'Y' AND vendorid=@vendorid AND vehicleid=@vehicleid`
                     // : `SELECT * FROM VehicleDetailsNew WHERE verify_flag = 'Y' AND vendorid=@vendorid`;
-                       ? `SELECT VH.*, V.employee_count FROM VehicleDetailsNew VH INNER JOIN Vendor_Details V ON VH.vendorid = V.vendorid WHERE
+                       ? `SELECT VH.*, V.vehicle_count FROM VehicleDetailsNew VH INNER JOIN Vendor_Details V ON VH.vendorid = V.vendorid WHERE
                       -- verify_flag = 'Y' AND 
                         VH.vendorid=@vendorid AND VH.vehicleid=@vehicleid`
-                    : `SELECT VH.*, V.employee_count FROM VehicleDetailsNew VH INNER JOIN Vendor_Details V ON VH.vendorid = V.vendorid WHERE 
+                    : `SELECT VH.*, V.vehicle_count FROM VehicleDetailsNew VH INNER JOIN Vendor_Details V ON VH.vendorid = V.vendorid WHERE 
                     -- verify_flag = 'Y' AND 
                     VH.vendorid=@vendorid`;
                 
@@ -387,6 +389,7 @@ exports.updateVendoremployeeDB = (VendorEmployeeDetails) => {
                 request.input('email_id', sql.NVarChar(255), VendorEmployeeDetails.email_id || null);
                 request.input('website', sql.NVarChar(255), VendorEmployeeDetails.website || null);
                 request.input('designation', sql.NVarChar(255), VendorEmployeeDetails.designation || null);
+                request.input('customDesignation', sql.NVarChar(255), VendorEmployeeDetails.customDesignation || null);
                 request.input('username', sql.NVarChar(255), VendorEmployeeDetails.username || null);
                 request.input('password', sql.NVarChar(255), VendorEmployeeDetails.password || null);
                 request.input('employee_count', sql.NVarChar(255), VendorEmployeeDetails.employee_count || null);
