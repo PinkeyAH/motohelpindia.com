@@ -278,10 +278,10 @@ exports.updateVendorDetails = async (req, res) => {
         const result = await updateVendorDetailsDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc , userDetails: result.userDetails });
+            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc  });
         }
 
-        return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
+        return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc , userDetails: JSON.parse(result.userDetails) });
     } catch (error) {
         logger.log("error", `Update VendorDetails Error: ${error}`);
         return res.status(500).json({ status: "03", message: "Internal server error" });
