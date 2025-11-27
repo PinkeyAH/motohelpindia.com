@@ -44,7 +44,7 @@ const logger = require('../../../log/logger');
 //     });
 // };
 
-exports.InsertMultipleCustomerEmployeesDB = async (employees) => {
+exports.InsertcustomeremployeeDB = async (employees) => {
     logger.info(`[INFO]: Inserting ${employees.length} Customer Employee Records`);
 
     const poolConn = await sql.connect(pool);
