@@ -105,8 +105,9 @@ exports.customer_Forgot_MpinDB = async (payload) => {
                 const request = pool.request();
 
                 // Input Parameters
-                request.input('CustomerID', sql.NVarChar(255), payload.CustomerID);
                 request.input('ContactNo', sql.NVarChar(255), payload.ContactNo);
+                request.input('New_Customer_MPIN', sql.NVarChar(255), payload.New_Customer_MPIN);
+                request.input('Confirm_Customer_MPIN', sql.NVarChar(255), payload.Confirm_Customer_MPIN);
             
                 // Outputs
                 request.output('bstatus_code', sql.NVarChar(50));
