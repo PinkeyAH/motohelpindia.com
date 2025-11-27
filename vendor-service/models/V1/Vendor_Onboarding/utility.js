@@ -660,13 +660,86 @@ exports.deleteVendorKYCDB = (vendorid) => {
     });
 };
 
+// exports.deleteVehicleDB = (data) => {
+//     const { vendorid, vehicleid } = data;
+//     console.log(`[INFO]: Deleting Vehicle record for vendorid: ${vendorid}, vehicleid: ${vehicleid}`);
+
+//     return new Promise((resolve, reject) => {
+//         sql.connect(pool)
+//             .then(pool => {
+//                 const request = pool.request();
+//                 request.input('vendorid', sql.NVarChar(255), vendorid);
+//                 request.input('vehicleid', sql.NVarChar(255), vehicleid);
+
+//                 console.log(`[INFO]: Executing Transactional Delete for VehicleID: ${vehicleid}, VendorID: ${vendorid}`);
+
+//                 return request.query(`
+//                     BEGIN TRANSACTION;
+
+//                         -- 1️⃣ Try deleting vehicle mapping
+//                         DELETE DVA 
+//                         FROM DriverVehicleAssign AS DVA
+//                         JOIN VehicleDetailsNew AS VDN ON DVA.VehicleID = VDN.VehicleID
+//                         WHERE DVA.IsActive = '0' 
+//                           AND DVA.VendorID = @vendorid
+//                           AND VDN.VehicleID = @vehicleid;
+
+//                         DECLARE @rows INT = @@ROWCOUNT;
+
+//                         -- 2️⃣ Insert log based on result
+//                         IF @rows > 0
+//                         BEGIN
+//                             INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
+//                             VALUES (@vehicleid, @vendorid, 'system', 'Vehicle deleted successfully');
+//                         END
+//                         ELSE
+//                         BEGIN
+//                             INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
+//                             VALUES (@vehicleid, @vendorid, 'system', 'No record found for deletion');
+//                         END
+
+//                     COMMIT TRANSACTION;
+//                 `);
+//             })
+//             .then(result => {
+//                 if (result.rowsAffected[0] > 0) {
+//                     console.log(`[SUCCESS]: Vehicle deleted successfully for vehicleid: ${vehicleid}`);
+//                     resolve({ message: `Vehicle deleted successfully for vehicleid: ${vehicleid}`, status: "00" });
+//                 } else {
+//                     console.log(`[INFO]: No records found to delete for vehicleid: ${vehicleid}`);
+//                     resolve({ message: `No records found for vehicleid: ${vehicleid}`, status: "01" });
+//                 }
+//             })
+//             .catch(async (error) => {
+//                 console.error(`[ERROR]: SQL Error during vehicle delete for vehicleid: ${vehicleid} → ${error.message}`);
+
+//                 // 3️⃣ Log SQL Error into VehicleDeleteLog
+//                 try {
+//                     const pool2 = await sql.connect(pool);
+//                     const req = pool2.request();
+//                     req.input('vehicleid', sql.NVarChar(255), vehicleid);
+//                     req.input('vendorid', sql.NVarChar(255), vendorid);
+//                     req.input('errormsg', sql.NVarChar(255), error.message);
+
+//                     await req.query(`
+//                         INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
+//                         VALUES (@vehicleid, @vendorid, 'system', CONCAT('Error during delete: ', @errormsg));
+//                     `);
+//                 } catch (logError) {
+//                     console.error(`[LOG ERROR]: Failed to log vehicle delete error → ${logError.message}`);
+//                 }
+
+//                 reject({ message: 'SQL Error: ' + error.message, status: "01" });
+//             });
+//     });
+// };
 exports.deleteVehicleDB = (data) => {
     const { vendorid, vehicleid } = data;
     console.log(`[INFO]: Deleting Vehicle record for vendorid: ${vendorid}, vehicleid: ${vehicleid}`);
 
     return new Promise((resolve, reject) => {
         sql.connect(pool)
-            .then(pool => {
+            .then(async pool => {
                 const request = pool.request();
                 request.input('vendorid', sql.NVarChar(255), vendorid);
                 request.input('vehicleid', sql.NVarChar(255), vehicleid);
@@ -674,46 +747,77 @@ exports.deleteVehicleDB = (data) => {
                 console.log(`[INFO]: Executing Transactional Delete for VehicleID: ${vehicleid}, VendorID: ${vendorid}`);
 
                 return request.query(`
-                    BEGIN TRANSACTION;
 
-                        -- 1️⃣ Try deleting vehicle mapping
-                        DELETE DVA 
+                    BEGIN TRY
+                        BEGIN TRANSACTION;
+
+                        /* 1️⃣ DELETE FROM DriverVehicleAssign */
+                        DELETE DVA
                         FROM DriverVehicleAssign AS DVA
                         JOIN VehicleDetailsNew AS VDN ON DVA.VehicleID = VDN.VehicleID
-                        WHERE DVA.IsActive = '0' 
+                        WHERE DVA.IsActive = '0'
                           AND DVA.VendorID = @vendorid
                           AND VDN.VehicleID = @vehicleid;
 
-                        DECLARE @rows INT = @@ROWCOUNT;
+                        DECLARE @assignRows INT = @@ROWCOUNT;
 
-                        -- 2️⃣ Insert log based on result
-                        IF @rows > 0
-                        BEGIN
-                            INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
-                            VALUES (@vehicleid, @vendorid, 'system', 'Vehicle deleted successfully');
-                        END
-                        ELSE
-                        BEGIN
-                            INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
-                            VALUES (@vehicleid, @vendorid, 'system', 'No record found for deletion');
-                        END
+                        /* 2️⃣ DELETE FROM VehicleDetailsNew ONLY IF NOT ASSIGNED ANYWHERE */
+                        DELETE FROM VehicleDetailsNew
+                        WHERE VehicleID = @vehicleid
+                          AND VendorID = @vendorid;
 
-                    COMMIT TRANSACTION;
+                        DECLARE @vehicleRows INT = @@ROWCOUNT;
+
+                        /* 3️⃣ INSERT LOGS */
+                        INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
+                        VALUES (
+                            @vehicleid,
+                            @vendorid,
+                            'system',
+                            CONCAT(
+                                'DriverAssignmentDeleted=', @assignRows,
+                                ', VehicleDeleted=', @vehicleRows
+                            )
+                        );
+
+                        COMMIT TRANSACTION;
+
+                        SELECT @assignRows AS assignCount, @vehicleRows AS vehicleCount;
+
+                    END TRY
+
+                    BEGIN CATCH
+                        ROLLBACK TRANSACTION;
+
+                        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+
+                        INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
+                        VALUES (@vehicleid, @vendorid, 'system', CONCAT('SQL Transaction Error: ', @ErrorMessage));
+
+                        THROW;
+                    END CATCH;
                 `);
             })
             .then(result => {
-                if (result.rowsAffected[0] > 0) {
-                    console.log(`[SUCCESS]: Vehicle deleted successfully for vehicleid: ${vehicleid}`);
-                    resolve({ message: `Vehicle deleted successfully for vehicleid: ${vehicleid}`, status: "00" });
+                const assignCount = result.recordset[0].assignCount;
+                const vehicleCount = result.recordset[0].vehicleCount;
+
+                if (assignCount > 0 || vehicleCount > 0) {
+                    resolve({
+                        status: "00",
+                        message: `Vehicle delete successful. AssignDeleted=${assignCount}, VehicleDeleted=${vehicleCount}`
+                    });
                 } else {
-                    console.log(`[INFO]: No records found to delete for vehicleid: ${vehicleid}`);
-                    resolve({ message: `No records found for vehicleid: ${vehicleid}`, status: "01" });
+                    resolve({
+                        status: "01",
+                        message: `No record found for vehicleid: ${vehicleid}`
+                    });
                 }
             })
             .catch(async (error) => {
-                console.error(`[ERROR]: SQL Error during vehicle delete for vehicleid: ${vehicleid} → ${error.message}`);
+                console.error(`[ERROR]: Delete Failed → ${error.message}`);
 
-                // 3️⃣ Log SQL Error into VehicleDeleteLog
+                // 🔥 Log error in VehicleDeleteLog
                 try {
                     const pool2 = await sql.connect(pool);
                     const req = pool2.request();
@@ -723,13 +827,13 @@ exports.deleteVehicleDB = (data) => {
 
                     await req.query(`
                         INSERT INTO VehicleDeleteLog (VehicleID, VendorID, DeletedBy, Remark)
-                        VALUES (@vehicleid, @vendorid, 'system', CONCAT('Error during delete: ', @errormsg));
+                        VALUES (@vehicleid, @vendorid, 'system', CONCAT('Catch Error: ', @errormsg));
                     `);
                 } catch (logError) {
-                    console.error(`[LOG ERROR]: Failed to log vehicle delete error → ${logError.message}`);
+                    console.error(`[LOG ERROR]: ${logError.message}`);
                 }
 
-                reject({ message: 'SQL Error: ' + error.message, status: "01" });
+                reject({ status: "01", message: 'SQL Error: ' + error.message });
             });
     });
 };
