@@ -190,7 +190,7 @@ exports.getVendoremployeeDB = (vendorid) => {
                 console.log(`[INFO]: Executing multi-query for vendorid: ${vendorid}`);
 
                 const query = `
-                    SELECT * FROM Vendor_employeeDetails WHERE vendor_id = @vendorid;
+                    SELECT E.*, V.employee_count FROM Vendor_employeeDetails E INNER JOIN Vendor_Details V ON E.vendor_id = V.vendorid WHERE vendor_id = @vendorid;
                 --    SELECT * FROM Vendor_Legaldocuments WHERE vendorid = @vendorid;
                 --    SELECT * FROM Vendor_employeeDetails WHERE vendor_id = @vendorid;
                 --    SELECT * FROM VehicleDetailsNew WHERE vendorid = @vendorid;
