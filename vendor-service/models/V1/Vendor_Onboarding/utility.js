@@ -181,24 +181,41 @@ exports.vendorBankkYCDB = (bankdata) => {
 exports.getVendoremployeeDB = (vendorid) => {
     console.log(`[INFO]: Fetching Vendor_employeeDetails for vendorid: ${vendorid}`);
 
-    return new Promise((resolve, reject) => {
+     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
                 const request = pool.request();
-                request.input('vendorid', sql.NVarChar(255), vendorid); // Bind vendorid
+                request.input('vendorid', sql.NVarChar(255), vendorid);
 
-                console.log(`[INFO]: Executing Query - SELECT * FROM Vendor_employeeDetails WHERE vendor_id = ${vendorid}`);
+                console.log(`[INFO]: Executing multi-query for vendorid: ${vendorid}`);
 
-                return request.query('SELECT E.*, V.employee_count FROM Vendor_employeeDetails E INNER JOIN Vendor_Details V ON E.vendor_id = V.vendorid WHERE vendor_id = @vendorid');
+                const query = `
+                    SELECT * FROM Vendor_employeeDetails WHERE vendor_id = @vendorid;
+                --    SELECT * FROM Vendor_Legaldocuments WHERE vendorid = @vendorid;
+                --    SELECT * FROM Vendor_employeeDetails WHERE vendor_id = @vendorid;
+                --    SELECT * FROM VehicleDetailsNew WHERE vendorid = @vendorid;
+                --    SELECT * FROM Driver_Details WHERE vendorid = @vendorid;
+                `;
+
+                return request.query(query);
             })
             .then(result => {
-                if (result.rowsAffected[0] > 0) {
-                    console.log(`[SUCCESS]: Query executed successfully. Rows returned: ${JSON.stringify(result.recordset)}`);
-                    resolve({ message: "Fetching Vendor_employeeDetails", status: "00", data: result.recordset });
-                } else {
-                    console.log(`[INFO]: No records found to delete for vendorid: ${vendorid}`);
-                    resolve({ message: `No records found for vendorid: ${vendorid}`, status: "01" });
-                }
+                console.log(`[SUCCESS]: Data fetched successfully for vendorid: ${vendorid}`);
+
+                // MSSQL returns multiple recordsets for multiple SELECT statements
+                const response = {
+                    status: "00",
+                    message: "Vendor-related data fetched successfully",
+                    data: {
+                        // Vendor_Details: result.recordsets[0] || [],
+                        // Vendor_Legaldocuments: result.recordsets[1] || [],
+                        Vendor_employeeDetails: result.recordsets[0] || [],
+                        // VehicleDetailsNew: result.recordsets[3] || [],
+                        // Driver_Details: result.recordsets[4] || []
+                    }
+                };
+
+                resolve(response);
             })
             .catch(error => {
                 console.error(`[ERROR]: Vendor_employeeDetailse Error: SQL Error: ${error.message}`);
