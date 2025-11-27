@@ -60,6 +60,7 @@ exports.VendorOnboardingDB = (data, vendorid, VendorEmployeeDetails, vehicle_Det
                 // request.input('destination', sql.NVarChar(255), data.VendorDetails.destination);
                 // request.input('region', sql.NVarChar(255), data.VendorDetails.region);
                 request.input('state', sql.NVarChar(255), data.VendorDetails.state);
+                request.input('district', sql.NVarChar(255), data.VendorDetails.district);
                 request.input('Tahsil', sql.NVarChar(255), data.VendorDetails.Tahsil);
                 request.input('City', sql.NVarChar(255), data.VendorDetails.City);
                 request.input('vehicle_count', sql.NVarChar(255), data.VendorDetails.vehicle_count);
