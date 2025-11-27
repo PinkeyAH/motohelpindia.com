@@ -206,13 +206,14 @@ exports.getVendoremployeeDB = (vendorid) => {
                 const response = {
                     status: "00",
                     message: "Vendor-related data fetched successfully",
-                    data: {
-                        // Vendor_Details: result.recordsets[0] || [],
-                        // Vendor_Legaldocuments: result.recordsets[1] || [],
-                        Vendor_employeeDetails: result.recordsets[0] || [],
-                        // VehicleDetailsNew: result.recordsets[3] || [],
-                        // Driver_Details: result.recordsets[4] || []
-                    }
+                    data: result.recordsets[0] || [],
+                    // {
+                    //     // Vendor_Details: result.recordsets[0] || [],
+                    //     // Vendor_Legaldocuments: result.recordsets[1] || [],
+                    //     // Vendor_employeeDetails: result.recordsets[0] || [],
+                    //     // VehicleDetailsNew: result.recordsets[3] || [],
+                    //     // Driver_Details: result.recordsets[4] || []
+                    // }
                 };
 
                 resolve(response);
