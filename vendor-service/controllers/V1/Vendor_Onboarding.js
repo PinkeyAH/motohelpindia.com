@@ -4,13 +4,14 @@ const addFormats = require('ajv-formats');
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const { logger } = require('../../log/logger'); const path = require('path');
-const { VendorOnboardingDB, vendorBankkYCDB, VendorOnboardingUpdateDB, getVendoremployeeDB,  getVendorDetailsDB, getVendorKYCDB, getVehicleDB,
-        updateVendoremployeeDB, updateVendorDetailsDB, updateVendorKYCDB, updateVehicleDB,
-        deleteVendoremployeeDB, deleteVendorDetailsDB, deleteVendorKYCDB, deleteVehicleDB, deleteDriverDB,
-        ImageUploadDB, UpdateImageUploadDB, VehicleVerificationDB, checkMobileNoDB } 
-      = require('../../models/V1/Vendor_Onboarding/utility');
+const { VendorOnboardingDB, vendorBankkYCDB, VendorOnboardingUpdateDB, getVendoremployeeDB, getVendorDetailsDB, getVendorKYCDB, getVehicleDB,
+    updateVendoremployeeDB, updateVendorDetailsDB, updateVendorKYCDB, updateVehicleDB,
+    deleteVendoremployeeDB, deleteVendorDetailsDB, deleteVendorKYCDB, deleteVehicleDB, deleteDriverDB,
+    ImageUploadDB, UpdateImageUploadDB, VehicleVerificationDB, checkMobileNoDB }
+    = require('../../models/V1/Vendor_Onboarding/utility');
 const { VendorOnboarding_schema } = require("../../models/V1/Vendor_Onboarding/schema");
-const { getRandomSixDigitNumber, saveMultipleBase64Images } = require("../../common/common");
+const { getRandomSixDigitNumber, saveMultipleBase64Images ,saveSingleBase64Image} = require("../../common/common");
+const { log } = require('console');
 
 exports.VendorOnboarding = async (req, res) => {
     logger.log("info", `VendorOnboarding req_body = ${JSON.stringify(req.body)}`);
@@ -157,62 +158,73 @@ const InsertVendorPhoto = async (Vendorid, req, res) => {
 
 const vendorBank_Cheque = async (Vendorid, req, res) => {
     try {
-        const imagesMap = {};
         const Bank_Cheque = req.body.cheque_img;
 
-        // Filter base64 image fields
-        Object.entries(Bank_Cheque).forEach(([key, value]) => {
-            if (value && typeof value === 'string' && value.startsWith('data:image')) {
+        console.log("Bank_Cheque =", Bank_Cheque);
+
+        // CASE 1: single base64 string
+        if (typeof Bank_Cheque === "string" && Bank_Cheque.startsWith("data:image")) {
+            const destFolder = path.join(__dirname, "../../uploads", "Vendor_Bank_Cheque");
+
+            const fileName = saveSingleBase64Image(Bank_Cheque, destFolder);
+            const fileUrl = `https://motohelpindia.com/vendor-service/uploads/Vendor_Bank_Cheque/${fileName}`;
+
+            console.log("Single Image URL =", fileUrl);
+
+            return fileUrl;
+        }
+
+        // CASE 2: multiple images as object
+        const imagesMap = {};
+
+        Object.entries(Bank_Cheque || {}).forEach(([key, value]) => {
+            if (value && typeof value === "string" && value.startsWith("data:image")) {
                 imagesMap[key] = value;
             }
         });
 
-        const destFolder = path.join(__dirname, '../../uploads', 'Vendor');
+        const destFolder = path.join(__dirname, "../../uploads", "Vendor_Bank_Cheque");
         const savedPaths = saveMultipleBase64Images(imagesMap, destFolder);
-        console.log('Saved files:', savedPaths);
 
         const imagesToInsert = Object.entries(savedPaths).map(([key, fullPath]) => {
-            const dynamicNumberKey = `${key}No`; // auto generate
-            const docNumber = Bank_Cheque[dynamicNumberKey] || null;
-
             return {
                 VendorID: Vendorid,
-                photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
                 photo_url: `https://motohelpindia.com/vendor-service/uploads/Vendor_Bank_Cheque/${path.basename(fullPath)}`,
-                name: path.basename(fullPath),
-                doc_number: docNumber
             };
         });
 
-        // for (const img of imagesToInsert) {
-        //     await ImageUploadDB(img);
-        // }
+        if (imagesToInsert.length === 0) return null;
 
-        logger.log("info", `Vendor Images Inserted successfully`);
-        return;
-        // res.status(200).json({ status: "00", message: "All images saved successfully.", data: imagesToInsert });
+        return imagesToInsert[0].photo_url;
 
     } catch (error) {
-        console.error('Insert Vendor Error:', error);
-        return res.status(500).json({
-            status: "03",
-            message: "Internal server error",
-            error: error.message
-        });
+        console.error("Insert Vendor Error:", error);
+        return null;
     }
 };
 
 exports.vendorBankkYC = async (req, res) => {
     logger.log("info", ` vendorBankkYC req_body = ${JSON.stringify(req.body)} `);
+
     if (req.headers.vendorid) {
-        req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
+        req.body.vendorid = req.headers.vendorid;
     }
+
     try {
-        const Bank_Cheque = vendorBank_Cheque(req.body.vendorid, req, res);
-        const result = await vendorBankkYCDB(req.body,Bank_Cheque.photo_url);
+        // FIX: use await
+        const bankChequeURL = await vendorBank_Cheque(req.body.vendorid, req, res);
+        logger.log("info", ` bankChequeURL = ${bankChequeURL} `);
+        // Now pass actual URL
+        const result = await vendorBankkYCDB(req.body, bankChequeURL);
+
         logger.log("info", ` vendorBankkYC result = ${JSON.stringify(result)}`);
-        return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
+
+        return res.status(200).json({
+            status: result.bstatus_code,
+            message: result.bmessage_desc
+        });
+
     } catch (error) {
         logger.log("error", `vendorBankkYC Error: ${error}`);
         return res.status(500).json({ status: "03", message: "Internal server error" });
@@ -273,14 +285,14 @@ exports.getVendorKYC = async (req, res) => {
 
 exports.getVehicle = async (req, res) => {
     logger.log("info", "Fetching Vehicle detalis ");
-     if (req.headers.vendorid) {
-    req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
-}
+    if (req.headers.vendorid) {
+        req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
+    }
 
     try {
         logger.log("info", `Fetching Vehicle detalis req_body = ${JSON.stringify(req.body)}`);
         const result = await getVehicleDB(req.body);
-        return res.status(200).json({ status: result.status, message: result.message ,data: result.data});
+        return res.status(200).json({ status: result.status, message: result.message, data: result.data });
     } catch (error) {
         logger.log("error", `Get Vehicle Type Error: ${error}`);
         return res.status(500).json({ status: "03", message: "Internal server error" });
@@ -327,10 +339,10 @@ exports.updateVendorDetails = async (req, res) => {
         const result = await updateVendorDetailsDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc  });
+            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
-        return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc , userDetails: JSON.parse(result.userDetails) });
+        return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc, userDetails: JSON.parse(result.userDetails) });
     } catch (error) {
         logger.log("error", `Update VendorDetails Error: ${error}`);
         return res.status(500).json({ status: "03", message: "Internal server error" });
@@ -347,7 +359,7 @@ exports.updateVendorKYC = async (req, res) => {
     }
 
     try {
-       const result = await updateVendorKYCDB(req.body);
+        const result = await updateVendorKYCDB(req.body);
         logger.log("info", `Vendor KYC Updated successfully`);
         return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
 
@@ -363,9 +375,9 @@ exports.updateVendorKYC = async (req, res) => {
 
 exports.updateVehicle = async (req, res) => {
     logger.log("info", `Update Vehicle req_body = ${JSON.stringify(req.body)}`);
-     if (req.headers.vendorid) {
-    req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
-}
+    if (req.headers.vendorid) {
+        req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
+    }
 
     try {
         // const validate = ajv.compile(VehicleSchema());
@@ -375,7 +387,7 @@ exports.updateVehicle = async (req, res) => {
 
         const result = await updateVehicleDB(req.body);
         if (result.bstatus_code !== "00") {
-        return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
         logger.log("info", `Update Vehicle result = ${JSON.stringify(result)}`);
         return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
@@ -576,7 +588,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
         logger.log("info", `Fetching VendorOnboardingUpdate req_body = ${JSON.stringify(req.body)}`);
         const result = await VendorOnboardingUpdateDB(req.body, vendorid, req.body.VendorEmployeeDetails, req.body.VehicleDetails);
         console.log(`VendorOnboardingUpdate result: ${JSON.stringify(result)}`);
-        
+
         return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc, userDetails: JSON.parse(result.userDetails) });
     } catch (error) {
         logger.log("error", `Get VendorOnboardingUpdate Error: ${error}`);

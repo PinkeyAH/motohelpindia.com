@@ -144,7 +144,7 @@ exports.VendorOnboardingDB = (data, vendorid, VendorEmployeeDetails, vehicle_Det
     });
 };
 
-exports.vendorBankkYCDB = (bankdata) => {
+exports.vendorBankkYCDB = (bankdata , bankChequeURL) => {
     console.log(`[INFO]: Updating bank data record for kycDetails: ${JSON.stringify(bankdata)}`);
     return new Promise((resolve, reject) => {
         sql.connect(pool)
@@ -159,6 +159,7 @@ exports.vendorBankkYCDB = (bankdata) => {
                 request.input('ifsc_code', sql.NVarChar(11), bankdata.ifsc_code || null);
                 request.input('bank_name', sql.NVarChar(255), bankdata.bank_name || null);
                 request.input('branch_name', sql.NVarChar(255), bankdata.branch_name || null);
+                request.input('bank_doc_image', sql.NVarChar(255), bankChequeURL );
                 // Outputs
                 request.output('bstatus_code', sql.NVarChar(255));
                 request.output('bmessage_desc', sql.NVarChar(255));

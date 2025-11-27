@@ -21,6 +21,20 @@ exports.saveMultipleBase64Images = (imagesMap, destFolder) => {
       return saved;
     };
 
+exports.saveSingleBase64Image = (base64, destFolder) => {
+
+    if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
+
+    const match = base64.match(/^data:(.+);base64,(.+)$/);
+    const ext = match[1].split("/")[1];
+    const buffer = Buffer.from(match[2], "base64");
+
+    const fileName = `cheque_${Date.now()}.${ext}`;
+    fs.writeFileSync(path.join(destFolder, fileName), buffer);
+
+    return fileName;
+}
+
 
     // Generate OTP function
 
