@@ -9,17 +9,18 @@ const{ InsertcustomeremployeeDB, updatecustomeremployeeDB, deletecustomeremploye
 // Insert Customer Employee
 exports.Insertcustomeremployee = async (req, res) => {
     try {
+        logger.info('Insertcustomeremployee request body:', req.body);
         // const validate = ajv.compile(customer_employee_schema); 
         // const valid = validate(req.body);
         // if (!valid) {
         //     logger.error('Validation errors: ', validate.errors);
         //     return res.status(400).json({ errors: validate.errors });
         // }
-        const result = await InsertcustomeremployeeDB(req.body);
+        const result = await InsertcustomeremployeeDB(req.body.CustomerEmployeeDetails, req.body.CustomerID);
         if (!result) {
-            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.status_code, message: result.message });
         }
-        res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
+        res.status(200).json({ status: result.status_code, message: result.message });
     } catch (error) {
         logger.error('Error in Insertcustomeremployee:', error);
         res.status(500).json({ error: 'Internal Server Error' });
