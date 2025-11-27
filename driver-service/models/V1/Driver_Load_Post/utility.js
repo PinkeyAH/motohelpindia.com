@@ -428,7 +428,7 @@ exports.getDriverVehicleAssignDB = async (data) => {
                                 OR (@verify_flag = 'N' AND dva.IsActive = 0)
                               )
                            )
-                         ORDER BY dva.update_date DESC, dva.insert_date DESC;
+                         ORDER BY dva.update_date ASC, dva.insert_date ASC;
         `;
 
         console.log("🚀 Running Query...");
