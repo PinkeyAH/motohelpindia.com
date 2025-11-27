@@ -7,7 +7,7 @@ const { customer_employee_schema } = require('../../models/V1/Customer_Employees
 const{ InsertcustomeremployeeDB, updatecustomeremployeeDB, deletecustomeremployeeDB, getcustomeremployeeDB} = require('../../models/V1/Customer_Employees/utility.js');
 
 // Insert Customer Employee
-exports.Insertcustomeremployee = async function (req, res) {
+exports.Insertcustomeremployee = async (req, res) => {
     try {
         const validate = ajv.compile(customer_employee_schema); 
         const valid = validate(req.body);
@@ -27,7 +27,7 @@ exports.Insertcustomeremployee = async function (req, res) {
 }
 
 // Update Customer Employee
-exports.updatecustomeremployee = async function (req, res) {
+exports.updatecustomeremployee = async (req, res) => {
     try {
         const validate = ajv.compile(customer_employee_schema);
         const valid = validate(req.body);
@@ -48,7 +48,7 @@ exports.updatecustomeremployee = async function (req, res) {
 
 // Delete Customer Employee
 
-exports.deletecustomeremployee = async function (req, res) {
+exports.deletecustomeremployee = async (req, res) => {
     try {
         const validate = ajv.compile(customer_employee_schema);
         const valid = validate(req.body);
@@ -68,7 +68,7 @@ exports.deletecustomeremployee = async function (req, res) {
 }
 
 // Get Customer Employee
-   exports.getcustomeremployee = async function (req, res) {
+   exports.getcustomeremployee = async (req, res) => {
     try {       
         const validate = ajv.compile(customer_employee_schema);
         const valid = validate(req.body);

@@ -3,45 +3,108 @@ const pool = require('../../../db/db');
 const logger = require('../../../log/logger');
 
 
-exports.InsertcustomeremployeeDB = (CustomerEmployeeDetails,employeeid) => {
-logger.info(`[INFO]: Inserting CustomerEmployeeDetails record for vendorid: ${CustomerEmployeeDetails.vendorid}`);
-    return new Promise((resolve, reject) => {
-        sql.connect(pool)
-            .then(pool => {
-                const request = pool.request();
-                request.input('vendorid', sql.NVarChar(15), CustomerEmployeeDetails.CustomerID);
-                request.input('employeeid', sql.NVarChar(15), CustomerEmployeeDetails.employeeid || employeeid || null);
+// exports.InsertcustomeremployeeDB = (CustomerEmployeeDetails,employeeid) => {
+// logger.info(`[INFO]: Inserting CustomerEmployeeDetails record for vendorid: ${CustomerEmployeeDetails.vendorid}`);
+//     return new Promise((resolve, reject) => {
+//         sql.connect(pool)
+//             .then(pool => {
+//                 const request = pool.request();
+//                 request.input('vendorid', sql.NVarChar(15), CustomerEmployeeDetails.CustomerID);
+//                 request.input('employeeid', sql.NVarChar(15), CustomerEmployeeDetails.employeeid || employeeid || null);
 
-                // Contact Details
-                request.input('full_name', sql.NVarChar(255), CustomerEmployeeDetails.full_name);
-                request.input('contact_No', sql.NVarChar(15), CustomerEmployeeDetails.contact_no);
-                request.input('alternate_No', sql.NVarChar(15), CustomerEmployeeDetails.alternate_no || null);
-                request.input('email_id', sql.NVarChar(255), CustomerEmployeeDetails.email_id || null);
-                request.input('website', sql.NVarChar(255), CustomerEmployeeDetails.website || null);
-                request.input('designation', sql.NVarChar(255), CustomerEmployeeDetails.designation || null);
-                request.input('customDesignation', sql.NVarChar(255), CustomerEmployeeDetails.customDesignation || null);
-                request.input('username', sql.NVarChar(255), CustomerEmployeeDetails.username || null);
-                request.input('password', sql.NVarChar(255), CustomerEmployeeDetails.password || null);
-                request.input('employee_count', sql.NVarChar(255), CustomerEmployeeDetails.employee_count || null);
+//                 // Contact Details
+//                 request.input('full_name', sql.NVarChar(255), CustomerEmployeeDetails.full_name);
+//                 request.input('contact_No', sql.NVarChar(15), CustomerEmployeeDetails.contact_no);
+//                 request.input('alternate_No', sql.NVarChar(15), CustomerEmployeeDetails.alternate_no || null);
+//                 request.input('email_id', sql.NVarChar(255), CustomerEmployeeDetails.email_id || null);
+//                 request.input('website', sql.NVarChar(255), CustomerEmployeeDetails.website || null);
+//                 request.input('designation', sql.NVarChar(255), CustomerEmployeeDetails.designation || null);
+//                 request.input('customDesignation', sql.NVarChar(255), CustomerEmployeeDetails.customDesignation || null);
+//                 request.input('username', sql.NVarChar(255), CustomerEmployeeDetails.username || null);
+//                 request.input('password', sql.NVarChar(255), CustomerEmployeeDetails.password || null);
+//                 request.input('employee_count', sql.NVarChar(255), CustomerEmployeeDetails.employee_count || null);
 
-                // Outputs 
-                request.output('bstatus_code', sql.NVarChar(255));
-                request.output('bmessage_desc', sql.NVarChar(255));
-                // Call the stored procedure
+//                 // Outputs 
+//                 request.output('bstatus_code', sql.NVarChar(255));
+//                 request.output('bmessage_desc', sql.NVarChar(255));
+//                 // Call the stored procedure
 
-                return request.execute('CustomerEmployeeInsert');
-            })
-            .then(result => {
-                const output = {
-                    status: result.output.bstatus_code,
-                    message: result.output.bmessage_desc
-                };
-                resolve(output);
-            })
-            .catch(err => {
-                reject('SQL Error: ' + err);
+//                 return request.execute('CustomerEmployeeInsert');
+//             })
+//             .then(result => {
+//                 const output = {
+//                     status: result.output.bstatus_code,
+//                     message: result.output.bmessage_desc
+//                 };
+//                 resolve(output);
+//             })
+//             .catch(err => {
+//                 reject('SQL Error: ' + err);
+//             });
+//     });
+// };
+
+exports.InsertMultipleCustomerEmployeesDB = async (employees) => {
+    logger.info(`[INFO]: Inserting ${employees.length} Customer Employee Records`);
+
+    const poolConn = await sql.connect(pool);
+    const transaction = new sql.Transaction(poolConn);
+
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        let results = [];
+
+        for (const emp of employees) {
+            logger.info(`[INFO]: Inserting Employee: ${emp.full_name}`);
+
+            request.input('vendorid', sql.NVarChar(15), emp.CustomerID);
+            request.input('employeeid', sql.NVarChar(15), emp.employeeid || null);
+
+            request.input('full_name', sql.NVarChar(255), emp.full_name);
+            request.input('contact_No', sql.NVarChar(15), emp.contact_no);
+            request.input('alternate_No', sql.NVarChar(15), emp.alternate_no || null);
+            request.input('email_id', sql.NVarChar(255), emp.email_id || null);
+            request.input('website', sql.NVarChar(255), emp.website || null);
+            request.input('designation', sql.NVarChar(255), emp.designation || null);
+            request.input('customDesignation', sql.NVarChar(255), emp.customDesignation || null);
+            request.input('username', sql.NVarChar(255), emp.username || null);
+            request.input('password', sql.NVarChar(255), emp.password || null);
+            request.input('employee_count', sql.NVarChar(255), emp.employee_count || null);
+
+            request.output('bstatus_code', sql.NVarChar(255));
+            request.output('bmessage_desc', sql.NVarChar(255));
+
+            const res = await request.execute('CustomerEmployeeInsert');
+
+            results.push({
+                employee: emp.full_name,
+                status: res.output.bstatus_code,
+                message: res.output.bmessage_desc
             });
-    });
+
+            request.parameters = {}; // Clear inputs for next loop
+        }
+
+        await transaction.commit();
+
+        return {
+            status: "00",
+            message: "All employees inserted successfully",
+            data: results
+        };
+
+    } catch (err) {
+        await transaction.rollback();
+        logger.error(`[ERROR]: Insert Multiple Employees Failed → ${err.message}`);
+
+        return {
+            status: "01",
+            message: "Insert failed, transaction rolled back",
+            error: err.message
+        };
+    }
 };
 
 exports.updatecustomeremployeeDB = (CustomerEmployeeDetails) => {
