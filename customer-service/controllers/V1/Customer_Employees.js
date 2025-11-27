@@ -17,9 +17,9 @@ exports.Insertcustomeremployee = async function (req, res) {
         }
         const result = await InsertcustomeremployeeDB(req.body);
         if (!result) {
-            return res.status(500).json({ error: 'Failed to insert customer employee' });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
-        res.status(200).json(result);
+        res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
     } catch (error) {
         logger.error('Error in Insertcustomeremployee:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -37,9 +37,9 @@ exports.updatecustomeremployee = async function (req, res) {
         }
         const result = await updatecustomeremployeeDB(req.body);
         if (!result) {
-            return res.status(500).json({ error: 'Failed to update customer employee' });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
-        res.status(200).json(result);
+        res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
     } catch (error) {
         logger.error('Error in updatecustomeremployee:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -58,9 +58,9 @@ exports.deletecustomeremployee = async function (req, res) {
         }
         const result = await deletecustomeremployeeDB(req.body);
         if (!result) {
-            return res.status(500).json({ error: 'Failed to delete customer employee' });
+            return res.status(500).json({ status: result.status, message: result.message });
         }   
-        res.status(200).json(result);
+        return res.status(200).json({ status: result.status, message: result.message });
     } catch (error) {
         logger.error('Error in deletecustomeremployee:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -78,9 +78,9 @@ exports.deletecustomeremployee = async function (req, res) {
         }
         const result = await getcustomeremployeeDB(req.body);
         if (!result) {
-            return res.status(500).json({ error: 'Failed to get customer employee' });
+        return res.status(500).json({ status: result.status, message: result.message });
         }
-        res.status(200).json(result);
+        return res.status(200).json({ status: result.status, message: result.message });
     } catch (error) {
         logger.error('Error in getcustomeremployee:', error);
         res.status(500).json({ error: 'Internal Server Error' });

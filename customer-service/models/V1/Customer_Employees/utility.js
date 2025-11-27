@@ -136,19 +136,14 @@ exports.getcustomeremployeeDB = (data) => {
                     ? 'SELECT * FROM Customer_employeeDetails WHERE CustomerID = @CustomerID AND employeeid = @employeeid'
                     : 'SELECT * FROM Customer_employeeDetails WHERE CustomerID = @CustomerID';
 
-                const photoQuery = data.employeeid
-                    ? 'SELECT employeeid AS employeeid, photo_url, photo_type FROM employee_photos WHERE employeeid = @employeeid'
-                    : 'SELECT employeeid AS employeeid, photo_url, photo_type FROM employee_photos';
 
                 // Run both queries
                 return Promise.all([
                     request.query(detailsQuery),
-                    request.query(photoQuery)
                 ]);
             })
-            .then(([detailsResult, photoResult]) => {
+            .then(([detailsResult]) => {
                 const details = detailsResult.recordset;
-                const photos = photoResult.recordset || [];
 
                 const merged = details.map(detail => {
                     const { CustomerID, employeeid, ...employeeDetails } = detail;
@@ -157,8 +152,7 @@ exports.getcustomeremployeeDB = (data) => {
                     return {
                         CustomerID,
                         employeeid: detail.employeeid,
-                        employeeDetails,
-                        photos
+                        employeeDetails
                     };
                 });
 
