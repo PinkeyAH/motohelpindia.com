@@ -13,9 +13,8 @@ const { Pancard , GST, DrivingLicense, Aadhaargenerateotp,Aadhaarverifyotp, Vehi
 const { Insertcustomerloadpost, updatecustomerloadpost, getcustomerloadpost, deletecustomerloadpost, getVehicle_Details, getCargoTypes,getCustomerLoadPostViews,
         getNearestCustomerpost ,CustomerPostStatus, getcustomerprocess ,getcustomeractive, getcustomercompleted, getNearestDrivers, CargoTypeBodyTypeHistory} = require('../controllers/V1/Customer_Load_Post.js');
 const { getActiveLoadPostWebAPI } = require('../controllers/V1/Customer_Load_Post_web.js');
-
 const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
-
+const { Insertcustomeremployee, updatecustomeremployee, deletecustomeremployee, getcustomeremployee } = require('../controllers/V1/Customer_Employees.js');
         
 router.post('/Customer_SendOtp', customer_send_OTP);
 router.post('/Customer_ValidateOtp', customer_validate_OTP); 
@@ -83,6 +82,11 @@ router.post('/customer_completed_Trip', getcustomercompleted);
 router.post('/get_Nearest_Drivers', getNearestDrivers);
 
 
+// Insertemployee
+router.post('/Insert_customer_employee', Insertcustomeremployee);
+router.post('/update_customer_employee', updatecustomeremployee);
+router.post('/delete_customer_employee', deletecustomeremployee);
+router.post('/get_customer_employee', getcustomeremployee); 
 
 // Driver load posting
 // insertOrUpdateDriverLiveLocation

@@ -8,7 +8,6 @@ const { getRandomSixDigitNumber, getDistanceFromLatLonInKm } = require("../../co
 const { InsertcustomerloadpostDB, updatecustomerloadpostDB, getcustomerloadpostDB, deletecustomerloadpostDB, getVehicle_DetailsDB, 
     getCargoTypesDB, getCustomerLoadPostViewsDB, getNearestCustomerposttDB, CustomerPostStatusDB, getcustomerprocessDB, getcustomeractiveDB,
     getcustomercompletedDB, getNearestDriversDB, VendorNearestCustomerPostDB, CargoTypeBodyTypeHistoryDB } = require('../../models/V1/Customer_Load_Post/utility');
-const e = require('express');
 // const { customerLoadPostSchema, updateCustomerLoadPostSchema } = require('../../models/V1/Customer_Load_Post/schema');
 
 // Insert customer load post

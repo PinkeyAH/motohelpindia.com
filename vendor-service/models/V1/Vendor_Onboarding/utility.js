@@ -399,7 +399,7 @@ exports.updateVendoremployeeDB = (VendorEmployeeDetails) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('EmployeeUpdate');
+                return request.execute('VendorEmployeeUpdate');
             })
             .then(result => {
                 const output = {
