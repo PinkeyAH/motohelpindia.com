@@ -155,13 +155,62 @@ const InsertVendorPhoto = async (Vendorid, req, res) => {
     }
 };
 
+const vendorBank_Cheque = async (Vendorid, req, res) => {
+    try {
+        const imagesMap = {};
+        const Bank_Cheque = req.body.cheque_img;
+
+        // Filter base64 image fields
+        Object.entries(Bank_Cheque).forEach(([key, value]) => {
+            if (value && typeof value === 'string' && value.startsWith('data:image')) {
+                imagesMap[key] = value;
+            }
+        });
+
+        const destFolder = path.join(__dirname, '../../uploads', 'Vendor');
+        const savedPaths = saveMultipleBase64Images(imagesMap, destFolder);
+        console.log('Saved files:', savedPaths);
+
+        const imagesToInsert = Object.entries(savedPaths).map(([key, fullPath]) => {
+            const dynamicNumberKey = `${key}No`; // auto generate
+            const docNumber = Bank_Cheque[dynamicNumberKey] || null;
+
+            return {
+                VendorID: Vendorid,
+                photo_id: docNumber || key.toUpperCase(),
+                photo_type: key,
+                photo_url: `https://motohelpindia.com/vendor-service/uploads/Vendor_Bank_Cheque/${path.basename(fullPath)}`,
+                name: path.basename(fullPath),
+                doc_number: docNumber
+            };
+        });
+
+        // for (const img of imagesToInsert) {
+        //     await ImageUploadDB(img);
+        // }
+
+        logger.log("info", `Vendor Images Inserted successfully`);
+        return;
+        // res.status(200).json({ status: "00", message: "All images saved successfully.", data: imagesToInsert });
+
+    } catch (error) {
+        console.error('Insert Vendor Error:', error);
+        return res.status(500).json({
+            status: "03",
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+};
+
 exports.vendorBankkYC = async (req, res) => {
     logger.log("info", ` vendorBankkYC req_body = ${JSON.stringify(req.body)} `);
     if (req.headers.vendorid) {
         req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
     }
     try {
-        const result = await vendorBankkYCDB(req.body);
+        const Bank_Cheque = vendorBank_Cheque(req.body.vendorid, req, res);
+        const result = await vendorBankkYCDB(req.body,Bank_Cheque.photo_url);
         logger.log("info", ` vendorBankkYC result = ${JSON.stringify(result)}`);
         return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
     } catch (error) {
