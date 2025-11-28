@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer API Logs</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: #f3f4f7;
+        }
+        .table-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Customer API Logs</h2>
+
+    <!-- Filters Row -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <input type="text" id="searchText" class="form-control" placeholder="Search API, Method, Status...">
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" id="startDate" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" id="endDate" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-primary w-100" onclick="filterLogs()">Filter</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>API Name</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Time (ms)</th>
+                <th>Error</th>
+                <th>IP</th>
+                <th>Logged At</th>
+                <th>Request</th>
+                <th>Response</th>
+            </tr>
+            </thead>
+            <tbody id="logTableBody"></tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-secondary" onclick="prevPage()">Previous</button>
+            <span id="pageInfo" class="fw-bold"></span>
+            <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+        </div>
+
+        <!-- Export -->
+        <button class="btn btn-success mt-3" onclick="downloadCSV()">Download CSV</button>
+
+    </div>
+
+</div>
+
+<!-- JS -->
+<script>
+    const API_URL = "http://localhost:9000/customer/v1/customer-logs";  // update if needed
+
+    let logs = [];
+    let filteredLogs = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    async function loadLogs() {
+        const res = await fetch(API_URL);
+        const json = await res.json();
+
+        logs = json.data;
+        filteredLogs = logs;
+
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("logTableBody");
+        tbody.innerHTML = "";
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        const pageData = filteredLogs.slice(start, end);
+
+        pageData.forEach(row => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.id}</td>
+                    <td>${row.api_name}</td>
+                    <td>${row.method}</td>
+                    <td>${row.status_code}</td>
+                    <td>${row.time_taken_ms}</td>
+                    <td>${row.error_message || ""}</td>
+                    <td>${row.ip_address}</td>
+                    <td>${row.created_at}</td>
+                    <td><pre>${row.request_body}</pre></td>
+                    <td><pre>${row.response_body}</pre></td>
+                </tr>`;
+        });
+
+        document.getElementById("pageInfo").innerText =
+            `Page ${currentPage} of ${Math.ceil(filteredLogs.length / rowsPerPage)}`;
+    }
+
+    function filterLogs() {
+        const text = document.getElementById("searchText").value.toLowerCase();
+        const start = document.getElementById("startDate").value;
+        const end = document.getElementById("endDate").value;
+
+        filteredLogs = logs.filter(log => {
+            let matchesText =
+                log.api_name.toLowerCase().includes(text) ||
+                log.method.toLowerCase().includes(text) ||
+                (log.status_code + "").includes(text);
+
+            let matchesDate = true;
+
+            if (start) matchesDate = new Date(log.created_at) >= new Date(start);
+            if (end) matchesDate = matchesDate && (new Date(log.created_at) <= new Date(end));
+
+            return matchesText && matchesDate;
+        });
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    function nextPage() {
+        if (currentPage * rowsPerPage < filteredLogs.length) {
+            currentPage++;
+            renderTable();
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    }
+
+    function downloadCSV() {
+        let csv = "ID,API Name,Method,Status,Time(ms),Error,IP,Created At,Request,Response\n";
+
+        filteredLogs.forEach(row => {
+            csv += `"${row.id}","${row.api_name}","${row.method}","${row.status_code}","${row.time_taken_ms}","${row.error_message || ""}","${row.ip_address}","${row.created_at}","${row.request_body}","${row.response_body}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "CustomerApiLogs.csv";
+        a.click();
+    }
+
+    loadLogs();
+</script>
+
+</body>
+</html>

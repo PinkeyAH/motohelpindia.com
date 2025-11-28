@@ -4,6 +4,8 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const routes = require('./routes/routesV1'); // Your existing routes file
 const  initializeCustomerSocket  = require('./socket');
+const { apiLogger, errorLogger } = require('../customer-service/log/apiLogger');
+const customerLogs = require('./log/customerLogs');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,9 +17,14 @@ const server = http.createServer(app);
 app.use(express.json()); // Built-in JSON parser
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 50000 }));
 app.use(bodyParser.json({ limit: '50mb' }));
-
+app.use(apiLogger);
 const io = initializeCustomerSocket(server, app);
 console.log("Socket.IO initialized" + io ? "✅" : "❌");
+
+// --------------------------
+// Log Routes
+// --------------------------
+app.use("/logs", customerLogs);
 
 // --------------------------
 // Routes
@@ -28,6 +35,7 @@ app.use('/v1', routes);
 // Simple health check
 app.get('/', (req, res) => res.send('Customer Service running'));
 
+app.use(errorLogger);
 // --------------------------
 // Start server
 // --------------------------

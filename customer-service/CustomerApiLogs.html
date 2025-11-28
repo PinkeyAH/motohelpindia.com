@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer API Logs</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f8f9fa; }
+        .table thead { background: #0d6efd; color: white; }
+        .spinner-container { display: none; text-align: center; padding: 20px; }
+        pre { white-space: pre-wrap; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Customer API Logs</h3>
+
+    <div class="row mb-3">
+
+        <!-- Search -->
+        <div class="col-md-3">
+            <input id="searchInput" class="form-control" placeholder="Search API / IP">
+        </div>
+
+        <!-- From Date -->
+        <div class="col-md-2">
+            <input type="date" id="fromDate" class="form-control">
+        </div>
+
+        <!-- To Date -->
+        <div class="col-md-2">
+            <input type="date" id="toDate" class="form-control">
+        </div>
+
+        <!-- Filter Button -->
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" onclick="loadLogs()">Filter</button>
+        </div>
+
+        <!-- Excel Download -->
+        <div class="col-md-1">
+            <button class="btn btn-success w-100" onclick="downloadExcel()">Excel</button>
+        </div>
+
+        <!-- PDF Download -->
+        <div class="col-md-1">
+            <button class="btn btn-danger w-100" onclick="downloadPDF()">PDF</button>
+        </div>
+    </div>
+
+    <!-- Spinner -->
+    <div id="loading" class="spinner-container">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading Logs...</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>API</th>
+                <th>Request</th>
+                <th>Response</th>
+                <th>IP</th>
+                <th>Time (ms)</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination justify-content-center" id="pagination"></ul>
+    </nav>
+</div>
+
+<script>
+    let currentPage = 1;
+    let limit = 10;
+
+    async function loadLogs(page = 1) {
+        currentPage = page;
+
+        document.getElementById("loading").style.display = "block";
+
+        let search = document.getElementById("searchInput").value;
+        let from = document.getElementById("fromDate").value;
+        let to = document.getElementById("toDate").value;
+
+        const res = await fetch(`/customer-logs?page=${page}&limit=${limit}&search=${search}&from=${from}&to=${to}`);
+        const json = await res.json();
+
+        document.getElementById("loading").style.display = "none";
+
+        const data = json.data;
+
+        let tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+
+        data.forEach(row => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.id}</td>
+                    <td>${row.api_name}</td>
+                    <td><pre>${row.request_body}</pre></td>
+                    <td><pre>${row.response_body}</pre></td>
+                    <td>${row.ip_address}</td>
+                    <td>${row.time_taken}</td>
+                    <td>${new Date(row.created_at).toLocaleString()}</td>
+                </tr>
+            `;
+        });
+
+        buildPagination(json.total, page);
+    }
+
+    function buildPagination(total, page) {
+        let pages = Math.ceil(total / limit);
+        let pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= pages; i++) {
+            pagination.innerHTML += `
+                <li class="page-item ${i === page ? "active" : ""}">
+                    <a class="page-link" href="#" onclick="loadLogs(${i})">${i}</a>
+                </li>
+            `;
+        }
+    }
+
+    function downloadExcel() {
+        window.location.href = "/customer-logs/excel";
+    }
+
+    function downloadPDF() {
+        window.location.href = "/customer-logs/pdf";
+    }
+
+    loadLogs();
+</script>
+
+</body>
+</html>

@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
+const {customerLogs, getCustomerLogs/*, exportCustomerLogsExcel, exportCustomerLogsPDF*/} = require('../log/apiLogger.js');
+
+
 const { getDestination, getPincode, get_state_region_district ,get_state_district_block} = require("../controllers/V1/Master.js");
 const { InsertCustomerDetails, updateCustomerDetails, deleteCustomerDetails, getCustomerDetails } = require("../controllers/V1/Customer_Onboarding.js");
 const { customer_send_OTP,customer_validate_OTP } = require("../controllers/validate.js");
@@ -16,6 +20,20 @@ const { getActiveLoadPostWebAPI } = require('../controllers/V1/Customer_Load_Pos
 const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
 const { Insertcustomeremployee, updatecustomeremployee, deletecustomeremployee, getcustomeremployee } = require('../controllers/V1/Customer_Employees.js');
         
+
+// ---------------------------
+// Customer Logs Routes
+// ---------------------------
+router.get("/logs", customerLogs);
+router.get("/customer-logs", getCustomerLogs);
+// router.get("/excel", exportCustomerLogsExcel);
+// router.get("/pdf", exportCustomerLogsPDF);
+
+// ---------------------------
+// Customer Auth APIs
+// ---------------------------
+router.post('/Customer_Login', login);
+// router.post('/Customer_ValidateOtp_Login', customer_validateOtp_login);
 router.post('/Customer_SendOtp', customer_send_OTP);
 router.post('/Customer_ValidateOtp', customer_validate_OTP); 
 
