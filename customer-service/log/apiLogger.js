@@ -130,7 +130,7 @@ exports.customerLogs = async (_req, res) => {
 
 
 exports.getCustomerLogs = async (req, res) => {
-    const { page = 1, limit = 10, search = "", from, to } = req.query;
+    const { page = 1, limit = 1000, search = "", from, to } = req.query;
     const start = (page - 1) * limit;
     let where = " WHERE 1=1 ";
     try {
