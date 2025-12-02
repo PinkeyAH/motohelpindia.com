@@ -103,13 +103,13 @@ exports.customerloadpostinvoiceDB = (customerloadpostinvoice) => {
     });
 };
 
-exports.getcustomerloadpostmasterDB = (getcustomerloadpostmaster) => {
-    logger.info(`[INFO]: Fetching getcustomerloadpostmasterDB record for LoadPostID: ${getcustomerloadpostmaster.LoadPostID}`);
+exports.getcustomerloadpostmasterDB = (data) => {
+    logger.info(`[INFO]: Fetching getcustomerloadpostmasterDB record for LoadPostID: ${data.LoadPostID}`);
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
                 const request = pool.request();
-                request.input('CustomerID', sql.NVarChar(10), data.CustomerID || data);
+                request.input('CustomerID', sql.NVarChar(10), data.CustomerID );
                 request.input('LoadPostID', sql.NVarChar(10), data.LoadPostID);
 
                 console.log(`[INFO]: Executing Query - SELECT * FROM CustomerLoadPost WHERE LoadPostID = @LoadPostID `);
