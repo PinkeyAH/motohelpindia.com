@@ -76,13 +76,13 @@ exports.customerloadpostinvoiceDB = (customerloadpostinvoice) => {
             .then(pool => {
                 const request = pool.request();
                 // Input parameters
-                // request.input('invoice_id', sql.Int, customerloadpostinvoice.invoice_id);
-                request.input('load_master_id', sql.Int, customerloadpostinvoice.load_master_id);
+                // request.input('invoice_id', sql.NVarChar(50), customerloadpostinvoice.invoice_id);
+                request.input('load_master_id', sql.NVarChar(50), customerloadpostinvoice.load_master_id);
                 request.input('po_number', sql.NVarChar(50), customerloadpostinvoice.po_number);
                 request.input('invoice_date', sql.Date, customerloadpostinvoice.invoice_date);
                 request.input('invoice_number', sql.NVarChar(50), customerloadpostinvoice.invoice_number);
-                request.input('quantity', sql.Int, customerloadpostinvoice.quantity);
-                request.input('value_amount', sql.Decimal(18, 2), customerloadpostinvoice.value_amount);
+                request.input('quantity',sql.NVarChar(50), customerloadpostinvoice.quantity);
+                request.input('value_amount', sql.NVarChar(50), customerloadpostinvoice.value_amount);
                 request.input('remarks', sql.NVarChar(200), customerloadpostinvoice.remarks);
                 // Outputs
                 request.output('status_code', sql.NVarChar(255));

@@ -2,7 +2,7 @@
 const customer_loadpost_master_schema = {
     type: 'object',
     properties: {
-        load_master_id: { type: 'string' },
+        // load_master_id: { type: 'string' },
         LoadPostID: { type: 'string' },
         CustomerID: { type: 'string' },
         contact_person: { type: 'string' },
@@ -45,7 +45,7 @@ const customer_loadpost_master_schema = {
 const customer_loadpost_invoice_schema = {
     type: 'object',
     properties: {
-        invoice_id: { type: 'string' },
+        // invoice_id: { type: 'string' },
         load_master_id: { type: 'string' },
         po_string: { type: 'string' },
         invoice_date: { type: 'string', format: 'date' },   
