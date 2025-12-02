@@ -49,7 +49,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 request.input('lr_date', sql.Date, customerloadpostmaster.lr_date);
                 request.input('po_number', sql.NVarChar(50), customerloadpostmaster.po_number);
                 request.input('invoice_date', sql.NVarChar(50), customerloadpostmaster.invoice_date);
-                request.input('DATE', sql.Float, customerloadpostmaster.DATE);
+                // request.input('DATE', sql.Float, customerloadpostmaster.DATE);
                 request.input('invoice_number', sql.NVarChar(50), customerloadpostmaster.invoice_number);
                 request.input('quantity', sql.NVarChar(200), customerloadpostmaster.quantity);
                 request.input('value_amount', sql.NVarChar(200), customerloadpostmaster.value_amount);

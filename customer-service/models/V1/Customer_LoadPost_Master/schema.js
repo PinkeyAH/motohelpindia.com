@@ -6,7 +6,7 @@ const customer_loadpost_master_schema = {
         LoadPostID: { type: 'string' },
         CustomerID: { type: 'string' },
         contact_person: { type: 'string' },
-        contact_string: { type: 'string' },
+        contact_number: { type: 'string' },
         pickup_plot_unit: { type: 'string' },
         pickup_area_street: { type: 'string' },
         pickup_pincode: { type: 'string' },
@@ -35,6 +35,12 @@ const customer_loadpost_master_schema = {
         lab_report_available: { type: 'string' },
         insurance: { type: 'string' },
         transit_risk: { type: 'string' },
+        po_number: { type: 'string' },
+        invoice_date: { type: 'string' },   
+        invoice_number: { type: 'string' },
+        quantity: { type: 'string' },
+        value_amount: { type: 'string' },
+        remarks: { type: 'string' }
         // lr_no: { type: 'string' },
         // lr_date: { type: 'string', format: 'date' }
     },
