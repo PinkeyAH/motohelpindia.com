@@ -10,12 +10,12 @@ const{ customerloadpostmasterDB,  customerloadpostinvoiceDB, getcustomerloadpost
 exports.customerloadpostmaster = async (req, res) => {
     try {
         logger.info('customerloadpostmaster request body:', req.body);
-        // const validate = ajv.compile(customer_loadpost_master_schema);
-        // const valid = validate(req.body);
-        // if (!valid) {
-        //     logger.error('Validation errors: ', validate.errors);
-        //     return res.status(400).json({ errors: validate.errors });
-        // }
+        const validate = ajv.compile(customer_loadpost_master_schema);
+        const valid = validate(req.body);
+        if (!valid) {
+            logger.error('Validation errors: ', validate.errors);
+            return res.status(400).json({ errors: validate.errors });
+        }
         const result = await customerloadpostmasterDB(req.body);
         if (!result) {
             return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });

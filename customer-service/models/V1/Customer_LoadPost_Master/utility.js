@@ -12,9 +12,9 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 const request = pool.request();
 
                 // Input parameters
-                // request.input('load_master_id', sql.Int, customerloadpostmaster.load_master_id);
-                request.input('LoadPostID', sql.Int, customerloadpostmaster.LoadPostID);
-                request.input('CustomerID', sql.Int, customerloadpostmaster.CustomerID);
+                // request.input('load_master_id',sql.NVarChar(15), customerloadpostmaster.load_master_id);
+                request.input('LoadPostID', sql.NVarChar(15), customerloadpostmaster.LoadPostID);
+                request.input('CustomerID', sql.NVarChar(15), customerloadpostmaster.CustomerID);
                 request.input('contact_person', sql.NVarChar(100), customerloadpostmaster.contact_person);
                 request.input('contact_number', sql.NVarChar(15), customerloadpostmaster.contact_number);
                 request.input('pickup_plot_unit', sql.NVarChar(100), customerloadpostmaster.pickup_plot_unit);
@@ -49,6 +49,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 request.input('lr_date', sql.Date, customerloadpostmaster.lr_date);
 
                 // Outputs
+                request.output('load_master_id', sql.NVarChar(255));
                 request.output('bstatus_code', sql.NVarChar(255));
                 request.output('bmessage_desc', sql.NVarChar(255));
 
@@ -263,7 +264,7 @@ exports.getcustomerloadpostmasterDB = (getcustomerloadpostmaster) => {
                 }
             })
             .catch(error => {
-            //    console.error(`[ERROR]: getcustomerActive Error: SQL Error: ${error.message}`);
+                //    console.error(`[ERROR]: getcustomerActive Error: SQL Error: ${error.message}`);
                 logger.log("error", `getcustomerActive Error: ${error.message}`);
                 reject({ bmessage_desc: 'SQL Error: ' + error.message, bstatus_code: "01" });
             });
