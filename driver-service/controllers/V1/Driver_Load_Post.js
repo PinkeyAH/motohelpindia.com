@@ -14,6 +14,7 @@ const e = require('express');
 // Insert driver load post
 exports.Insertdriverloadpost = async (req, res) => {
     try {
+        logger.log("info", `Insertdriverloadpost request body: ${JSON.stringify(req.body)}`);
         const LoadPostID = getRandomSixDigitNumber();
         const LoadPost_ID = `LP${LoadPostID}`;
 
