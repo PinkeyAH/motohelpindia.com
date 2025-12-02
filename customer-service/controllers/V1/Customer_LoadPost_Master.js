@@ -3,7 +3,7 @@ const addFormats = require('ajv-formats');
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const logger = require('../../log/logger');
-const { customer_loadpost_master_schema, customer_loadpost_invoice_schema } = require('../../models/V1/Customer_LoadPost_Master/schema.js');
+const { customer_loadpost_master_schema, customer_loadpost_invoice_schema, update_customer_loadpost_master_schema } = require('../../models/V1/Customer_LoadPost_Master/schema.js');
 const{ customerloadpostmasterDB, updatecustomerloadpostmasterDB, getcustomermasterDB, customerloadpostinvoiceDB, getcustomerloadpostmasterDB} = require('../../models/V1/Customer_LoadPost_Master/utility.js');
 
 // Customer Load Post Master
@@ -30,7 +30,7 @@ exports.customerloadpostmaster = async (req, res) => {
 exports.updatecustomerloadpostmaster = async (req, res) => {
     try {
         logger.info('updatecustomerloadpostmaster request body:', req.body);
-        const validate = ajv.compile(customer_loadpost_master_schema);
+        const validate = ajv.compile(update_customer_loadpost_master_schema);
         const valid = validate(req.body);
         if (!valid) {
             logger.error('Validation errors: ', validate.errors);
