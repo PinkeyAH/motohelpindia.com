@@ -47,6 +47,15 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 request.input('transit_risk', sql.Bit, customerloadpostmaster.transit_risk);
                 request.input('lr_no', sql.NVarChar(50), customerloadpostmaster.lr_no);
                 request.input('lr_date', sql.Date, customerloadpostmaster.lr_date);
+                request.input('po_number', sql.NVarChar(50), customerloadpostmaster.po_number);
+                request.input('invoice_date', sql.NVarChar(50), customerloadpostmaster.invoice_date);
+                request.input('DATE', sql.Float, customerloadpostmaster.DATE);
+                request.input('invoice_number', sql.NVarChar(50), customerloadpostmaster.invoice_number);
+                request.input('quantity', sql.NVarChar(200), customerloadpostmaster.quantity);
+                request.input('value_amount', sql.NVarChar(200), customerloadpostmaster.value_amount);
+                request.input('remarks', sql.NVarChar(200), customerloadpostmaster.remarks);
+
+                
 
                 // Outputs
                 request.output('load_master_id', sql.NVarChar(255));
