@@ -19,7 +19,7 @@ const { Insertcustomerloadpost, updatecustomerloadpost, getcustomerloadpost, del
 const { getActiveLoadPostWebAPI } = require('../controllers/V1/Customer_Load_Post_web.js');
 const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
 const { Insertcustomeremployee, updatecustomeremployee, deletecustomeremployee, getcustomeremployee } = require('../controllers/V1/Customer_Employees.js');
-const { customerloadpostmaster, updatecustomerloadpostmaster, getcustomermaster, customerloadpostinvoice, getcustomerloadpostmaster} = require('../controllers/V1/Customer_LoadPost_Master.js');        
+const { customerloadpostmaster, updatecustomerloadpostmaster, getcustomermaster, updatecustomerloadpostinvoice, getcustomerloadpostmaster} = require('../controllers/V1/Customer_LoadPost_Master.js');        
 
 // ---------------------------
 // Customer Logs Routes
@@ -123,8 +123,9 @@ router.post('/get_customer_counts', getCustomerCounts);
 
 router.post('/customer_loadpost_master', customerloadpostmaster);
 router.post('/update_customer_loadpost_master', updatecustomerloadpostmaster);
+router.post('/update_customer_loadpost_invoice', updatecustomerloadpostinvoice);
+
 router.post('/get_customer_master', getcustomermaster);
-router.post('/customer_loadpost_invoice', customerloadpostinvoice);
 router.post('/get_customer_loadpost_master', getcustomerloadpostmaster);
 
 

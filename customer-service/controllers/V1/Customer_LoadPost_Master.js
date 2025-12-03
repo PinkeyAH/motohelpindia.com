@@ -4,7 +4,7 @@ const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const logger = require('../../log/logger');
 const { customer_loadpost_master_schema, customer_loadpost_invoice_schema, update_customer_loadpost_master_schema } = require('../../models/V1/Customer_LoadPost_Master/schema.js');
-const{ customerloadpostmasterDB, updatecustomerloadpostmasterDB, getcustomermasterDB, customerloadpostinvoiceDB, getcustomerloadpostmasterDB} = require('../../models/V1/Customer_LoadPost_Master/utility.js');
+const{ customerloadpostmasterDB, updatecustomerloadpostmasterDB, getcustomermasterDB, updatecustomerloadpostinvoiceDB, getcustomerloadpostmasterDB} = require('../../models/V1/Customer_LoadPost_Master/utility.js');
 
 // Customer Load Post Master
 exports.customerloadpostmaster = async (req, res) => {
@@ -63,16 +63,16 @@ exports.getcustomermaster = async (req, res) => {
     }
 }
 
-exports.customerloadpostinvoice = async (req, res) => { 
+exports.updatecustomerloadpostinvoice = async (req, res) => { 
     try {
-        logger.info('customerloadpostinvoice request body:', req.body);
+        logger.info('updatecustomerloadpostinvoice request body:', req.body);
         const validate = ajv.compile(customer_loadpost_invoice_schema);
         const valid = validate(req.body);
         if (!valid) {
             logger.error('Validation errors: ', validate.errors);
             return res.status(400).json({ errors: validate.errors });
         }
-        const result = await customerloadpostinvoiceDB(req.body);
+        const result = await updatecustomerloadpostinvoiceDB(req.body);
         if (!result) {
             return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }

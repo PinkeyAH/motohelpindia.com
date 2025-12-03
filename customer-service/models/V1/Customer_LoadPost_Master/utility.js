@@ -53,8 +53,8 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 request.input('insurance', sql.Char(1), customerloadpostmaster.insurance ? 'Y' : 'N');
 
                 request.input('transit_risk', sql.NVarChar(255), customerloadpostmaster.transit_risk);
-                request.input('lr_no', sql.NVarChar(255), customerloadpostmaster.lr_no);
-                request.input('lr_date', sql.NVarChar(255), customerloadpostmaster.lr_date);
+                request.input('lr_no', sql.NVarChar(255), customerloadpostmaster.lr_no || null);
+                request.input('lr_date', sql.NVarChar(255), customerloadpostmaster.lr_date || null);
 
                 // TVP INVOICE DETAILS (must match exact SP TVP definition)
                 const INVD = new sql.Table('invoice_Details');
@@ -63,6 +63,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 INVD.columns.add('invoice_date', sql.NVarChar(50));
                 INVD.columns.add('quantity', sql.NVarChar(50));
                 INVD.columns.add('value_amount', sql.NVarChar(50));
+                INVD.columns.add('invoice_img', sql.NVarChar(sql.MAX));
                 INVD.columns.add('remarks', sql.NVarChar(255));
 
                 customerloadpostmaster.invoiceDetails.forEach(item => {
@@ -72,6 +73,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                         item.invoice_date,
                         item.quantity,
                         item.value_amount,
+                        item.invoice_img,
                         item.remarks
                     );
                 });
@@ -82,7 +84,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 request.output('bstatus_code', sql.NVarChar(50));
                 request.output('bmessage_desc', sql.NVarChar(255));
 
-                return request.execute('InsertCustomerLoadPostMaster');
+                return request.execute('CustomerLoadPostMasterInsert');
             })
             .then(result => {
                 resolve({
@@ -138,15 +140,15 @@ exports.updatecustomerloadpostmasterDB = (customerloadpostmaster) => {
                 request.input('lab_report_available', sql.Bit, customerloadpostmaster.lab_report_available);
                 request.input('insurance', sql.Bit, customerloadpostmaster.insurance);
                 request.input('transit_risk', sql.Bit, customerloadpostmaster.transit_risk);
-                request.input('lr_no', sql.NVarChar(50), customerloadpostmaster.lr_no);
+                request.input('lr_no', sql.NVarChar(50), customerloadpostmaster.lr_no || null);
                 request.input('lr_date', sql.Date, customerloadpostmaster.lr_date) || null;
-                request.input('po_number', sql.NVarChar(50), customerloadpostmaster.po_number);
-                request.input('invoice_date', sql.NVarChar(50), customerloadpostmaster.invoice_date);
-                // request.input('DATE', sql.Float, customerloadpostmaster.DATE);
-                request.input('invoice_number', sql.NVarChar(50), customerloadpostmaster.invoice_number);
-                request.input('quantity', sql.NVarChar(200), customerloadpostmaster.quantity);
-                request.input('value_amount', sql.NVarChar(200), customerloadpostmaster.value_amount);
-                request.input('remarks', sql.NVarChar(200), customerloadpostmaster.remarks);
+                // request.input('po_number', sql.NVarChar(50), customerloadpostmaster.po_number);
+                // request.input('invoice_date', sql.NVarChar(50), customerloadpostmaster.invoice_date);
+                // // request.input('DATE', sql.Float, customerloadpostmaster.DATE);
+                // request.input('invoice_number', sql.NVarChar(50), customerloadpostmaster.invoice_number);
+                // request.input('quantity', sql.NVarChar(200), customerloadpostmaster.quantity);
+                // request.input('value_amount', sql.NVarChar(200), customerloadpostmaster.value_amount);
+                // request.input('remarks', sql.NVarChar(200), customerloadpostmaster.remarks);
 
 
 
@@ -156,7 +158,7 @@ exports.updatecustomerloadpostmasterDB = (customerloadpostmaster) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('UpdateCustomerLoadPostMaster');
+                return request.execute('CustomerLoadPostMasterUpdate');
             })
             .then(result => {
                 const output = {
@@ -211,8 +213,8 @@ exports.getcustomermasterDB = (data) => {
     });
 };
 
-exports.customerloadpostinvoiceDB = (customerloadpostinvoice) => {
-    logger.info(`[INFO]: Updating customerloadpostinvoiceDB record for LoadMasterID: ${customerloadpostinvoice.load_master_id}`);
+exports.updatecustomerloadpostinvoiceDB = (customerloadpostinvoice) => {
+    logger.info(`[INFO]: Updating updatecustomerloadpostinvoiceDB record for LoadMasterID: ${customerloadpostinvoice.load_master_id}`);
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
@@ -225,12 +227,13 @@ exports.customerloadpostinvoiceDB = (customerloadpostinvoice) => {
                 request.input('invoice_number', sql.NVarChar(50), customerloadpostinvoice.invoice_number);
                 request.input('quantity', sql.NVarChar(50), customerloadpostinvoice.quantity);
                 request.input('value_amount', sql.NVarChar(50), customerloadpostinvoice.value_amount);
+                request.input('invoice_img', sql.NVarChar(sql.MAX), customerloadpostinvoice.invoice_img || null);
                 request.input('remarks', sql.NVarChar(200), customerloadpostinvoice.remarks);
                 // Outputs
                 request.output('status_code', sql.NVarChar(255));
                 request.output('message', sql.NVarChar(255));
                 // Call the stored procedure
-                return request.execute('InsertCustomerLoadPostInvoice');
+                return request.execute('CustomerLoadPostInvoiceUpdate');
             })
             .then(result => {
                 const output = {
