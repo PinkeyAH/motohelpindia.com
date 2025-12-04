@@ -130,13 +130,13 @@ exports.deletedriverloadpost = async (req, res) => {
 }
 // Get vehicle details
 exports.getdriverlocationbymobile = async (req, res) => {
-      if (req.headers.vendorid) {
-            req_json.vendorid = req.headers.vendorid;
-        }
+        if (req.headers.vendorid) {
+    req.body.vendorid = req.headers.vendorid;  // Move vendorid from headers to body
+}
 
     console.log("req.body.MobileNo", req.body.MobileNo);
     try {
-        const result = await getdriverlocationbymobileDB(req.body.MobileNo, req_json.vendorid);
+        const result = await getdriverlocationbymobileDB(req.body.MobileNo, req.body.vendorid);
         logger.log("info", `get driver location by mobile result: ${JSON.stringify(result)}`);
         return res.status(200).send({ status: result.status, message: result.message, data: result.data });
 

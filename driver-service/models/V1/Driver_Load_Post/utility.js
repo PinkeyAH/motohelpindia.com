@@ -230,6 +230,7 @@ exports.getdriverlocationbymobileDB = async (MobileNo ,vendorid) => {
         sql.connect(pool)
             .then(pool => {
                 const request = pool.request();
+                    request.input('vendorid', sql.NVarChar(100), vendorid);
 
                 let query = `
                     SELECT 
