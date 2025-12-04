@@ -41,6 +41,225 @@ exports.getvendorCountsDB = (data) => {
     });
 };
 
+// exports.getvehicleavailableDB = (data) => {
+//     console.log(`[INFO]: Fetching active vehicle details for vendorid: ${data.vendorid}, driverid: ${data.driverid || 'N/A'}`);
+
+//     return new Promise((resolve, reject) => {
+//         sql.connect(pool)
+//             .then(async pool => {
+//                 const request = pool.request();
+
+//                 // Common inputs
+//                 request.input('vendorid', sql.NVarChar(10), data.vendorid || null);
+//                 request.input('radiusKm', sql.Float, 500);
+//                 if (data.driverid) request.input('driverid', sql.NVarChar(10), data.driverid);
+
+//                 // ================================
+//                 // CASE 1: vendorid + driverid
+//                 // ================================
+//                 if (data.vendorid && !data.driverid) {
+//                     const mainQuery = `
+//                     SELECT 
+//                             d.driver_id,
+//                             d.full_name AS Driver_Name,
+//                             dll.Lat AS Driver_Latitude,
+//                             dll.Lng AS Driver_Longitude,
+//                             vdn.registration_no AS vehicle_No,
+//                             vdn.vehicleType,
+//                             cps.Trip_Status,
+//                             clp.LoadPostID,
+//                             cla.Origin_Lat AS pickup_Latitude,
+//                             cla.Origin_Lng AS pickup_Longitude,
+//                             cla.Destination_Lat AS dropoff_Latitude,
+//                             cla.Destination_Lng AS dropoff_Longitude,
+//                             6371 * ACOS(
+//                                 COS(RADIANS(dll.Lat)) 
+//                                 * COS(RADIANS(cla.Origin_Lat)) 
+//                                 * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                 + SIN(RADIANS(dll.Lat)) 
+//                                 * SIN(RADIANS(cla.Origin_Lat))
+//                             ) AS DriverToOriginKm,
+//                             6371 * ACOS(
+//                                 COS(RADIANS(cla.Origin_Lat)) 
+//                                 * COS(RADIANS(cla.Destination_Lat)) 
+//                                 * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
+//                                 + SIN(RADIANS(cla.Origin_Lat)) 
+//                                 * SIN(RADIANS(cla.Destination_Lat))
+//                             ) AS OriginToDestinationKm
+//                         FROM 
+//                             Driver_Details d
+//                         JOIN 
+//                             DriverLiveLocation dll ON d.driver_id = dll.DriverID
+//                         JOIN 
+//                             DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
+//                         JOIN 
+//                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
+//                                                   AND dva.VehicleID = vdn.VehicleID
+//                         LEFT JOIN 
+//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+//                         LEFT JOIN 
+//                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
+//                         LEFT JOIN 
+//                             CustomerLoadPostAddress cla ON clp.LoadPostID = cla.LoadPostID
+//                         WHERE 
+//                             d.VendorID = @vendorid
+//                             AND dva.IsActive = 1
+//                             AND cps.Trip_Status = 'Pending'
+//                             AND (
+//                                 6371 * ACOS(
+//                                     COS(RADIANS(dll.Lat)) 
+//                                     * COS(RADIANS(cla.Origin_Lat)) 
+//                                     * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                     + SIN(RADIANS(dll.Lat)) 
+//                                     * SIN(RADIANS(cla.Origin_Lat))
+//                                 )
+//                             ) <= @radiusKm
+//                         ORDER BY DriverToOriginKm ASC;
+//                     `;
+                        
+//                     const mainResult = await request.query(mainQuery);
+
+//                     // ✅ Fallback condition
+//                     if (mainResult.recordset.length === 0) {
+//                         console.log(`[INFO]: No active trips found for driver ${data.driverid}, running fallback query...`);
+
+//                         const fallbackQuery = `
+//                             SELECT 
+//                                 d.driver_id,
+//                                 d.full_name AS Driver_Name,
+//                                 dll.Lat AS Driver_Latitude,
+//                                 dll.Lng AS Driver_Longitude,
+//                                 vdn.registration_no AS vehicle_No,
+//                                 vdn.vehicleType
+//                             FROM 
+//                                 Driver_Details d
+//                             JOIN 
+//                                 DriverLiveLocation dll ON d.driver_id = dll.DriverID
+//                             JOIN 
+//                                 DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
+//                             JOIN 
+//                                 VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
+//                                                       AND dva.VehicleID = vdn.VehicleID
+//                             WHERE 
+//                                 d.VendorID = @vendorid
+//                                 AND dva.IsActive = 1
+//                         `;
+//                         const fallbackResult = await request.query(fallbackQuery);
+//                         return fallbackResult;
+//                     } else {
+//                         return mainResult;
+//                     }
+//                 }
+
+//                 // ================================
+//                 // CASE 2: Only vendorid (Pending trips)
+//                 // ================================
+//                 else if (data.vendorid && data.driverid) {
+//                     const vendorQuery = `
+//                     SELECT 
+//                             d.driver_id,
+//                             d.full_name AS Driver_Name,
+//                             dll.Lat AS Driver_Latitude,
+//                             dll.Lng AS Driver_Longitude,
+//                             vdn.registration_no AS vehicle_No,
+//                             vdn.vehicleType,
+//                             cps.Trip_Status,
+//                             clp.LoadPostID,
+//                             cla.Origin_Lat AS pickup_Latitude,
+//                             cla.Origin_Lng AS pickup_Longitude,
+//                             cla.Destination_Lat AS dropoff_Latitude,
+//                             cla.Destination_Lng AS dropoff_Longitude,
+//                             6371 * ACOS(
+//                                 COS(RADIANS(dll.Lat)) 
+//                                 * COS(RADIANS(cla.Origin_Lat)) 
+//                                 * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                 + SIN(RADIANS(dll.Lat)) 
+//                                 * SIN(RADIANS(cla.Origin_Lat))
+//                             ) AS DriverToOriginKm,
+//                             6371 * ACOS(
+//                                 COS(RADIANS(cla.Origin_Lat)) 
+//                                 * COS(RADIANS(cla.Destination_Lat)) 
+//                                 * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
+//                                 + SIN(RADIANS(cla.Origin_Lat)) 
+//                                 * SIN(RADIANS(cla.Destination_Lat))
+//                             ) AS OriginToDestinationKm
+//                         FROM 
+//                             Driver_Details d
+//                         JOIN 
+//                             DriverLiveLocation dll ON d.driver_id = dll.DriverID
+//                         JOIN 
+//                             DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
+//                         JOIN 
+//                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
+//                                                   AND dva.VehicleID = vdn.VehicleID
+//                         LEFT JOIN 
+//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+//                         LEFT JOIN 
+//                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
+//                         LEFT JOIN 
+//                             CustomerLoadPostAddress cla ON clp.LoadPostID = cla.LoadPostID
+//                         WHERE 
+//                             d.VendorID = @vendorid
+//                             AND dva.IsActive = 1
+//                             AND d.driver_id = @driverid
+//                             AND cps.Trip_Status = 'pending'
+//                             AND (
+//                                 6371 * ACOS(
+//                                     COS(RADIANS(dll.Lat)) 
+//                                     * COS(RADIANS(cla.Origin_Lat)) 
+//                                     * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                     + SIN(RADIANS(dll.Lat)) 
+//                                     * SIN(RADIANS(cla.Origin_Lat))
+//                                 )
+//                             ) <= @radiusKm
+//                         ORDER BY DriverToOriginKm ASC;
+//                     `;
+
+                        
+//                     return await request.query(vendorQuery);
+//                 }
+
+//                 // ================================
+//                 // CASE 3: No vendorid (fallback)
+//                 // ================================
+//                 else {
+//                     const fallbackQuery = `
+//                         SELECT 
+//                             d.driver_id,
+//                             d.full_name AS Driver_Name,
+//                             dll.Lat AS Driver_Latitude,
+//                             dll.Lng AS Driver_Longitude,
+//                             vdn.registration_no AS vehicle_No,
+//                             vdn.vehicleType
+//                         FROM 
+//                             Driver_Details d
+//                         JOIN 
+//                             DriverLiveLocation dll ON d.driver_id = dll.DriverID
+//                         JOIN 
+//                             DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
+//                         JOIN 
+//                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
+//                                                   AND dva.VehicleID = vdn.VehicleID;
+//                     `;
+//                     return await request.query(fallbackQuery);
+//                 }
+//             })
+//             .then(result => {
+//                 if (result.recordset.length > 0) {
+//                     console.log(`[SUCCESS]: ${result.recordset.length} vehicle(s) found`);
+//                     resolve({ status: "00", message: "Vehicle records found", data: result.recordset });
+//                 } else {
+//                     console.log(`[INFO]: No vehicle records found`);
+//                     resolve({ status: "01", message: "No records found", data: [] });
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error(`[ERROR]: getVehicleActiveDB SQL Error: ${error.message}`);
+//                 reject({ status: "99", message: `SQL Error: ${error.message}` });
+//             });
+//     });
+// };
+
 exports.getvehicleavailableDB = (data) => {
     console.log(`[INFO]: Fetching active vehicle details for vendorid: ${data.vendorid}, driverid: ${data.driverid || 'N/A'}`);
 
@@ -51,7 +270,7 @@ exports.getvehicleavailableDB = (data) => {
 
                 // Common inputs
                 request.input('vendorid', sql.NVarChar(10), data.vendorid || null);
-                request.input('radiusKm', sql.Float, 100000);
+                request.input('radiusKm', sql.Float, 500);
                 if (data.driverid) request.input('driverid', sql.NVarChar(10), data.driverid);
 
                 // ================================
@@ -118,37 +337,37 @@ exports.getvehicleavailableDB = (data) => {
                     `;
                         
                     const mainResult = await request.query(mainQuery);
+                     return mainResult;
+                    // // ✅ Fallback condition
+                    // if (mainResult.recordset.length === 0) {
+                    //     console.log(`[INFO]: No active trips found for driver ${data.driverid}, running fallback query...`);
 
-                    // ✅ Fallback condition
-                    if (mainResult.recordset.length === 0) {
-                        console.log(`[INFO]: No active trips found for driver ${data.driverid}, running fallback query...`);
-
-                        const fallbackQuery = `
-                            SELECT 
-                                d.driver_id,
-                                d.full_name AS Driver_Name,
-                                dll.Lat AS Driver_Latitude,
-                                dll.Lng AS Driver_Longitude,
-                                vdn.registration_no AS vehicle_No,
-                                vdn.vehicleType
-                            FROM 
-                                Driver_Details d
-                            JOIN 
-                                DriverLiveLocation dll ON d.driver_id = dll.DriverID
-                            JOIN 
-                                DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
-                            JOIN 
-                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
-                                                      AND dva.VehicleID = vdn.VehicleID
-                            WHERE 
-                                d.VendorID = @vendorid
-                                AND dva.IsActive = 1
-                        `;
-                        const fallbackResult = await request.query(fallbackQuery);
-                        return fallbackResult;
-                    } else {
-                        return mainResult;
-                    }
+                    //     const fallbackQuery = `
+                    //         SELECT 
+                    //             d.driver_id,
+                    //             d.full_name AS Driver_Name,
+                    //             dll.Lat AS Driver_Latitude,
+                    //             dll.Lng AS Driver_Longitude,
+                    //             vdn.registration_no AS vehicle_No,
+                    //             vdn.vehicleType
+                    //         FROM 
+                    //             Driver_Details d
+                    //         JOIN 
+                    //             DriverLiveLocation dll ON d.driver_id = dll.DriverID
+                    //         JOIN 
+                    //             DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
+                    //         JOIN 
+                    //             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
+                    //                                   AND dva.VehicleID = vdn.VehicleID
+                    //         WHERE 
+                    //             d.VendorID = @vendorid
+                    //             AND dva.IsActive = 1
+                    //     `;
+                    //     const fallbackResult = await request.query(fallbackQuery);
+                    //     return fallbackResult;
+                    // } else {
+                    //     return mainResult;
+                    // }
                 }
 
                 // ================================
@@ -219,30 +438,30 @@ exports.getvehicleavailableDB = (data) => {
                     return await request.query(vendorQuery);
                 }
 
-                // ================================
-                // CASE 3: No vendorid (fallback)
-                // ================================
-                else {
-                    const fallbackQuery = `
-                        SELECT 
-                            d.driver_id,
-                            d.full_name AS Driver_Name,
-                            dll.Lat AS Driver_Latitude,
-                            dll.Lng AS Driver_Longitude,
-                            vdn.registration_no AS vehicle_No,
-                            vdn.vehicleType
-                        FROM 
-                            Driver_Details d
-                        JOIN 
-                            DriverLiveLocation dll ON d.driver_id = dll.DriverID
-                        JOIN 
-                            DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
-                        JOIN 
-                            VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
-                                                  AND dva.VehicleID = vdn.VehicleID;
-                    `;
-                    return await request.query(fallbackQuery);
-                }
+                // // ================================
+                // // CASE 3: No vendorid (fallback)
+                // // ================================
+                // else {
+                //     const fallbackQuery = `
+                //         SELECT 
+                //             d.driver_id,
+                //             d.full_name AS Driver_Name,
+                //             dll.Lat AS Driver_Latitude,
+                //             dll.Lng AS Driver_Longitude,
+                //             vdn.registration_no AS vehicle_No,
+                //             vdn.vehicleType
+                //         FROM 
+                //             Driver_Details d
+                //         JOIN 
+                //             DriverLiveLocation dll ON d.driver_id = dll.DriverID
+                //         JOIN 
+                //             DriverVehicleAssign dva ON dll.DriverID = dva.DriverID
+                //         JOIN 
+                //             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
+                //                                   AND dva.VehicleID = vdn.VehicleID;
+                //     `;
+                //     return await request.query(fallbackQuery);
+                // }
             })
             .then(result => {
                 if (result.recordset.length > 0) {
@@ -259,7 +478,6 @@ exports.getvehicleavailableDB = (data) => {
             });
     });
 };
-
 
 exports.getvehicleprocessDB = (data) => {
     return new Promise((resolve, reject) => {

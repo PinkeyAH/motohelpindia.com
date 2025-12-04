@@ -167,7 +167,7 @@ router.post('/PostStatus', CustomerPostStatus);
 router.post('/process_Trip', getcustomerprocess);
 router.post('/active_Trip', getcustomeractive);
 // router.post('/customer_active', getcustomeractive);
-router.post('/get_Nearest_Drivers', getNearestDrivers);
+// router.post('/get_Nearest_Drivers', getNearestDrivers);
 
 // GetMultiCounts
 router.post('/get_vendor_counts', getvendorCounts);
