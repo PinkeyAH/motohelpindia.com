@@ -225,7 +225,7 @@ exports.deletedriverloadpostDB = async (data) => {
 };
 
 
-exports.getdriverlocationbymobileDB = async (MobileNo) => {
+exports.getdriverlocationbymobileDB = async (MobileNo ,vendorid) => {
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
@@ -258,6 +258,7 @@ exports.getdriverlocationbymobileDB = async (MobileNo) => {
                     JOIN VehicleDetailsNew AS v ON v.vehicleid = dva.VehicleID
                     JOIN DriverLiveLocation AS dll ON dll.DriverID = d.driver_id
                     WHERE dll.Status = 'Available'  
+                      AND dva.VendorID = @vendorid
                       AND dll.DriverTripStatus = 'Inactive'
                       AND dva.IsActive = 1
                 `;
