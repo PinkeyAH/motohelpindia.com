@@ -16,13 +16,13 @@ exports.InsertCustomerDB = async (data, CustomerID) => {
                 request.input('ContactPerson', sql.NVarChar(255), data.ContactPerson);
                 request.input('ContactNo', sql.NVarChar(50), data.ContactNo);
                 request.input('EmailID', sql.NVarChar(255), data.EmailID);
-                request.input('Address', sql.NVarChar(500), data.RegisteredAddress.fullAddress);
+                request.input('Address', sql.NVarChar(500), data.Address || data.RegisteredAddress.fullAddress);
                 request.input('Address1', sql.NVarChar(255), data.Address1);
                 request.input('Address2', sql.NVarChar(255), data.Address2);
                 request.input('Pincode', sql.NVarChar(255), data.Pincode || data.RegisteredAddress.addressComponents.pincode);
                 request.input('City', sql.NVarChar(255), data.City || data.RegisteredAddress.addressComponents.place);
                 request.input('State', sql.NVarChar(255), data.State || data.RegisteredAddress.addressComponents.state);
-                request.input('Tahsil', sql.NVarChar(255), data.Tahsil || data.RegisteredAddress.addressComponents.tal);
+                request.input('Tahsil', sql.NVarChar(255), data.Tahsil ?? data?.RegisteredAddress?.addressComponents?.Tahsil ?? '');
 
                 const toStringSafe = (value) => {
                     if (value === null || value === undefined) return "";
@@ -81,13 +81,13 @@ exports.updateCustomerDetailsDB = async (data) => {
                 request.input('ContactPerson', sql.NVarChar(255), data.ContactPerson);
                 request.input('ContactNo', sql.NVarChar(50), data.ContactNo);
                 request.input('EmailID', sql.NVarChar(255), data.EmailID);
-                request.input('Address', sql.NVarChar(500), data.RegisteredAddress.fullAddress||null);
+                request.input('Address', sql.NVarChar(500), data.Address || data.RegisteredAddress.fullAddress);
                 request.input('Address1', sql.NVarChar(255), data.Address1);
                 request.input('Address2', sql.NVarChar(255), data.Address2);
                 request.input('Pincode', sql.NVarChar(255), data.Pincode || data.RegisteredAddress.addressComponents.Pincode);
                 request.input('City', sql.NVarChar(255), data.City || data.RegisteredAddress.addressComponents.City);
                 request.input('State', sql.NVarChar(255), data.State || data.RegisteredAddress.addressComponents.State);
-                request.input('Tahsil', sql.NVarChar(255), data.Tahsil || data.RegisteredAddress.addressComponents.Tahsil);
+                request.input('Tahsil', sql.NVarChar(255), data.Tahsil ?? data?.RegisteredAddress?.addressComponents?.Tahsil ?? '');
                 const toStringSafe = (value) => {
                     if (value === null || value === undefined) return "";
                     return String(value);  // ✔ number → string conversion
