@@ -50,7 +50,7 @@ exports.InsertCustomerDB = async (data, CustomerID) => {
                 request.output('CustomerDetails', sql.NVarChar(sql.MAX));
 
                 // Call the stored procedure
-                return request.execute('InsertCustomerDetails');
+                return request.execute('CustomerDetailsInsert');
             })
 
             .then(result => {
@@ -81,7 +81,7 @@ exports.updateCustomerDetailsDB = async (data) => {
                 request.input('ContactPerson', sql.NVarChar(255), data.ContactPerson);
                 request.input('ContactNo', sql.NVarChar(50), data.ContactNo);
                 request.input('EmailID', sql.NVarChar(255), data.EmailID);
-                request.input('Address', sql.NVarChar(500), data.RegisteredAddress.fullAddress);
+                request.input('Address', sql.NVarChar(500), data.RegisteredAddress.fullAddress||null);
                 request.input('Address1', sql.NVarChar(255), data.Address1);
                 request.input('Address2', sql.NVarChar(255), data.Address2);
                 request.input('Pincode', sql.NVarChar(255), data.Pincode || data.RegisteredAddress.addressComponents.Pincode);
@@ -113,7 +113,7 @@ exports.updateCustomerDetailsDB = async (data) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('UpdateCustomerDetails');
+                return request.execute('CustomerDetailsUpdate');
             })
 
             .then(result => {
