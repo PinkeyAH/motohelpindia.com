@@ -49,6 +49,7 @@ router.post('/vendor_Change_Mpin',/* Mpin_validateRequests,*/ vendor_Change_Mpin
 // router.post('/Mpin_SendOtp', Mpin_SendOtp);
 // router.post('/Mpin_ValidateOtp', Mpin_ValidateOtp);
 // router.post('/vendor_logout_Mpin', /*Mpin_validateRequests,*/ vendor_logout_Mpin);
+
 // Logout
 router.post('/logout', logout);
 

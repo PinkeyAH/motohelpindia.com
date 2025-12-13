@@ -2,7 +2,7 @@ const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 const logger = require('../../log/logger');
 const { InsertCustomer_schema, UpdateCustomerDetails_schema, DeleteCustomerDetails_schema, GetCustomerDetails_schema } = require("../../models/V1/Customer_Onboarding/schema");
-const { InsertCustomerDB, ImageUploadDB, updateCustomerDetailsDB, deleteCustomerDetailsDB, getCustomerDetailsDB,UpdateImageUploadDB } = require('../../models/V1/Customer_Onboarding/utility');
+const { InsertCustomerDB, ImageUploadDB, updateCustomerDetailsDB, deleteCustomerDetailsDB, getCustomerDetailsDB, UpdateImageUploadDB } = require('../../models/V1/Customer_Onboarding/utility');
 const { getRandomSixDigitNumber, saveMultipleBase64Images } = require("../../common/common");
 // Initialize Ajv
 const ajv = new Ajv({ allErrors: true });
