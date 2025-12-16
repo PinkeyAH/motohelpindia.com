@@ -59,6 +59,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 // TVP INVOICE DETAILS (must match exact SP TVP definition)
                 const INVD = new sql.Table('invoice_Details');
                 INVD.columns.add('po_number', sql.NVarChar(50));
+                                INVD.columns.add('po_date', sql.NVarChar(50));
                 INVD.columns.add('invoice_number', sql.NVarChar(50));
                 INVD.columns.add('invoice_date', sql.NVarChar(50));
                 INVD.columns.add('quantity', sql.NVarChar(50));
@@ -69,6 +70,7 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 customerloadpostmaster.invoiceDetails.forEach(item => {
                     INVD.rows.add(
                         item.po_number,
+                        item.po_date,
                         item.invoice_number,
                         item.invoice_date,
                         item.quantity,
@@ -223,6 +225,7 @@ exports.updatecustomerloadpostinvoiceDB = (customerloadpostinvoice) => {
                 // request.input('invoice_id', sql.NVarChar(50), customerloadpostinvoice.invoice_id);
                 request.input('load_master_id', sql.NVarChar(50), customerloadpostinvoice.load_master_id);
                 request.input('po_number', sql.NVarChar(50), customerloadpostinvoice.po_number);
+                request.input('po_date', sql.Date, customerloadpostinvoice.po_date);
                 request.input('invoice_date', sql.Date, customerloadpostinvoice.invoice_date);
                 request.input('invoice_number', sql.NVarChar(50), customerloadpostinvoice.invoice_number);
                 request.input('quantity', sql.NVarChar(50), customerloadpostinvoice.quantity);
@@ -266,8 +269,7 @@ exports.getcustomerloadpostmasterDB = (data) => {
                                                     clp.CustomerID,
 													dd.driver_id,
 													dd.full_name,
-
-                                                 
+                                                                                                     
                                                     clp.VehicleType,
                                                     clp.Weight,
                                                     clp.verify_flag,
