@@ -23,7 +23,8 @@ exports.get_request = async function (url, queryParams = {}, headers = {}) {
       resolve(response);
     } catch (error) {
       if (error.response) {
-        reject(new Error(`Status ${error.response.status}: ${JSON.stringify(error.response.data)}`));
+        reject(error)
+        // reject(new Error(`Status ${error.response.status}: ${JSON.stringify(error.response.data)}`));
       } else if (error.request) {
         reject(new Error('No response received from server'));
       } else {
