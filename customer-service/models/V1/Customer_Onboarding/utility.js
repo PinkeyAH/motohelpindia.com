@@ -3,7 +3,7 @@ const pool = require('../../../db/db'); // Ensure your DB config is imported
 const logger = require('../../../log/logger');
 
 
-exports.InsertCustomerDB = async (data, CustomerID) => {
+exports.InsertCustomerDB = async (data, CustomerID, Customer_EmployeeDetails) => {
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
@@ -37,29 +37,29 @@ exports.InsertCustomerDB = async (data, CustomerID) => {
                 request.input('PancardNo', sql.NVarChar(20), data.PancardNo);
                 request.input('GstNo', sql.NVarChar(20), data.GstNo);
 
-                const tvp = new sql.Table();
-                tvp.columns.add('designation', sql.NVarChar(100));
-                tvp.columns.add('department', sql.NVarChar(100));
-                tvp.columns.add('employeeid', sql.NVarChar(15));
-                tvp.columns.add('contact_No', sql.NVarChar(15));
-                tvp.columns.add('full_name', sql.NVarChar(100));
-                tvp.columns.add('emailid', sql.NVarChar(255));
-                tvp.columns.add('Authority_level', sql.NVarChar(100));
+                // const tvp = new sql.Table();
+                // tvp.columns.add('designation', sql.NVarChar(100));
+                // tvp.columns.add('department', sql.NVarChar(100));
+                // tvp.columns.add('employeeid', sql.NVarChar(15));
+                // tvp.columns.add('contact_No', sql.NVarChar(15));
+                // tvp.columns.add('full_name', sql.NVarChar(100));
+                // tvp.columns.add('emailid', sql.NVarChar(255));
+                // tvp.columns.add('Authority_level', sql.NVarChar(100));
             
 
-                Customer_EmployeeDetails.forEach(cd => {
-                    tvp.rows.add(
-                        cd.designation,
-                        cd.department,
-                        cd.employeeid,
-                        cd.contact_No,
-                        cd.full_name,
-                        cd.emailid,
-                        cd.Authority_level
-                    );
-                });
+                // Customer_EmployeeDetails.forEach(cd => {
+                //     tvp.rows.add(
+                //         cd.designation,
+                //         cd.department,
+                //         cd.employeeid,
+                //         cd.contact_No,
+                //         cd.full_name,
+                //         cd.emailid,
+                //         cd.Authority_level
+                //     );
+                // });
 
-                request.input('CustomerEmployeeDetailsType', tvp);
+                // request.input('CustomerEmployeeDetailsType', tvp);
 
                 // request.input('Industry', sql.NVarChar(255), data.Industry);
                 // request.input('IndustryDetails', sql.NVarChar(255), data.IndustryDetails);
