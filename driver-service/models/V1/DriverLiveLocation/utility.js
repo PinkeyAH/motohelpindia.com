@@ -24,7 +24,7 @@ exports.insertOrUpdate_DriverLiveLocationDB = async (data) => {
                 request.input('State', sql.NVarChar(100), data.State || null);
                 request.input('Pincode', sql.NVarChar(10), data.Pincode || null);
                 request.input('Address', sql.NVarChar(255), data.Address || null);
-                request.input('Status', sql.NVarChar(20), data.Status || 'Online');
+                request.input('Status', sql.NVarChar(20), data.Status);
 
                 // output
                 request.output('bstatus_code', sql.NVarChar(255));
