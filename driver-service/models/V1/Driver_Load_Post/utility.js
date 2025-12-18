@@ -23,11 +23,11 @@ exports.InsertdriverloadpostDB = async (data, LoadPost_ID, driverdata) => {
 
                 request.input('Origin_Lat', sql.Decimal(9, 6), data.origin.coordinates.lat || driverdata.data[0].Lat);
                 request.input('Origin_Lng', sql.Decimal(9, 6), data.origin.coordinates.lng || driverdata.data[0].Lng);
-                request.input('Origin_City', sql.NVarChar(100), data.origin.components.place || driverdata.data[0].City);
-                request.input('Origin_District', sql.NVarChar(100), data.origin.components.dist || driverdata.data[0].District);
+                request.input('Origin_City', sql.NVarChar(100), data.origin.components.place || driverdata.data[0].City || null);
+                request.input('Origin_District', sql.NVarChar(100), data.origin.components.dist || driverdata.data[0].District || null);
                 request.input('Origin_Taluka', sql.NVarChar(100), data.origin.components.tal || driverdata.data[0].Taluka || null);
-                request.input('Origin_State', sql.NVarChar(100), data.origin.components.state || driverdata.data[0].State);
-                request.input('Origin_Pincode', sql.NVarChar(10), data.origin.components.pincode || driverdata.data[0].Pincode);
+                request.input('Origin_State', sql.NVarChar(100), data.origin.components.state || driverdata.data[0].State || null);
+                request.input('Origin_Pincode', sql.NVarChar(10), data.origin.components.pincode || driverdata.data[0].Pincode || null);
                 request.input('cost', sql.NVarChar(50), data.cost);
 
                 // request.input('Destination_Lat', sql.Decimal(9,6), data.destination.coordinates.lat);
