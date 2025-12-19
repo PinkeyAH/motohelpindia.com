@@ -11,7 +11,7 @@ exports.insertOrUpdate_DriverLiveLocationDB = async (data) => {
                 // Input parameters mapping to SP
                 request.input('DriverID', sql.NVarChar(50), data.DriverID);
                 request.input('VendorID', sql.NVarChar(50), data.VendorID);
-                request.input('TripID', sql.NVarChar(50), data.TripID || null);
+                request.input('LP_ID', sql.NVarChar(50), data.LP_ID || null);
                 request.input('VehicleID', sql.NVarChar(50), data.VehicleID || null);
                 request.input('MobileNo', sql.NVarChar(20), data.MobileNo || null);
                 request.input('Lat', sql.Decimal(10, 6), data.Lat);
