@@ -13,7 +13,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const initializeSocket = require('./socket');
 const initializeDriverSocket = require('../driver-service/socket');
 const initializeCustomerSocket = require('../customer-service/socket');
-// const initializeVendorSocket = require('../vendor-service/socket');
+const initializeVendorSocket = require('../vendor-service/socket');
 const app = express();
 const server = http.createServer(app);
 
@@ -24,7 +24,7 @@ console.log("✅ Socket.IO base initialized");
 // ✅ Pass the SAME `io` instance to both modules
 initializeDriverSocket(io, app);
 initializeCustomerSocket(io, app);
-// initializeVendorSocket(io, app);
+initializeVendorSocket(io, app);
 console.log("✅ Driver & Customer Sockets initialized");
 
 // ✅ Middleware
