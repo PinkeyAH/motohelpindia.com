@@ -153,3 +153,38 @@ exports.get_DriverAvailableStatusDB = async (data) => {
     }
     );
 }
+
+// Driver online/offline status update
+exports.DriveronlineofflinestatusDB = async (data) => {
+    return new Promise((resolve, reject) => {
+        sql.connect(pool)
+            .then(pool => {
+                const request = pool.request();
+                request.input('DriverID', sql.NVarChar(50), data.DriverID);
+                request.input('VendorID', sql.NVarChar(50), data.VendorID);
+                request.input('Status', sql.NVarChar(20), data.Status);
+                // output
+                request.output('bstatus_code', sql.NVarChar(255));
+                request.output('bmessage_desc', sql.NVarChar(255));
+
+                // Call stored procedure
+                return request.execute("DriverOnlineOfflineStatusUpdate");
+            }
+            )
+            .then(result => {
+                resolve({
+                    bstatus_code: result.output.bstatus_code,
+                    bmessage_desc: result.output.bmessage_desc
+                });
+            }
+            )
+            .catch(err => {
+                logger.log("error", `Driveronlineofflinestatus DB Error: ${err.message}`);
+                reject({
+                    bstatus_code: "96",
+                    bmessage_desc: "DB Error",
+                    error: err.message
+                });
+            });
+    });
+};

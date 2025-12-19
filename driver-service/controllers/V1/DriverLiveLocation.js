@@ -5,7 +5,7 @@ addFormats(ajv);
 const logger = require('../../log/logger');
 // const { getRandomSixDigitNumber } = require("../../common/common");
 
-const { insertOrUpdate_DriverLiveLocationDB, get_DriverLiveLocationDB,get_DriverAvailableStatusDB } = require('../../models/V1/DriverLiveLocation/utility.js');
+const { insertOrUpdate_DriverLiveLocationDB, get_DriverLiveLocationDB,get_DriverAvailableStatusDB, DriveronlineofflinestatusDB } = require('../../models/V1/DriverLiveLocation/utility.js');
 // const {  } = require('../../models/V1/DriverLiveLocation/schema.js');
 
 // insertOrUpdateDriverLiveLocation
@@ -48,7 +48,6 @@ exports.getDriverLiveLocation = async (req, res) => {
     }
 }
 
-
 // getDriverAvailableStatus
 exports.getDriverAvailableStatus = async (req, res) => {
     try {
@@ -63,6 +62,22 @@ exports.getDriverAvailableStatus = async (req, res) => {
 
     } catch (error) {
         logger.log("error", `getDriverAvailableStatus Error: ${error.message}`);
+        return res.status(500).json({ status: "99", message: "Internal server error" });
+    }
+}
+
+// Driver online/offline status update
+exports.Driveronlineofflinestatus = async (req, res) => {
+    try {
+        const result = await DriveronlineofflinestatusDB(req.body);   // DB call
+        logger.log("info", `Driveronlineofflinestatus result: ${JSON.stringify(result)}`);
+        return res.status(200).send({
+            status: result.bstatus_code,
+            message: result.bmessage_desc,
+            data: result.data
+        });
+    } catch (error) {
+        logger.log("error", `Driveronlineofflinestatus Error: ${error.message}`);
         return res.status(500).json({ status: "99", message: "Internal server error" });
     }
 }

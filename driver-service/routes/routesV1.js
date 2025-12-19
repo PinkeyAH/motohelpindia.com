@@ -8,7 +8,7 @@ const { getDestination, getPincode, get_state_region_district ,get_state_distric
 const { auth_vaildation } = require('../../KYC_Verification/controllers/V1/auth_vaildation');
 const { Pancard , GST, DrivingLicense, Aadhaargenerateotp,Aadhaarverifyotp, Vehicle} = require('../../KYC_Verification/controllers/V1/KYC_Verification');
 
-const { insertOrUpdateDriverLiveLocation, getDriverLiveLocation } = require("../controllers/V1/DriverLiveLocation.js");
+const { insertOrUpdateDriverLiveLocation, getDriverLiveLocation, Driveronlineofflinestatus } = require("../controllers/V1/DriverLiveLocation.js");
 const { Insertdriverloadpost, updatedriverloadpost, getdriverloadpost, deletedriverloadpost, getdriverlocationbymobile , getNearestDrivers} = require('../controllers/V1/Driver_Load_Post');
 
 const { getNearestCustomerpost ,CustomerPostStatus, getcustomerprocess ,getcustomeractive} = require('../.././customer-service/controllers/V1/Customer_Load_Post.js');
@@ -43,6 +43,7 @@ router.post('/Vehicle', auth_vaildation, Vehicle);
 router.post('/insertOrUpdate_DriverLiveLocation', insertOrUpdateDriverLiveLocation);
 router.post('/get_DriverLiveLocation', getDriverLiveLocation);
 
+router.post('/Driver_online_offline_status', Driveronlineofflinestatus);
 router.post('/Insert_driver_load_post', Insertdriverloadpost);
 router.post('/update_driver_load_post', updatedriverloadpost);
 router.post('/get_driver_load_post', getdriverloadpost);
