@@ -260,7 +260,7 @@ exports.getdriverlocationbymobileDB = async (MobileNo ,vendorid) => {
                     JOIN DriverLiveLocation AS dll ON dll.DriverID = d.driver_id
                     WHERE dll.Status = 'Available'  
                       AND dva.VendorID = @vendorid
-                      AND dll.DriverTripStatus = 'Inactive'
+                      AND dll.Driver_LPStatus = 'Inactive'
                       AND dva.IsActive = 1
                 `;
 
@@ -624,7 +624,7 @@ exports.getDriverAvailableDB = async (data) => {
                           AND
                            d.driver_id NOT IN (
                              SELECT DriverID FROM DriverVehicleAssign WHERE status = 'Active' AND IsActive = 1
-                        --   SELECT DriverID FROM DriverLiveLocation WHERE status = 'Available' and  DriverTripStatus = 'Inactive'
+                        --   SELECT DriverID FROM DriverLiveLocation WHERE status = 'Available' and  Driver_LPStatus = 'Inactive'
                           )
                         ORDER BY d.full_name;
                     `;

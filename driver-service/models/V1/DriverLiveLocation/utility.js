@@ -63,7 +63,7 @@ exports.get_DriverLiveLocationDB = async (data) => {
                         dva.DriverID,
                         dva.VendorID,
 						dll.Status,
-						dll.DriverTripStatus,
+						dll.Driver_LPStatus,
                         d.full_name,
                         d.Phone,
                         dva.MobileNo,
@@ -137,7 +137,7 @@ exports.get_DriverAvailableStatusDB = async (data) => {
                     JOIN VehicleDetailsNew AS v ON v.vehicleid = dva.VehicleID
                     JOIN DriverLiveLocation AS dll ON dll.DriverID = d.driver_id
                     WHERE dll.Status = 'Available'  
-                      AND dll.DriverTripStatus = 'Inactive'
+                      AND dll.Driver_LPStatus = 'Inactive'
                       AND dll.vendorid = @VendorID
                       AND dva.IsActive = 1
                 `);
