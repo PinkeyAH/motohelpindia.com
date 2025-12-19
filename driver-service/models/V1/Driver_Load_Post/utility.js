@@ -258,7 +258,7 @@ exports.getdriverlocationbymobileDB = async (MobileNo ,vendorid) => {
                     JOIN Driver_Details AS d ON d.driver_id = dva.DriverID
                     JOIN VehicleDetailsNew AS v ON v.vehicleid = dva.VehicleID
                     JOIN DriverLiveLocation AS dll ON dll.DriverID = d.driver_id
-                    WHERE dll.Status = 'Available'  
+                    WHERE dll.Status = 'Online'  
                       AND dva.VendorID = @vendorid
                       AND dll.Driver_LPStatus = 'Inactive'
                       AND dva.IsActive = 1
