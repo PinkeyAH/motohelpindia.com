@@ -54,7 +54,11 @@ function initializeVendorSocket(io) {
           UpdatedAt: new Date(),
         });
 
-        console.log("📤 VendorLocationUpdate emitted:", VendorLPStatus);
+        console.log("📤 VendorLocationUpdate emitted:", {
+          // ...data,
+          driverData: VendorLPStatus?.data || [],
+          UpdatedAt: new Date(),
+        });
 
         /* 3️⃣ Update In-Memory Store */
         // updateVendorLocation(VendorID, {
