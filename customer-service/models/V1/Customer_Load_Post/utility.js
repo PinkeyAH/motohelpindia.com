@@ -157,7 +157,7 @@ exports.getcustomerloadpostDB = async (data) => {
                                                 clp.Weight,
                                                 clp.verify_flag,
                                                 clp.verification_code,
-                                                cps.trip_status,
+                                                cps.LP_Status,
                                                 clp.BodyType,
                                                 clp.CargoContent,
                                                 clp.CargoPackageType,
@@ -188,7 +188,7 @@ exports.getcustomerloadpostDB = async (data) => {
                                                 ON clp.LoadPostID = cla.LoadPostID 
                                             JOIN CustomerPostStatus cps
                                                     ON clp.LoadPostID = cps.CustomerPostID
-                                            where cps.trip_status = 'Pending' 
+                                            where cps.LP_Status = 'Pending' 
                                             AND clp.CustomerID = @CustomerID
                                      --       AND cps.customerpostid = @LoadPostID
                                             ORDER BY clp.insert_date DESC;
@@ -204,7 +204,7 @@ exports.getcustomerloadpostDB = async (data) => {
                                                 clp.Weight,
                                                 clp.verify_flag,
                                                 clp.verification_code,
-                                                cps.trip_status,
+                                                cps.LP_Status,
                                                 clp.BodyType,
                                                 clp.CargoContent,
                                                 clp.CargoPackageType,
@@ -237,7 +237,7 @@ exports.getcustomerloadpostDB = async (data) => {
                                                 cps.CustomerStatus,
                                                 cps.VendorStatus,
                                                 cps.DriverStatus,
-                                                cps. trip_status AS tripStatus
+                                                cps. LP_Status 
 
                                                 
                                                 FROM CustomerLoadPost clp
@@ -247,7 +247,7 @@ exports.getcustomerloadpostDB = async (data) => {
                                                     ON clp.LoadPostID = cps.CustomerPostID
                                                 
                                                 WHERE clp.LoadPostID = @LoadPostID
-                                                    AND cps.trip_status = 'Pending'
+                                                    AND cps.LP_Status = 'Pending'
                                                     AND clp.CustomerID = @CustomerID
 
                                                 ORDER BY clp.insert_date DESC;
@@ -444,7 +444,7 @@ exports.getNearestCustomerposttDB = async (data) => {
         //                           dll.DriverID,
         //                           cps.CustomerID,
         //                           dll.VendorID,
-        //                           cps.trip_status,
+        //                           cps.LP_Status,
         //                           dll. DriverTripStatus,
         //                           cps.CustomerStatus AS CustomerTripStatus,
         //                           dll.Lat AS DriverLat,
@@ -539,7 +539,7 @@ exports.getNearestCustomerposttDB = async (data) => {
         //                                  AND cla.Origin_Lng IS NOT NULL
         //                                  AND clp.VehicleType = @vehicleType
         //                                  AND dll.Status = 'Available'
-        //                                  AND cps.Trip_Status = 'Pending'
+        //                                  AND cps.LP_Status = 'Pending'
         //                                  AND (cps.DriverStatus IS NULL)
         //                                  AND (
         //                                        6371 * ACOS(
@@ -559,7 +559,7 @@ exports.getNearestCustomerposttDB = async (data) => {
     dll.DriverID,
     cps.CustomerID,
     dll.VendorID,
-    cps.trip_status,
+    cps.LP_Status,
     dll.DriverTripStatus,
     cps.CustomerStatus AS CustomerTripStatus,
     dll.Lat AS DriverLat,
@@ -685,7 +685,7 @@ WHERE cla.Origin_Lat IS NOT NULL
   AND cla.Origin_Lng IS NOT NULL
   AND clp.VehicleType = @vehicleType
   AND dll.Status = 'Available'
-  AND cps.Trip_Status = 'Pending'
+  AND cps.LP_Status = 'Pending'
   AND (cps.DriverStatus IS NULL)
   AND (
       6371 * ACOS(
@@ -816,13 +816,13 @@ exports.getcustomerprocessDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
 													dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
 													dll.MobileNo,
-                                                    cps.trip_status
+                                                    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -830,7 +830,7 @@ exports.getcustomerprocessDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
-                                                    where cps.trip_status = 'Progress' 
+                                                    where cps.LP_Status = 'Progress' 
                                                     And clp.CustomerID = @CustomerID
                                               --      AND cps.customerpostid = @LoadPostID
                                                     ORDER BY clp.insert_date DESC;
@@ -878,13 +878,13 @@ exports.getcustomerprocessDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
 													dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
 													dll.MobileNo,
-                                                    cps.trip_status
+                                                    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -893,7 +893,7 @@ exports.getcustomerprocessDB = async (data) => {
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
                                                     WHERE clp.LoadPostID = @LoadPostID
-                                                        AND cps.trip_status = 'Progress'
+                                                        AND cps.LP_Status = 'Progress'
                                                         AND clp.CustomerID = @CustomerID
                                                     ORDER BY clp.insert_date DESC;
 `);
@@ -973,13 +973,13 @@ exports.getcustomeractiveDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
 													dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
 													dll.MobileNo,
-                                                    cps.trip_status
+                                                    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -987,7 +987,7 @@ exports.getcustomeractiveDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
-                                                    where cps.trip_status = 'Active'
+                                                    where cps.LP_Status = 'Active'
                                                     AND clp.CustomerID = @CustomerID
                                                  --   AND cps.customerpostid = @LoadPostID
 
@@ -1035,13 +1035,13 @@ exports.getcustomeractiveDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
 													dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
 													dll.MobileNo,
-                                                    cps.trip_status
+                                                    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -1050,7 +1050,7 @@ exports.getcustomeractiveDB = async (data) => {
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
                                                     WHERE clp.LoadPostID = @LoadPostID
-                                                        AND cps.trip_status = 'Active'
+                                                        AND cps.LP_Status = 'Active'
                                                         AND clp.CustomerID = @CustomerID
                                                     ORDER BY clp.insert_date DESC;
 `);
@@ -1133,13 +1133,13 @@ exports.getcustomercompletedDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
                                                     dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
                                                     dll.MobileNo,
-                                                    cps.trip_status AS cpsTripStatus
+                                                    cps.LP_Status 
                                                     FROM CustomerLoadPost clp   
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1147,7 +1147,7 @@ exports.getcustomercompletedDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
-                                                    WHERE cps.trip_status = 'Completed'
+                                                    WHERE cps.LP_Status = 'Completed'
                                                     AND clp.CustomerID = @CustomerID
                                                     AND CAST(cps.update_date AS DATE) BETWEEN @FromDate AND @ToDate
                                                     ORDER BY clp.insert_date DESC;
@@ -1195,13 +1195,13 @@ exports.getcustomercompletedDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
                                                     dll.Lng AS DriverLng,
                                                     --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
                                                     dll.MobileNo,
-                                                    cps.trip_status AS cpsTripStatus
+                                                    cps.LP_Status 
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1209,7 +1209,7 @@ exports.getcustomercompletedDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
-                                                    WHERE cps.trip_status = 'Completed'
+                                                    WHERE cps.LP_Status = 'Completed'
                                                     AND clp.CustomerID = @CustomerID
                                                     ORDER BY clp.insert_date DESC;
 `);
@@ -1246,13 +1246,13 @@ exports.getcustomercompletedDB = async (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
                                                     dll.Lng AS DriverLng,
                                                     --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
                                                     dll.MobileNo,
-                                                    cps.trip_status AS cpsTripStatus
+                                                    cps.LP_Status 
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1260,7 +1260,7 @@ exports.getcustomercompletedDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
-                                                    WHERE cps.trip_status = 'Completed'
+                                                    WHERE cps.LP_Status = 'Completed'
                                                     AND clp.CustomerID = @CustomerID
                                                     ORDER BY clp.insert_date DESC;
 `);
@@ -1307,13 +1307,13 @@ exports.getcustomercompletedDB = async (data) => {
                                                     cps.update_date AS PostUpdateDate,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status ,
                                                     dll.Lat AS DriverLat,
                                                     dll.Lng AS DriverLng,
                                                     --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
                                                     dll.MobileNo,
-                                                    cps.trip_status AS cpsTripStatus
+                                                    cps.LP_Status 
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1322,7 +1322,7 @@ exports.getcustomercompletedDB = async (data) => {
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
                                                     WHERE clp.LoadPostID = @LoadPostID
-                                                        AND cps.trip_status = 'Completed'
+                                                        AND cps.LP_Status = 'Completed'
                                                         AND clp.CustomerID = @CustomerID    
                                                     ORDER BY clp.insert_date DESC;
 `);
@@ -1565,7 +1565,7 @@ exports.VendorNearestCustomerPostDB = async (data) => {
                                     AND clp.CargoContent = cp.cargo_type
                                 WHERE cla.Origin_Lat IS NOT NULL
                                   AND cla.Origin_Lng IS NOT NULL
-                                  AND cps.Trip_Status = 'Pending'
+                                  AND cps.LP_Status = 'Pending'
                                   AND (
                                       6371 * ACOS(
                                           CASE 
