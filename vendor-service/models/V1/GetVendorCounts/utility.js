@@ -96,7 +96,7 @@ exports.getvendorCountsDB = (data) => {
 //                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
 //                                                   AND dva.VehicleID = vdn.VehicleID
 //                         LEFT JOIN 
-//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+//                             CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
 //                         LEFT JOIN 
 //                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
 //                         LEFT JOIN 
@@ -193,7 +193,7 @@ exports.getvendorCountsDB = (data) => {
 //                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
 //                                                   AND dva.VehicleID = vdn.VehicleID
 //                         LEFT JOIN 
-//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+//                             CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
 //                         LEFT JOIN 
 //                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
 //                         LEFT JOIN 
@@ -315,7 +315,7 @@ exports.getvehicleavailableDB = (data) => {
                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                   AND dva.VehicleID = vdn.VehicleID
                         LEFT JOIN 
-                            CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+                            CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
                         LEFT JOIN 
                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                         LEFT JOIN 
@@ -412,7 +412,7 @@ exports.getvehicleavailableDB = (data) => {
                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                   AND dva.VehicleID = vdn.VehicleID
                         LEFT JOIN 
-                            CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+                            CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
                         LEFT JOIN 
                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                         LEFT JOIN 
@@ -531,7 +531,7 @@ exports.getvehicleprocessDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+                                               CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -595,7 +595,7 @@ exports.getvehicleprocessDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+                                               CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -689,7 +689,7 @@ exports.getvehicleactiveDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+                                               CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -753,7 +753,7 @@ exports.getvehicleactiveDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
+                                               CustomerPostStatus cps ON dll.Driver_LPStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -811,9 +811,9 @@ exports.getvehicleclosedDB = (data) => {
                                              vdn.registration_no AS vehicle_No,
                                              vdn.vehicleType,
                                              
-                                             -- If DriverTripStatus is Inactive or Closed, force it to 'Closed'
+                                             -- If Driver_LPStatus is Inactive or Closed, force it to 'Closed'
                                              CASE 
-                                                 WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
+                                                 WHEN LOWER(dll.Driver_LPStatus) IN ('inactive', 'closed') THEN 'Closed'
                                                  ELSE cps.LP_Status
                                              END AS LP_Status ,
 											 cla.Origin_District,
@@ -856,8 +856,8 @@ exports.getvehicleclosedDB = (data) => {
                                              CustomerPostStatus cps 
                                              ON (
                                                  CASE 
-                                                     WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
-                                                     ELSE dll.DriverTripStatus
+                                                     WHEN LOWER(dll.Driver_LPStatus) IN ('inactive', 'closed') THEN 'Closed'
+                                                     ELSE dll.Driver_LPStatus
                                                  END
                                              ) = cps.LP_Status
                                          LEFT JOIN 
@@ -870,7 +870,7 @@ exports.getvehicleclosedDB = (data) => {
                                              AND dva.IsActive = 1
                                              AND (
                                                  CASE 
-                                                     WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
+                                                     WHEN LOWER(dll.Driver_LPStatus) IN ('inactive', 'closed') THEN 'Closed'
                                                      ELSE cps.LP_Status
                                                  END
                                              ) = 'Closed'
@@ -886,9 +886,9 @@ exports.getvehicleclosedDB = (data) => {
                                              vdn.registration_no AS vehicle_No,
                                              vdn.vehicleType,
                                              
-                                             -- If DriverTripStatus is Inactive or Closed, force it to 'Closed'
+                                             -- If Driver_LPStatus is Inactive or Closed, force it to 'Closed'
                                              CASE 
-                                                 WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
+                                                 WHEN LOWER(dll.Driver_LPStatus) IN ('inactive', 'closed') THEN 'Closed'
                                                  ELSE cps.LP_Status
                                              END AS LP_Status ,
 											 cla.Origin_District,
@@ -931,8 +931,8 @@ exports.getvehicleclosedDB = (data) => {
                                              CustomerPostStatus cps 
                                              ON (
                                                  CASE 
-                                                     WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
-                                                     ELSE dll.DriverTripStatus
+                                                     WHEN LOWER(dll.Driver_LPStatus) IN ('inactive', 'closed') THEN 'Closed'
+                                                     ELSE dll.Driver_LPStatus
                                                  END
                                              ) = cps.LP_Status
                                          LEFT JOIN 
@@ -946,7 +946,7 @@ exports.getvehicleclosedDB = (data) => {
                                               AND d.driver_id = @driverid
                                              AND (
                                                  CASE 
-                                                     WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
+                                                     WHEN LOWER(dll.Driver_LPStatus) IN ('inactive', 'closed') THEN 'Closed'
                                                      ELSE cps.LP_Status
                                                  END
                                              ) = 'Closed'
