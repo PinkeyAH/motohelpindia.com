@@ -56,9 +56,11 @@ exports.get_DriverLiveLocationDB = async (data) => {
         sql.connect(pool)
             .then(pool => {
                 const request = pool.request();
-                request.input('DriverID', sql.NVarChar(10), data.Driverid);
-                request.input('VendorID', sql.NVarChar(10), data.Vendorid);
+                request.input('DriverID', sql.NVarChar(10), data.Driverid || data.DriverID);
+                request.input('VendorID', sql.NVarChar(10), data.Vendorid || data.VendorID);
                 // request.input('VehicleID', sql.NVarChar(10), data.VehicleID);
+                    logger.log("info", `get_DriverLiveLocationDB called with data: ${JSON.stringify(data.Driverid || data.DriverID)} , ${JSON.stringify(data.Vendorid || data.VendorID)}`);
+
                                 return request.query(` SELECT 
                         dva.DriverID,
                         dva.VendorID,

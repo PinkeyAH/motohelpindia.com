@@ -13,7 +13,6 @@ const {
 } = require("../customer-service/models/V1/Customer_Load_Post/utility");
 
 const { updateDriverLocation } = require("../api-gateway/shared/driverLiveStore");
-const { log } = require("async");
 
 function initializeDriverSocket(io, app) {
   console.log("🚛 Driver Socket initialized");
@@ -39,8 +38,12 @@ function initializeDriverSocket(io, app) {
         console.log(`📍 Driver ${DriverID} location updated in DB`);
 
         // ✅ 2. Emit live update to all
-        io.emit("driverLocationUpdate", { ...data, UpdatedAt: new Date() });
-        console.log("📤 Broadcasting driver location:", { ...data, UpdatedAt: new Date() });
+        const driverLPStatus = await get_DriverLiveLocationDB(data);
+        console.log(`📍 driverLPStatus ${JSON.stringify(driverLPStatus)} driverLPStatus updated in DB`);
+
+        // ✅ 2. Emit live update to all
+        io.emit("driverLocationUpdate", { ...data, driverLPStatus, UpdatedAt: new Date() });
+        console.log("📤 Broadcasting driver location:", { ...data, driverLPStatus, UpdatedAt: new Date() });
 
         // // ✅ 3. Fetch processTrip only once (right now)
         // const processTrip = await getcustomerprocessDB(data);
@@ -49,12 +52,6 @@ function initializeDriverSocket(io, app) {
         // ✅ 4. Update in-memory store (DriverLiveStore)
         // updateDriverLocation(DriverID, { Latitude, Longitude, CustomerID, processTrip: processTrip.data });
         updateDriverLocation(DriverID, { ...data, UpdatedAt: new Date() });
-           //  driverLPStatus 
-       const driverLPStatus = await get_DriverLiveLocationDB(data);
-        console.log("info", `driverLPStatus: ${JSON.stringify(driverLPStatus)}`);
-        io.emit("driverLPStatus", { driverId: DriverID, driverLPStatus: driverLPStatus.data[0] });
-        console.log("info", `driverLPStatus: ${JSON.stringify(driverLPStatus)}`);
-
 
         // ✅ 5. Manage refresh intervals
         const driverEntry = connectedDrivers.get(DriverID);
