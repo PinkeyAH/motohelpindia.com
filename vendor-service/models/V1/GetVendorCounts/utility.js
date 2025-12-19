@@ -66,7 +66,7 @@ exports.getvendorCountsDB = (data) => {
 //                             dll.Lng AS Driver_Longitude,
 //                             vdn.registration_no AS vehicle_No,
 //                             vdn.vehicleType,
-//                             cps.Trip_Status,
+//                             cps.LP_Status,
 //                             clp.LoadPostID,
 //                             cla.Origin_Lat AS pickup_Latitude,
 //                             cla.Origin_Lng AS pickup_Longitude,
@@ -96,7 +96,7 @@ exports.getvendorCountsDB = (data) => {
 //                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
 //                                                   AND dva.VehicleID = vdn.VehicleID
 //                         LEFT JOIN 
-//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
 //                         LEFT JOIN 
 //                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
 //                         LEFT JOIN 
@@ -104,7 +104,7 @@ exports.getvendorCountsDB = (data) => {
 //                         WHERE 
 //                             d.VendorID = @vendorid
 //                             AND dva.IsActive = 1
-//                             AND cps.Trip_Status = 'Pending'
+//                             AND cps.LP_Status = 'Pending'
 //                             AND (
 //                                 6371 * ACOS(
 //                                     COS(RADIANS(dll.Lat)) 
@@ -163,7 +163,7 @@ exports.getvendorCountsDB = (data) => {
 //                             dll.Lng AS Driver_Longitude,
 //                             vdn.registration_no AS vehicle_No,
 //                             vdn.vehicleType,
-//                             cps.Trip_Status,
+//                             cps.LP_Status,
 //                             clp.LoadPostID,
 //                             cla.Origin_Lat AS pickup_Latitude,
 //                             cla.Origin_Lng AS pickup_Longitude,
@@ -193,7 +193,7 @@ exports.getvendorCountsDB = (data) => {
 //                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
 //                                                   AND dva.VehicleID = vdn.VehicleID
 //                         LEFT JOIN 
-//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+//                             CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
 //                         LEFT JOIN 
 //                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
 //                         LEFT JOIN 
@@ -202,7 +202,7 @@ exports.getvendorCountsDB = (data) => {
 //                             d.VendorID = @vendorid
 //                             AND dva.IsActive = 1
 //                             AND d.driver_id = @driverid
-//                             AND cps.Trip_Status = 'pending'
+//                             AND cps.LP_Status = 'pending'
 //                             AND (
 //                                 6371 * ACOS(
 //                                     COS(RADIANS(dll.Lat)) 
@@ -285,7 +285,7 @@ exports.getvehicleavailableDB = (data) => {
                             dll.Lng AS Driver_Longitude,
                             vdn.registration_no AS vehicle_No,
                             vdn.vehicleType,
-                            cps.Trip_Status,
+                            cps.LP_Status,
                             clp.LoadPostID,
                             cla.Origin_Lat AS pickup_Latitude,
                             cla.Origin_Lng AS pickup_Longitude,
@@ -315,7 +315,7 @@ exports.getvehicleavailableDB = (data) => {
                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                   AND dva.VehicleID = vdn.VehicleID
                         LEFT JOIN 
-                            CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+                            CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
                         LEFT JOIN 
                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                         LEFT JOIN 
@@ -323,7 +323,7 @@ exports.getvehicleavailableDB = (data) => {
                         WHERE 
                             d.VendorID = @vendorid
                             AND dva.IsActive = 1
-                            AND cps.Trip_Status = 'Pending'
+                            AND cps.LP_Status = 'Pending'
                             AND (
                                 6371 * ACOS(
                                     COS(RADIANS(dll.Lat)) 
@@ -382,7 +382,7 @@ exports.getvehicleavailableDB = (data) => {
                             dll.Lng AS Driver_Longitude,
                             vdn.registration_no AS vehicle_No,
                             vdn.vehicleType,
-                            cps.Trip_Status,
+                            cps.LP_Status,
                             clp.LoadPostID,
                             cla.Origin_Lat AS pickup_Latitude,
                             cla.Origin_Lng AS pickup_Longitude,
@@ -412,7 +412,7 @@ exports.getvehicleavailableDB = (data) => {
                             VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                   AND dva.VehicleID = vdn.VehicleID
                         LEFT JOIN 
-                            CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+                            CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
                         LEFT JOIN 
                             CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                         LEFT JOIN 
@@ -421,7 +421,7 @@ exports.getvehicleavailableDB = (data) => {
                             d.VendorID = @vendorid
                             AND dva.IsActive = 1
                             AND d.driver_id = @driverid
-                            AND cps.Trip_Status = 'pending'
+                            AND cps.LP_Status = 'pending'
                             AND (
                                 6371 * ACOS(
                                     COS(RADIANS(dll.Lat)) 
@@ -496,7 +496,7 @@ exports.getvehicleprocessDB = (data) => {
                                                dll.Lng AS Driver_Longitude,
                                                vdn.registration_no AS vehicle_No,
                                                vdn.vehicleType,
-                                               cps.Trip_Status,
+                                               cps.LP_Status,
                                                clp.LoadPostID,
                                                cla.Origin_Lat AS pickup_Latitude,
                                                cla.Origin_Lng AS pickup_Longitude,
@@ -531,7 +531,7 @@ exports.getvehicleprocessDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -539,7 +539,7 @@ exports.getvehicleprocessDB = (data) => {
                                            WHERE 
                                                d.VendorID = @vendorid
                                                AND dva.IsActive = 1
-                                               AND cps.Trip_Status = 'Progress'
+                                               AND cps.LP_Status = 'Progress'
                                                AND (
                                                    6371 * ACOS(
                                                        COS(RADIANS(dll.Lat)) 
@@ -560,7 +560,7 @@ exports.getvehicleprocessDB = (data) => {
                                                dll.Lng AS Driver_Longitude,
                                                vdn.registration_no AS vehicle_No,
                                                vdn.vehicleType,
-                                               cps.Trip_Status,
+                                               cps.LP_Status,
                                                clp.LoadPostID,
                                                cla.Origin_Lat AS pickup_Latitude,
                                                cla.Origin_Lng AS pickup_Longitude,
@@ -595,7 +595,7 @@ exports.getvehicleprocessDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -604,7 +604,7 @@ exports.getvehicleprocessDB = (data) => {
                                                d.VendorID = @vendorid
                                                AND dva.IsActive = 1
                                                AND d.driver_id = @driverid
-                                               AND cps.Trip_Status = 'Progress'
+                                               AND cps.LP_Status = 'Progress'
                                                AND (
                                                    6371 * ACOS(
                                                        COS(RADIANS(dll.Lat)) 
@@ -654,7 +654,7 @@ exports.getvehicleactiveDB = (data) => {
                                                dll.Lng AS Driver_Longitude,
                                                vdn.registration_no AS vehicle_No,
                                                vdn.vehicleType,
-                                               cps.Trip_Status,
+                                               cps.LP_Status,
                                                clp.LoadPostID,
                                                cla.Origin_Lat AS pickup_Latitude,
                                                cla.Origin_Lng AS pickup_Longitude,
@@ -689,7 +689,7 @@ exports.getvehicleactiveDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -697,7 +697,7 @@ exports.getvehicleactiveDB = (data) => {
                                            WHERE 
                                                d.VendorID = @vendorid
                                                AND dva.IsActive = 1
-                                               AND cps.Trip_Status = 'Active'
+                                               AND cps.LP_Status = 'Active'
                                                AND (
                                                    6371 * ACOS(
                                                        COS(RADIANS(dll.Lat)) 
@@ -718,7 +718,7 @@ exports.getvehicleactiveDB = (data) => {
                                                dll.Lng AS Driver_Longitude,
                                                vdn.registration_no AS vehicle_No,
                                                vdn.vehicleType,
-                                               cps.Trip_Status,
+                                               cps.LP_Status,
                                                clp.LoadPostID,
                                                cla.Origin_Lat AS pickup_Latitude,
                                                cla.Origin_Lng AS pickup_Longitude,
@@ -753,7 +753,7 @@ exports.getvehicleactiveDB = (data) => {
                                                VehicleDetailsNew vdn ON dva.VendorID = vdn.VendorID 
                                                                      AND dva.VehicleID = vdn.VehicleID
                                            LEFT JOIN 
-                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.Trip_Status
+                                               CustomerPostStatus cps ON dll.DriverTripStatus = cps.LP_Status
                                            LEFT JOIN 
                                                CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                            LEFT JOIN 
@@ -762,7 +762,7 @@ exports.getvehicleactiveDB = (data) => {
                                                d.VendorID = @vendorid
                                                AND dva.IsActive = 1
                                                AND d.driver_id = @driverid
-                                               AND cps.Trip_Status = 'Active'
+                                               AND cps.LP_Status = 'Active'
                                                AND (
                                                    6371 * ACOS(
                                                        COS(RADIANS(dll.Lat)) 
@@ -814,8 +814,8 @@ exports.getvehicleclosedDB = (data) => {
                                              -- If DriverTripStatus is Inactive or Closed, force it to 'Closed'
                                              CASE 
                                                  WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
-                                                 ELSE cps.Trip_Status
-                                             END AS Trip_Status ,
+                                                 ELSE cps.LP_Status
+                                             END AS LP_Status ,
 											 cla.Origin_District,
 											 cla.Destination_District
                                              
@@ -859,7 +859,7 @@ exports.getvehicleclosedDB = (data) => {
                                                      WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
                                                      ELSE dll.DriverTripStatus
                                                  END
-                                             ) = cps.Trip_Status
+                                             ) = cps.LP_Status
                                          LEFT JOIN 
                                              CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                          LEFT JOIN 
@@ -871,7 +871,7 @@ exports.getvehicleclosedDB = (data) => {
                                              AND (
                                                  CASE 
                                                      WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
-                                                     ELSE cps.Trip_Status
+                                                     ELSE cps.LP_Status
                                                  END
                                              ) = 'Closed'
                                          
@@ -889,8 +889,8 @@ exports.getvehicleclosedDB = (data) => {
                                              -- If DriverTripStatus is Inactive or Closed, force it to 'Closed'
                                              CASE 
                                                  WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
-                                                 ELSE cps.Trip_Status
-                                             END AS Trip_Status ,
+                                                 ELSE cps.LP_Status
+                                             END AS LP_Status ,
 											 cla.Origin_District,
 											 cla.Destination_District
                                              
@@ -934,7 +934,7 @@ exports.getvehicleclosedDB = (data) => {
                                                      WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
                                                      ELSE dll.DriverTripStatus
                                                  END
-                                             ) = cps.Trip_Status
+                                             ) = cps.LP_Status
                                          LEFT JOIN 
                                              CustomerLoadPost clp ON cps.CustomerPostID = clp.LoadPostID
                                          LEFT JOIN 
@@ -947,7 +947,7 @@ exports.getvehicleclosedDB = (data) => {
                                              AND (
                                                  CASE 
                                                      WHEN LOWER(dll.DriverTripStatus) IN ('inactive', 'closed') THEN 'Closed'
-                                                     ELSE cps.Trip_Status
+                                                     ELSE cps.LP_Status
                                                  END
                                              ) = 'Closed'
                                          
