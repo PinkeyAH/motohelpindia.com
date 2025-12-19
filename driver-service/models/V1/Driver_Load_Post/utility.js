@@ -44,7 +44,7 @@ exports.InsertdriverloadpostDB = async (data, LoadPost_ID, driverdata) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('InsertDriverLoadPost');
+                return request.execute('DriverLoadPostInsert');
             })
             .then(result => {
                 const output = {
@@ -93,7 +93,7 @@ exports.updatedriverloadpostDB = async (data, driverdata) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('UpdateDriverLoadPost');
+                return request.execute('DriverLoadPostUpdate');
             })
             .then(result => {
                 const output = {
@@ -313,7 +313,7 @@ exports.InsertDriverVehicleAssignDB = async (data, AssignID) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('InsertDriverVehicleAssign');
+                return request.execute('DriverVehicleAssignInsert');
             })
             .then(result => {
                 const output = {
@@ -354,7 +354,7 @@ exports.updateDriverVehicleAssignDB = async (data) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('UpdateDriverVehicleAssign');
+                return request.execute('DriverVehicleAssignUpdate');
             })
             .then(result => {
                 const output = {

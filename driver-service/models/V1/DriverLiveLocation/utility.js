@@ -31,7 +31,7 @@ exports.insertOrUpdate_DriverLiveLocationDB = async (data) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call stored procedure
-                return request.execute("InsertOrUpdateDriverLiveLocation");
+                return request.execute("DriverLiveLocationInsertOrUpdate");
             })
             .then(result => {
                 resolve({

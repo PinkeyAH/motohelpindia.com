@@ -41,7 +41,7 @@ exports.InsertDriverDB = (data, driver_id) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('InsertDriver');
+                return request.execute('DriverInsert');
             })
             .then(result => {
                 const output = {
@@ -99,7 +99,7 @@ exports.updateDriverDetailsDB = (data) => {
 
                 // Call the stored procedure
 
-                return request.execute('UpdateDriver');
+                return request.execute('DriverUpdate');
             })
             .then(result => {
                 const output = {
