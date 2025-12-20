@@ -22,10 +22,37 @@ function initializeDriverSocket(io, app) {
 
   io.on("connection", (socket) => {
     // 🟢 Driver registration
+    // socket.on("registerDriver", (driverId) => {
+    //   connectedDrivers.set(driverId, { socket, refreshInterval: null });
+    //   console.log(`✅ Driver registered: ${driverId}`);
+    // });
+
     socket.on("registerDriver", (driverId) => {
-      connectedDrivers.set(driverId, { socket, refreshInterval: null });
-      console.log(`✅ Driver registered: ${driverId}`);
-    });
+  if (connectedDrivers.has(driverId)) return;
+
+  const entry = { socket, refreshInterval: null };
+  connectedDrivers.set(driverId, entry);
+
+  entry.refreshInterval = setInterval(async () => {
+    try {
+      const allDrivers = await getAlldriverLPStatus();
+
+      for (const [, d] of connectedDrivers.entries()) {
+        d.socket.emit("driverLPStatus", {
+          driverData: allDrivers?.data || [],
+          UpdatedAt: new Date(),
+        });
+      }
+
+      console.log("✅ driverLPStatus interval HIT");
+
+    } catch (err) {
+      console.error("❌ interval error:", err.message);
+    }
+  }, 10000); // 10 sec
+
+  console.log(`✅ Driver registered: ${driverId}`);
+});
 
     // 🛰️ Live location update
     socket.on("driverLiveLocation", async (data) => {
