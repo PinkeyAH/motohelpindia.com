@@ -1,4 +1,3 @@
-const socketIo = require("socket.io");
 const {
   insertOrUpdate_DriverLiveLocationDB,
 } = require("./models/V1/DriverLiveLocation/utility");
@@ -7,70 +6,59 @@ const {
   getNearestDriversDB,
 } = require("./models/V1/Driver_Load_Post/utility");
 
-const {getNearestCustomerposttDB,
+const {
+  getNearestCustomerposttDB,
   getcustomeractiveDB,
   getcustomerloadpostDB,
   getcustomerprocessDB,
 } = require("../customer-service/models/V1/Customer_Load_Post/utility");
 
-function initializeDriverSocket(server, app) {
-  const io = socketIo(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
-    },
-  });
+const { updateDriverLocation } = require("../api-gateway/shared/driverLiveStore");
 
-  // Store io reference
-  app.set("socketio", io);
+function initializeDriverSocket(io, app) {
+  console.log("🚛 Driver Socket initialized");
 
-  // Map to track all connected drivers
-  // key: DriverID, value: { socket, refreshInterval }
   const connectedDrivers = new Map();
 
   io.on("connection", (socket) => {
-    console.log("🔌 Client connected:", socket.id);
-
-    // Driver registration
+    // 🟢 Driver registration
     socket.on("registerDriver", (driverId) => {
       connectedDrivers.set(driverId, { socket, refreshInterval: null });
-      console.log(`Driver ${driverId} registered`);
+      console.log(`✅ Driver registered: ${driverId}`);
     });
 
-    // Handle driver live location updates
+    // 🛰️ Live location update
     socket.on("driverLiveLocation", async (data) => {
       try {
-        const driverId = data.DriverID;
-
-        // 1️⃣ Save/update driver location in DB
+        // const { DriverID, CustomerID, Latitude, Longitude } = data;
+        const { DriverID } = data;
+      connectedDrivers.set(DriverID, { socket, refreshInterval: null });
+      console.log(`✅ Driver driverLiveLocation: ${DriverID}`);
+        // ✅ 1. Save location in DB
         await insertOrUpdate_DriverLiveLocationDB(data);
+        console.log(`📍 Driver ${DriverID} location updated in DB`);
 
-        // 2️⃣ Broadcast driver location to all clients
-        const payload = { ...data, UpdatedAt: new Date() };
-        console.log("✅ Driver location broadcasted");
+        // ✅ 2. Emit live update to all
+        io.emit("driverLocationUpdate", { ...data, UpdatedAt: new Date() });
+        console.log("📤 Broadcasting driver location:", { ...data, UpdatedAt: new Date() });
 
-        console.log("📤 Broadcasting driver location:", payload);
+        // // ✅ 3. Fetch processTrip only once (right now)
+        // const processTrip = await getcustomerprocessDB(data);
+        // console.log(`📦 Process Trip for Driver ${DriverID}:`, processTrip);
 
-        io.emit("driverLocationUpdate", payload);
-        console.log(`📍 Driver ${driverId} location broadcasted`);
+        // ✅ 4. Update in-memory store (DriverLiveStore)
+        // updateDriverLocation(DriverID, { Latitude, Longitude, CustomerID, processTrip: processTrip.data });
+        updateDriverLocation(DriverID, { ...data, UpdatedAt: new Date() });
 
-        // 3️⃣ Get driver entry
-        const driverEntry = connectedDrivers.get(driverId);
+        // ✅ 5. Manage refresh intervals
+        const driverEntry = connectedDrivers.get(DriverID);
         if (!driverEntry) return;
 
-        // 4️⃣ Clear old interval if exists
         if (driverEntry.refreshInterval) clearInterval(driverEntry.refreshInterval);
 
-        // 5️⃣ Start new interval for API refresh
         driverEntry.refreshInterval = setInterval(async () => {
           try {
-            const [
-              NearestCustomerpost,
-              loadPostResult,
-              processTripResult,
-              activeTripResult,
-              nearestDriversResult,
-            ] = await Promise.all([
+            const [loadPost, processTrip, activeTrip, nearestDrivers] = await Promise.all([
               getNearestCustomerposttDB(data),
               getcustomerloadpostDB(data),
               getcustomerprocessDB(data),
@@ -78,26 +66,24 @@ function initializeDriverSocket(server, app) {
               getNearestDriversDB(data),
             ]);
 
-            // Emit results back to this driver only
-            driverEntry.socket.emit("nearestCustomerpost", NearestCustomerpost);
-            driverEntry.socket.emit("customerLoadPostUpdate", loadPostResult);
-            driverEntry.socket.emit("customerProcessTripUpdate", processTripResult);
-            driverEntry.socket.emit("customerActiveTripUpdate", activeTripResult);
-            driverEntry.socket.emit("nearestDriversUpdate", nearestDriversResult);
-
-            console.log(`⏱ APIs refreshed for DriverID=${driverId}`);
+            driverEntry.socket.emit("nearestCustomerpost", nearestCustomerpost);
+            driverEntry.socket.emit("customerLoadPostUpdate", loadPost);
+            driverEntry.socket.emit("customerProcessTripUpdate", processTrip);
+            driverEntry.socket.emit("customerActiveTripUpdate", activeTrip);
+            driverEntry.socket.emit("nearestDriversUpdate", nearestDrivers);
           } catch (err) {
-            console.error(`⚠️ Interval error for DriverID=${driverId}:`, err.message);
+            console.error(`⚠️ Interval error DriverID=${DriverID}:`, err.message);
           }
-        }, 5000);
+        }, 10000);
 
       } catch (err) {
         console.error("⚠️ driverLiveLocation error:", err.message);
       }
     });
 
-    // Handle disconnect
-    socket.on("disconnect", (reason) => {
+
+    // 🟥 On disconnect
+    socket.on("disconnect", () => {
       for (const [driverId, entry] of connectedDrivers) {
         if (entry.socket.id === socket.id) {
           if (entry.refreshInterval) clearInterval(entry.refreshInterval);
@@ -105,15 +91,8 @@ function initializeDriverSocket(server, app) {
           console.log(`❌ Driver ${driverId} disconnected`);
         }
       }
-      console.log(`Client disconnected: ${socket.id}, Reason: ${reason}`);
-    });
-
-    socket.on("error", (err) => {
-      console.error("⚠️ Socket error:", err);
     });
   });
-
-  return io;
 }
 
 module.exports = initializeDriverSocket;
