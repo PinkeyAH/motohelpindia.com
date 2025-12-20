@@ -28,31 +28,33 @@ function initializeDriverSocket(io, app) {
     });
 
     socket.on("driverLPDetails", (data) => {
-  if (connectedDrivers.has(data)) return;
+      if (connectedDrivers.has(data)) return;
 
-  const entry = { socket, refreshInterval: null };
-  connectedDrivers.set(data, entry);
+      const entry = { socket, refreshInterval: null };
+      connectedDrivers.set(data, entry);
 
-  entry.refreshInterval = setInterval(async () => {
-    try {
-      const allDrivers = await getAlldriverLPStatus();
+      entry.refreshInterval = setInterval(async () => {
+        try {
+          const allDrivers = await getAlldriverLPStatus();
+          console.log("🔥 RAW getAlldriverLPStatus RESULT:", allDrivers);
+          console.log("🔥 TYPE:", typeof allDrivers);
+          console.log("🔥 DATA:", allDrivers?.data);
+          for (const [, d] of connectedDrivers.entries()) {
+            d.socket.emit("driverLPStatus", {
+              driverData: allDrivers?.data,
+              UpdatedAt: new Date(),
+            });
+          }
 
-      for (const [, d] of connectedDrivers.entries()) {
-        d.socket.emit("driverLPStatus", {
-          driverData: allDrivers?.data || [],
-          UpdatedAt: new Date(),
-        });
-      }
+          console.log("✅ driverLPStatus interval HIT");
 
-      console.log("✅ driverLPStatus interval HIT");
+        } catch (err) {
+          console.error("❌ interval error:", err.message);
+        }
+      }, 10000); // 10 sec
 
-    } catch (err) {
-      console.error("❌ interval error:", err.message);
-    }
-  }, 10000); // 10 sec
-
-  console.log(`✅ Driver registered: ${data}`);
-});
+      console.log(`✅ Driver registered: ${data}`);
+    });
 
     // 🛰️ Live location update
     socket.on("driverLiveLocation", async (data) => {
@@ -116,37 +118,37 @@ function initializeDriverSocket(io, app) {
         if (driverEntry.refreshInterval) clearInterval(driverEntry.refreshInterval);
 
         driverEntry.refreshInterval = setInterval(async () => {
-  try {
-    // 1️⃣ Customer related data
-    const [loadPost, processTrip, activeTrip, nearestDrivers] =
-      await Promise.all([
-        getcustomerloadpostDB(data),
-        getcustomerprocessDB(data),
-        getcustomeractiveDB(data),
-        getNearestDriversDB(data),
-      ]);
+          try {
+            // 1️⃣ Customer related data
+            const [loadPost, processTrip, activeTrip, nearestDrivers] =
+              await Promise.all([
+                getcustomerloadpostDB(data),
+                getcustomerprocessDB(data),
+                getcustomeractiveDB(data),
+                getNearestDriversDB(data),
+              ]);
 
-    driverEntry.socket.emit("customerLoadPostUpdate", loadPost);
-    driverEntry.socket.emit("customerProcessTripUpdate", processTrip);
-    driverEntry.socket.emit("customerActiveTripUpdate", activeTrip);
-    driverEntry.socket.emit("nearestDriversUpdate", nearestDrivers);
+            driverEntry.socket.emit("customerLoadPostUpdate", loadPost);
+            driverEntry.socket.emit("customerProcessTripUpdate", processTrip);
+            driverEntry.socket.emit("customerActiveTripUpdate", activeTrip);
+            driverEntry.socket.emit("nearestDriversUpdate", nearestDrivers);
 
-    // 2️⃣ 🔥 DRIVER LP STATUS (ADDED HERE)
-    const allDrivers = await getAlldriverLPStatus();
+            // 2️⃣ 🔥 DRIVER LP STATUS (ADDED HERE)
+            const allDrivers = await getAlldriverLPStatus();
 
-    for (const [entry] of connectedDrivers.entries()) {
-      entry.socket.emit("driverLPStatus", {
-        driverData: allDrivers?.data || [],
-        UpdatedAt: new Date(),
-      });
-    }
+            for (const [entry] of connectedDrivers.entries()) {
+              entry.socket.emit("driverLPStatus", {
+                driverData: allDrivers?.data || [],
+                UpdatedAt: new Date(),
+              });
+            }
 
-    console.log("📦 driverLPStatus broadcast via interval");
+            console.log("📦 driverLPStatus broadcast via interval");
 
-  } catch (err) {
-    console.error(`⚠️ Interval error DriverID=${DriverID}:`, err.message);
-  }
-}, 1000); // ⏱️ every 10 sec
+          } catch (err) {
+            console.error(`⚠️ Interval error DriverID=${DriverID}:`, err.message);
+          }
+        }, 1000); // ⏱️ every 10 sec
 
       } catch (err) {
         console.error("⚠️ driverLiveLocation error:", err.message);
