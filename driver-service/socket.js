@@ -27,31 +27,36 @@ function initializeDriverSocket(io, app) {
       console.log(`✅ Driver registered: ${driverId}`);
     });
 
-    socket.on("driverLPDetails", (data) => {
-      if (connectedDrivers.has(data)) return;
+    socket.on("driverLPDetails", (driverId) => {
+      if (connectedDrivers.has(driverId)) return;
 
       const entry = { socket, refreshInterval: null };
-      connectedDrivers.set(data, entry);
-
-      entry.refreshInterval = setInterval(async () => {
+      connectedDrivers.set(driverId, entry);
+      
+     entry.refreshInterval = setInterval(async () => {
         try {
           const allDrivers = await getAlldriverLPStatus();
-          console.log("🔥 RAW getAlldriverLPStatus RESULT:", allDrivers);
-          console.log("🔥 TYPE:", typeof allDrivers);
-          console.log("🔥 DATA:", allDrivers?.data);
+
+          const driverData = Array.isArray(allDrivers)
+            ? allDrivers
+            : allDrivers?.data || [];
+
+               console.log(driverData);
+ 
           for (const [, d] of connectedDrivers.entries()) {
             d.socket.emit("driverLPStatus", {
-              driverData: allDrivers?.data,
+              driverData,
               UpdatedAt: new Date(),
             });
           }
 
-          console.log("✅ driverLPStatus interval HIT");
+          console.log("✅ driverLPStatus interval HIT", driverData.length);
 
         } catch (err) {
           console.error("❌ interval error:", err.message);
         }
       }, 10000); // 10 sec
+
 
       console.log(`✅ Driver registered: ${data}`);
     });
