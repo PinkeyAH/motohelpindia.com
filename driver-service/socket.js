@@ -13,6 +13,7 @@ const {
 } = require("../customer-service/models/V1/Customer_Load_Post/utility");
 
 const { updateDriverLocation, getAlldriverLPStatus } = require("../api-gateway/shared/driverLiveStore");
+const { log } = require("async");
 
 function initializeDriverSocket(io, app) {
   console.log("🚛 Driver Socket initialized");
@@ -49,18 +50,37 @@ function initializeDriverSocket(io, app) {
         // // ✅ 3. Fetch processTrip only once (right now)
         // const processTrip = await getcustomerprocessDB(data);
         // console.log(`📦 Process Trip for Driver ${DriverID}:`, processTrip);
-          const allDrivers = getAlldriverLPStatus();
-    // Emit to vendor
-            console.log(`📍 driverLPStatus ${JSON.stringify(allDrivers.data)} allDrivers driverLPStatus updated in DB`);
+    //       const allDrivers = getAlldriverLPStatus();
+    // // Emit to vendor
+    //         console.log(`📍 driverLPStatus ${JSON.stringify(allDrivers.data)} allDrivers driverLPStatus updated in DB`);
 
-        socket.emit("driverLPStatus", {
-          driverData: allDrivers.data || [],
-          UpdatedAt: new Date(),
-        });
+    //     socket.emit("driverLPStatus", {
+    //       driverData: allDrivers.data || [],
+    //       UpdatedAt: new Date(),
+    //     });
 
+    // ✅ Broadcast driver LP status to all connected drivers
+try {
+  const allDrivers = await getAlldriverLPStatus();
+console.log("📦 Broadcasting driverLPStatus to all connected drivers");
+  for (const [DriverID, entry] of connectedDrivers.entries()) {
+    console.log("📦 Broadcasting driverLPStatus to all connected drivers", allDrivers);
+
+    entry.socket.emit("driverLPStatus", {
+      driverData: allDrivers?.data || [],
+      UpdatedAt: new Date(),
+    });
+  }
+
+} catch (err) {
+  console.error("[ERROR] driverLPStatus broadcast:", err.message);
+}
         // ✅ 4. Update in-memory store (DriverLiveStore)
         // updateDriverLocation(DriverID, { Latitude, Longitude, CustomerID, processTrip: processTrip.data });
         updateDriverLocation(DriverID, { ...data, UpdatedAt: new Date() });
+
+
+
 
         // ✅ 5. Manage refresh intervals
         const driverEntry = connectedDrivers.get(DriverID);
