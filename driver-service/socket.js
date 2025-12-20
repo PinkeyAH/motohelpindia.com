@@ -32,8 +32,8 @@ function initializeDriverSocket(io, app) {
       try {
         // const { DriverID, CustomerID, Latitude, Longitude } = data;
         const { DriverID } = data;
-      connectedDrivers.set(DriverID, { socket, refreshInterval: null });
-      console.log(`✅ Driver driverLiveLocation: ${DriverID}`);
+        connectedDrivers.set(DriverID, { socket, refreshInterval: null });
+        console.log(`✅ Driver driverLiveLocation: ${DriverID}`);
         // ✅ 1. Save location in DB
         await insertOrUpdate_DriverLiveLocationDB(data);
         console.log(`📍 Driver ${DriverID} location updated in DB`);
@@ -50,31 +50,31 @@ function initializeDriverSocket(io, app) {
         // // ✅ 3. Fetch processTrip only once (right now)
         // const processTrip = await getcustomerprocessDB(data);
         // console.log(`📦 Process Trip for Driver ${DriverID}:`, processTrip);
-    //       const allDrivers = getAlldriverLPStatus();
-    // // Emit to vendor
-    //         console.log(`📍 driverLPStatus ${JSON.stringify(allDrivers.data)} allDrivers driverLPStatus updated in DB`);
+        //       const allDrivers = getAlldriverLPStatus();
+        // // Emit to vendor
+        //         console.log(`📍 driverLPStatus ${JSON.stringify(allDrivers.data)} allDrivers driverLPStatus updated in DB`);
 
-    //     socket.emit("driverLPStatus", {
-    //       driverData: allDrivers.data || [],
-    //       UpdatedAt: new Date(),
-    //     });
+        //     socket.emit("driverLPStatus", {
+        //       driverData: allDrivers.data || [],
+        //       UpdatedAt: new Date(),
+        //     });
 
-    // ✅ Broadcast driver LP status to all connected drivers
-try {
-  const allDrivers = await getAlldriverLPStatus();
-console.log("📦 Broadcasting driverLPStatus to all connected drivers");
-  for (const [DriverID, entry] of connectedDrivers.entries()) {
-    console.log("📦 Broadcasting driverLPStatus to all connected drivers", allDrivers);
+        // ✅ Broadcast driver LP status to all connected drivers
+        try {
+          const allDrivers = await getAlldriverLPStatus();
+          console.log("📦 Broadcasting driverLPStatus to all connected drivers");
+          for (const [DriverID, entry] of connectedDrivers.entries()) {
+            console.log("📦 Broadcasting driverLPStatus to all connected drivers", allDrivers);
 
-    entry.socket.emit("driverLPStatus", {
-      driverData: allDrivers?.data || [],
-      UpdatedAt: new Date(),
-    });
-  }
+            entry.socket.emit("driverLPStatus", {
+              driverData: allDrivers?.data || [],
+              UpdatedAt: new Date(),
+            });
+          }
 
-} catch (err) {
-  console.error("[ERROR] driverLPStatus broadcast:", err.message);
-}
+        } catch (err) {
+          console.error("[ERROR] driverLPStatus broadcast:", err.message);
+        }
         // ✅ 4. Update in-memory store (DriverLiveStore)
         // updateDriverLocation(DriverID, { Latitude, Longitude, CustomerID, processTrip: processTrip.data });
         updateDriverLocation(DriverID, { ...data, UpdatedAt: new Date() });
@@ -89,22 +89,37 @@ console.log("📦 Broadcasting driverLPStatus to all connected drivers");
         if (driverEntry.refreshInterval) clearInterval(driverEntry.refreshInterval);
 
         driverEntry.refreshInterval = setInterval(async () => {
-          try {
-            const [loadPost, processTrip, activeTrip, nearestDrivers] = await Promise.all([
-              getcustomerloadpostDB(data),
-              getcustomerprocessDB(data),
-              getcustomeractiveDB(data),
-              getNearestDriversDB(data),
-            ]);
+  try {
+    // 1️⃣ Customer related data
+    const [loadPost, processTrip, activeTrip, nearestDrivers] =
+      await Promise.all([
+        getcustomerloadpostDB(data),
+        getcustomerprocessDB(data),
+        getcustomeractiveDB(data),
+        getNearestDriversDB(data),
+      ]);
 
-            driverEntry.socket.emit("customerLoadPostUpdate", loadPost);
-            driverEntry.socket.emit("customerProcessTripUpdate", processTrip);
-            driverEntry.socket.emit("customerActiveTripUpdate", activeTrip);
-            driverEntry.socket.emit("nearestDriversUpdate", nearestDrivers);
-          } catch (err) {
-            console.error(`⚠️ Interval error DriverID=${DriverID}:`, err.message);
-          }
-        }, 10000);
+    driverEntry.socket.emit("customerLoadPostUpdate", loadPost);
+    driverEntry.socket.emit("customerProcessTripUpdate", processTrip);
+    driverEntry.socket.emit("customerActiveTripUpdate", activeTrip);
+    driverEntry.socket.emit("nearestDriversUpdate", nearestDrivers);
+
+    // 2️⃣ 🔥 DRIVER LP STATUS (ADDED HERE)
+    const allDrivers = await getAlldriverLPStatus();
+
+    for (const [entry] of connectedDrivers.entries()) {
+      entry.socket.emit("driverLPStatus", {
+        driverData: allDrivers?.data || [],
+        UpdatedAt: new Date(),
+      });
+    }
+
+    console.log("📦 driverLPStatus broadcast via interval");
+
+  } catch (err) {
+    console.error(`⚠️ Interval error DriverID=${DriverID}:`, err.message);
+  }
+}, 1000); // ⏱️ every 10 sec
 
       } catch (err) {
         console.error("⚠️ driverLiveLocation error:", err.message);
