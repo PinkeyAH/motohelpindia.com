@@ -46,7 +46,7 @@ function initializeDriverSocket(io, app) {
 
     console.log(
       "📦 driverLPStatus SEND:",
-      JSON.stringify(driverData, null, 2)
+      JSON.stringify([...driverData.entries()], null, 2)
     );
 
     for (const [, d] of connectedDrivers.entries()) {
