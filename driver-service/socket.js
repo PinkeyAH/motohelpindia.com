@@ -7,7 +7,7 @@ const {
   getNearestDriversDB,
 } = require("./models/V1/Driver_Load_Post/utility");
 
-const {
+const {getNearestCustomerposttDB,
   getcustomeractiveDB,
   getcustomerloadpostDB,
   getcustomerprocessDB,
@@ -65,11 +65,13 @@ function initializeDriverSocket(server, app) {
         driverEntry.refreshInterval = setInterval(async () => {
           try {
             const [
+              NearestCustomerpost,
               loadPostResult,
               processTripResult,
               activeTripResult,
               nearestDriversResult,
             ] = await Promise.all([
+              getNearestCustomerposttDB(data),
               getcustomerloadpostDB(data),
               getcustomerprocessDB(data),
               getcustomeractiveDB(data),
@@ -77,6 +79,7 @@ function initializeDriverSocket(server, app) {
             ]);
 
             // Emit results back to this driver only
+            driverEntry.socket.emit("nearestCustomerpost", NearestCustomerpost);
             driverEntry.socket.emit("customerLoadPostUpdate", loadPostResult);
             driverEntry.socket.emit("customerProcessTripUpdate", processTripResult);
             driverEntry.socket.emit("customerActiveTripUpdate", activeTripResult);
