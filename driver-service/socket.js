@@ -51,7 +51,7 @@ function initializeDriverSocket(io, app) {
     }
   }, 10000); // 10 sec
 
-  console.log(`✅ Driver registered: ${driverId}`);
+  console.log(`✅ Driver registered: ${data}`);
 });
 
     // 🛰️ Live location update
