@@ -124,6 +124,8 @@ function initializeVendorSocket(io) {
 
     // ------------------ Vendor Requests Driver Data ------------------
     socket.on("driverLPDetails", async (data) => {
+            console.log(`✅driverLPDetails: ${data}`);
+
       const { VendorID } = data;
       if (!VendorID) return;
 
@@ -133,6 +135,8 @@ function initializeVendorSocket(io) {
       try {
         // --------- Immediate Fetch ---------
         const driverLPStatus = await get_DriverLiveLocationDB(data);
+        console.log(`📍 driverLPStatus for Vendor ${VendorID}: ${JSON.stringify(driverLPStatus)}`);
+        
        // ✅ 4. Update in-memory store (driverLPStatus)
         driver_LPStatus({ driverData: driverLPStatus.data || [], UpdatedAt: new Date() });
         // Emit to vendor

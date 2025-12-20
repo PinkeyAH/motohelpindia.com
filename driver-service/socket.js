@@ -43,14 +43,16 @@ function initializeDriverSocket(io, app) {
 
 
         // ✅ 2. Emit live update to all
-        io.emit("driverLocationUpdate", { ...data, driverLPStatus, UpdatedAt: new Date() });
-        console.log("📤 Broadcasting driver location:", { ...data, driverLPStatus, UpdatedAt: new Date() });
+        io.emit("driverLocationUpdate", { ...data, UpdatedAt: new Date() });
+        console.log("📤 Broadcasting driver location:", { ...data, UpdatedAt: new Date() });
 
         // // ✅ 3. Fetch processTrip only once (right now)
         // const processTrip = await getcustomerprocessDB(data);
         // console.log(`📦 Process Trip for Driver ${DriverID}:`, processTrip);
           const allDrivers = getAllDriverLocations();
     // Emit to vendor
+            console.log(`📍 driverLPStatus ${JSON.stringify(allDrivers.data)} allDrivers driverLPStatus updated in DB`);
+
         socket.emit("driverLPStatus", {
           driverData: allDrivers.data || [],
           UpdatedAt: new Date(),
