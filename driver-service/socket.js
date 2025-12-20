@@ -27,12 +27,13 @@ function initializeDriverSocket(io, app) {
       console.log(`✅ Driver registered: ${driverId}`);
     });
 
-    socket.on("driverLPDetails", (driverId) => {
+    socket.on("driverLPDetails", async (data) => {
+      const { driverId } = data;
       if (connectedDrivers.has(driverId)) return;
 
       const entry = { socket, refreshInterval: null };
       connectedDrivers.set(driverId, entry);
-      
+
      entry.refreshInterval = setInterval(async () => {
         try {
           const allDrivers = await getAlldriverLPStatus();
