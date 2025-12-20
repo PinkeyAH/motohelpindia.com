@@ -37,13 +37,13 @@ function initializeDriverSocket(io, app) {
       entry.refreshInterval = setInterval(async () => {
         try {
           const allDrivers = await getAlldriverLPStatus();
-          console.log("allDrivers SEND:", JSON.stringify([...allDrivers.entries()], null, 2));
+          console.log("allDrivers:", JSON.stringify([...allDrivers.entries()], null, 2));
 
-          const driverData = ( Array.isArray(allDrivers)
+          const driverData = (Array.isArray(allDrivers)
             ? allDrivers
             : Array.isArray(allDrivers?.data)
-            ? allDrivers.data
-            : [...allDrivers.entries()])
+              ? allDrivers.data
+              : [...allDrivers.entries()])
             .flat(Infinity)      // remove nested arrays
             .filter(Boolean);    // remove null / undefined
 
@@ -58,8 +58,10 @@ function initializeDriverSocket(io, app) {
           // )
           //   .flat(Infinity)      // remove nested arrays
           //   .filter(Boolean);    // remove null / undefined
+          console.log("📦 driverData length:****************************************************************************", driverData.length);
 
           console.log("📦 driverData normalized:", JSON.stringify(driverData[[0]] || [], null, 2));
+          console.log("📦 driverData length:****************************************************************************", driverData.length);
           console.log("📦 driverLPStatus SEND:", JSON.stringify([...driverData.entries()], null, 2));
 
           // const driverData = normalizeDriverLPStatus(allDrivers);
