@@ -58,7 +58,7 @@ exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
 
 
                 // Call the stored procedure
-                return request.execute('InsertCustomerLoadPost');
+                return request.execute('CustomerLoadPostInsert');
             })
             .then(result => {
                 const output = {
@@ -120,7 +120,7 @@ exports.updatecustomerloadpostDB = async (data) => {
                 // nearestDriversJson: result.output.NearestDrivers
 
                 // Call the stored procedure
-                return request.execute('UpdateCustomerLoadPost');
+                return request.execute('CustomerLoadPostUpdate');
             })
             .then(result => {
                 const output = {
