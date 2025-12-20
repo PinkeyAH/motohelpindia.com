@@ -684,7 +684,9 @@ LEFT JOIN DriverLiveLocation dll
 WHERE cla.Origin_Lat IS NOT NULL
   AND cla.Origin_Lng IS NOT NULL
   AND clp.VehicleType = @vehicleType
-  AND dll.Status = 'Available'
+ -- AND dll.Status = 'Available'
+   AND dll.Status = 'Online'
+
   AND cps.LP_Status = 'Pending'
   AND (cps.DriverStatus IS NULL)
   AND (
