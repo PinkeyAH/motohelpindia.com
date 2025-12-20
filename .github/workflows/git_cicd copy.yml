@@ -1,0 +1,193 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - motohelp
+  pull_request:
+    branches:
+      - motohelp
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+     
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Ensure build completes first
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXIP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH using password
+        run: |
+          # Set the password as an environment variable (use GitHub Secrets for security)
+          export SSHPASS=${{ secrets.LINUXPASSWORD }}
+          # Execute commands on the remote server using sshpass
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          echo "Starting deployment..."
+           mkdir -p /var/www/motohelpindia.com
+          EOF
+
+          # Copy the new application files using rsync
+          sshpass -e rsync -avz -e "ssh -p ${{ secrets.LINUXPORT }}" "$GITHUB_WORKSPACE/" ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }}:/var/www/motohelpindia.com
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          EOF
+          
+          # Create .env file remotely
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cat > /var/www/motohelpindia.com/.env << 'REMOTE_ENV'
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          PORT = ${{ secrets.PORT }}
+          APIPORT = ${{ secrets.APIPORT }}
+          ADMINPORT = ${{ secrets.ADMINPORT }}
+          VENDORPORT = ${{ secrets.VENDORPORT }}
+          DRIVERPORT = ${{ secrets.DRIVERPORT }}
+          CUSTOMERPORT = ${{ secrets.CUSTOMERPORT }}
+          ADMIN_SERVICE_URL = ${{ secrets.ADMIN_SERVICE_URL }}
+          VENDOR_SERVICE_URL = ${{ secrets.VENDOR_SERVICE_URL }}
+          DRIVER_SERVICE_URL = ${{ secrets.DRIVER_SERVICE_URL }}
+          CUSTOMER_SERVICE_URL = ${{ secrets.CUSTOMER_SERVICE_URL }}
+          
+          REMOTE_ENV
+          EOF
+          
+           # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/api-gateway
+          echo "Starting deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting api-gateway application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+
+          EOF
+
+           # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/vendor-service
+          echo "Starting vendor deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting vendor-service application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+          EOF
+
+
+          # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/driver-service
+          echo "Starting driver deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting driver-service application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+
+          EOF
+
+          # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/customer-service
+          echo "Starting customer deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+          
+
+          echo "Starting customer-service application with PM2..."
+          pm2 restart index.js || pm2 start index.js
+                    
+          EOF
+
+          # Install dependencies and start the application
+          sshpass -e ssh -p ${{ secrets.LINUXPORT }} ${{ secrets.LINUXUSERNAME }}@${{ secrets.LINUXIP }} << 'EOF'
+          cd /var/www/motohelpindia.com/KYC_Verification
+          echo "Starting KYC_Verification deployment..."
+
+          npm install pm2
+          pm2 --version
+          echo "pm2 --version"
+
+          node --version
+          echo "node --version"
+
+          npm install
+          npm --version
+          echo "npm -version"
+
+          
+          echo "Starting customer-service application with PM2..."
+                      
+          EOF
+
+
+
+
+
+          
