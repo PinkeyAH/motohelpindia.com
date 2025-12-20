@@ -72,7 +72,7 @@ function initializeDriverSocket(io, app) {
 
           for (const [, d] of connectedDrivers.entries()) {
             d.socket.emit("driverLPStatus", {
-              driverData: driverData[[0]] || [],
+              driverData: JSON.stringify(driverData[[0]] || [], null, 2),
               UpdatedAt: new Date(),
             });
           }
