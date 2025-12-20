@@ -37,17 +37,15 @@ function initializeDriverSocket(io, app) {
       entry.refreshInterval = setInterval(async () => {
   try {
     const allDrivers = await getAlldriverLPStatus();
+  console.log("📦  allDrivers SEND:", JSON.stringify([...allDrivers.entries()], null, 2));
 
     const driverData = Array.isArray(allDrivers)
       ? allDrivers
       : Array.isArray(allDrivers?.data)
       ? allDrivers.data
-      : [];
+      : [...allDrivers.entries()];
 
-    console.log(
-      "📦 driverLPStatus SEND:",
-      JSON.stringify([...driverData.entries()], null, 2)
-    );
+    console.log( "📦 driverLPStatus SEND:",  JSON.stringify([...driverData.entries()], null, 2));
 
     for (const [, d] of connectedDrivers.entries()) {
       d.socket.emit("driverLPStatus", {
