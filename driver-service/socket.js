@@ -50,6 +50,11 @@ function initializeDriverSocket(io, app) {
         // updateDriverLocation(DriverID, { Latitude, Longitude, CustomerID, processTrip: processTrip.data });
         updateDriverLocation(DriverID, { ...data, UpdatedAt: new Date() });
 
+  // ✅ 2. Emit live post to all
+        const nearestCustomerpost = await getNearestCustomerposttDB(data);
+        io.emit("nearestCustomerpost", { nearestCustomerpost, UpdatedAt: new Date() });
+        console.log("📤 nearestCustomerpost driver location:", { nearestCustomerpost, UpdatedAt: new Date() });
+
         // ✅ 5. Manage refresh intervals
         const driverEntry = connectedDrivers.get(DriverID);
         if (!driverEntry) return;
@@ -59,14 +64,14 @@ function initializeDriverSocket(io, app) {
         driverEntry.refreshInterval = setInterval(async () => {
           try {
             const [loadPost, processTrip, activeTrip, nearestDrivers] = await Promise.all([
-              getNearestCustomerposttDB(data),
+              // getNearestCustomerposttDB(data),
               getcustomerloadpostDB(data),
               getcustomerprocessDB(data),
               getcustomeractiveDB(data),
               getNearestDriversDB(data),
             ]);
 
-            driverEntry.socket.emit("nearestCustomerpost", nearestCustomerpost);
+            // driverEntry.socket.emit("nearestCustomerpost", nearestCustomerpost);
             driverEntry.socket.emit("customerLoadPostUpdate", loadPost);
             driverEntry.socket.emit("customerProcessTripUpdate", processTrip);
             driverEntry.socket.emit("customerActiveTripUpdate", activeTrip);
