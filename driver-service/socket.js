@@ -22,16 +22,16 @@ function initializeDriverSocket(io, app) {
 
   io.on("connection", (socket) => {
     // 🟢 Driver registration
-    // socket.on("registerDriver", (driverId) => {
-    //   connectedDrivers.set(driverId, { socket, refreshInterval: null });
-    //   console.log(`✅ Driver registered: ${driverId}`);
-    // });
-
     socket.on("registerDriver", (driverId) => {
-  if (connectedDrivers.has(driverId)) return;
+      connectedDrivers.set(driverId, { socket, refreshInterval: null });
+      console.log(`✅ Driver registered: ${driverId}`);
+    });
+
+    socket.on("driverLPDetails", (data) => {
+  if (connectedDrivers.has(data)) return;
 
   const entry = { socket, refreshInterval: null };
-  connectedDrivers.set(driverId, entry);
+  connectedDrivers.set(data, entry);
 
   entry.refreshInterval = setInterval(async () => {
     try {
