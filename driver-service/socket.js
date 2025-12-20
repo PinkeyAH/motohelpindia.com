@@ -39,14 +39,19 @@ function initializeDriverSocket(io, app) {
     const allDrivers = await getAlldriverLPStatus();
   console.log("📦  allDrivers SEND:", JSON.stringify([...allDrivers.entries()], null, 2));
 
-    const driverData = Array.isArray(allDrivers)
-      ? allDrivers
-      : Array.isArray(allDrivers?.data)
-      ? allDrivers.data
-      : [...allDrivers.entries()];
+    // const driverData = Array.isArray(allDrivers)
+    //   ? allDrivers
+    //   : Array.isArray(allDrivers?.data)
+    //   ? allDrivers.data
+    //   : [...allDrivers.entries()];
 
-    console.log( "📦 driverLPStatus SEND:",  JSON.stringify([...driverData.entries()], null, 2));
+    // console.log( "📦 driverLPStatus SEND:",  JSON.stringify([...driverData.entries()], null, 2));
+      const driverData = normalizeDriverLPStatus(allDrivers);
 
+      console.log("📦 driverLPStatus SEND:", driverData);
+      console.log("✅ driver count =", driverData.length);
+
+      
     for (const [, d] of connectedDrivers.entries()) {
       d.socket.emit("driverLPStatus", {
         driverData,
@@ -212,6 +217,31 @@ function initializeDriverSocket(io, app) {
       }
     });
   });
+}
+
+function normalizeDriverLPStatus(allDrivers) {
+  let driverData = [];
+
+  // Case 1: Map
+  if (allDrivers instanceof Map) {
+    driverData = [...allDrivers.values()];
+  }
+  // Case 2: Direct array
+  else if (Array.isArray(allDrivers)) {
+    driverData = allDrivers;
+  }
+  // Case 3: { data: [] }
+  else if (Array.isArray(allDrivers?.data)) {
+    driverData = allDrivers.data;
+  }
+
+  // 🔥 FLATTEN nested garbage
+  driverData = driverData
+    .flat(Infinity)          // remove deep nesting
+    .filter(Boolean)         // remove null / undefined
+    .flatMap(d => d.driverData || d); // unwrap { driverData }
+
+  return driverData;
 }
 
 module.exports = initializeDriverSocket;
