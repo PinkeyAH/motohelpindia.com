@@ -34,22 +34,34 @@ function initializeDriverSocket(io, app) {
       const entry = { socket, refreshInterval: null };
       connectedDrivers.set(driverId, entry);
 
-     entry.refreshInterval = setInterval(async () => {
+      entry.refreshInterval = setInterval(async () => {
         try {
           const allDrivers = await getAlldriverLPStatus();
 
-          const driverData = Array.isArray(allDrivers)
-            ? allDrivers
-            : allDrivers?.data || [];
+          // ✅ Normalize response
+          let driverData = [];
 
-               console.log(driverData);
- 
+          if (Array.isArray(allDrivers)) {
+            driverData = allDrivers;
+          } else if (Array.isArray(allDrivers?.data)) {
+            driverData = allDrivers.data;
+          }
+
+          // 🔍 Debug (FULL DATA)
+          console.log(
+            "📦 driverLPStatus SEND:",
+            JSON.stringify(driverData, null, 2)
+          );
+
+          // 🚀 Broadcast to all connected vendors/drivers
           for (const [, d] of connectedDrivers.entries()) {
             d.socket.emit("driverLPStatus", {
               driverData,
               UpdatedAt: new Date(),
             });
           }
+
+          console.log("✅ driverLPStatus emitted | count =", driverData.length);
 
           console.log("✅ driverLPStatus interval HIT", driverData.length);
 

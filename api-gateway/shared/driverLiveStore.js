@@ -25,6 +25,8 @@ function getAllDriverLocations() {
 
 function getAlldriverLPStatus() {
   console.log("📍 All connectedDrivers (Map):", connectedDrivers);
+    console.log("📍 All Driver Process Data:",JSON.stringify([...connectedDrivers.entries()], null, 2));
+
   return connectedDrivers;
     // return Array.from(driverLiveData.entries());
 }
