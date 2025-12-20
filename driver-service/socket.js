@@ -35,36 +35,47 @@ function initializeDriverSocket(io, app) {
       connectedDrivers.set(driverId, entry);
 
       entry.refreshInterval = setInterval(async () => {
-  try {
-    const allDrivers = await getAlldriverLPStatus();
-  console.log("📦  allDrivers SEND:", JSON.stringify([...allDrivers.entries()], null, 2));
+        try {
+          const allDrivers = await getAlldriverLPStatus();
+          console.log("📦  allDrivers SEND:", JSON.stringify([...allDrivers.entries()], null, 2));
 
-    // const driverData = Array.isArray(allDrivers)
-    //   ? allDrivers
-    //   : Array.isArray(allDrivers?.data)
-    //   ? allDrivers.data
-    //   : [...allDrivers.entries()];
+          // const driverData = Array.isArray(allDrivers)
+          //   ? allDrivers
+          //   : Array.isArray(allDrivers?.data)
+          //   ? allDrivers.data
+          //   : [...allDrivers.entries()];
+          const driverData = (
+            Array.isArray(allDrivers?.data)
+              ? allDrivers.data
+              : Array.isArray(allDrivers)
+                ? allDrivers
+                : allDrivers instanceof Map
+                  ? Array.from(allDrivers.values())
+                  : []
+          )
+            .flat(Infinity)      // remove nested arrays
+            .filter(Boolean);    // remove null / undefined
+          console.log("📦 driverData normalized:", JSON.stringify(driverData, null, 2));
+          console.log("📦 driverLPStatus SEND:", JSON.stringify([...driverData.entries()], null, 2));
+          // const driverData = normalizeDriverLPStatus(allDrivers);
 
-    // console.log( "📦 driverLPStatus SEND:",  JSON.stringify([...driverData.entries()], null, 2));
-      const driverData = normalizeDriverLPStatus(allDrivers);
+          // console.log("📦 driverLPStatus SEND:", driverData);
+          // console.log("✅ driver count =", driverData.length);
 
-      console.log("📦 driverLPStatus SEND:", driverData);
-      console.log("✅ driver count =", driverData.length);
 
-      
-    for (const [, d] of connectedDrivers.entries()) {
-      d.socket.emit("driverLPStatus", {
-        driverData,
-        UpdatedAt: new Date(),
-      });
-    }
+          for (const [, d] of connectedDrivers.entries()) {
+            d.socket.emit("driverLPStatus", {
+              driverData,
+              UpdatedAt: new Date(),
+            });
+          }
 
-    console.log("✅ driverLPStatus interval HIT", driverData.length);
+          console.log("✅ driverLPStatus interval HIT", driverData.length);
 
-  } catch (err) {
-    console.error("❌ interval error:", err.message);
-  }
-}, 1000);
+        } catch (err) {
+          console.error("❌ interval error:", err.message);
+        }
+      }, 1000);
 
       // entry.refreshInterval = setInterval(async () => {
       //   try {
