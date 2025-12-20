@@ -49,7 +49,7 @@ function initializeDriverSocket(io, app) {
         // // ✅ 3. Fetch processTrip only once (right now)
         // const processTrip = await getcustomerprocessDB(data);
         // console.log(`📦 Process Trip for Driver ${DriverID}:`, processTrip);
-          const allDrivers = getAllDriverLocations();
+          const allDrivers = getAlldriverLPStatus();
     // Emit to vendor
             console.log(`📍 driverLPStatus ${JSON.stringify(allDrivers.data)} allDrivers driverLPStatus updated in DB`);
 

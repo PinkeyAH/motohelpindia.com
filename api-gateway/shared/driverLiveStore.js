@@ -35,5 +35,5 @@ module.exports = {
   updateDriverLocation,
   getDriverLocation,
   getAllDriverLocations,
-  getAlldriverLPStatus
+  getAlldriverLPStatus,
 };
