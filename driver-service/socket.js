@@ -35,40 +35,69 @@ function initializeDriverSocket(io, app) {
       connectedDrivers.set(driverId, entry);
 
       entry.refreshInterval = setInterval(async () => {
-        try {
-          const allDrivers = await getAlldriverLPStatus();
+  try {
+    const allDrivers = await getAlldriverLPStatus();
 
-          // ✅ Normalize response
-          let driverData = [];
+    const driverData = Array.isArray(allDrivers)
+      ? allDrivers
+      : Array.isArray(allDrivers?.data)
+      ? allDrivers.data
+      : [];
 
-          if (Array.isArray(allDrivers)) {
-            driverData = allDrivers;
-          } else if (Array.isArray(allDrivers?.data)) {
-            driverData = allDrivers.data;
-          }
+    console.log(
+      "📦 driverLPStatus SEND:",
+      JSON.stringify(driverData, null, 2)
+    );
 
-          // 🔍 Debug (FULL DATA)
-          console.log(
-            "📦 driverLPStatus SEND:",
-            JSON.stringify(driverData, null, 2)
-          );
+    for (const [, d] of connectedDrivers.entries()) {
+      d.socket.emit("driverLPStatus", {
+        driverData,
+        UpdatedAt: new Date(),
+      });
+    }
 
-          // 🚀 Broadcast to all connected vendors/drivers
-          for (const [, d] of connectedDrivers.entries()) {
-            d.socket.emit("driverLPStatus", {
-              driverData,
-              UpdatedAt: new Date(),
-            });
-          }
+    console.log("✅ driverLPStatus interval HIT", driverData.length);
 
-          console.log("✅ driverLPStatus emitted | count =", driverData.length);
+  } catch (err) {
+    console.error("❌ interval error:", err.message);
+  }
+}, 1000);
 
-          console.log("✅ driverLPStatus interval HIT", driverData.length);
+      // entry.refreshInterval = setInterval(async () => {
+      //   try {
+      //     const allDrivers = await getAlldriverLPStatus();
 
-        } catch (err) {
-          console.error("❌ interval error:", err.message);
-        }
-      }, 10000); // 10 sec
+      //     // ✅ Normalize response
+      //     let driverData = [];
+
+      //     if (Array.isArray(allDrivers)) {
+      //       driverData = allDrivers;
+      //     } else if (Array.isArray(allDrivers?.data)) {
+      //       driverData = allDrivers.data;
+      //     }
+
+      //     // 🔍 Debug (FULL DATA)
+      //     console.log(
+      //       "📦 driverLPStatus SEND:",
+      //       JSON.stringify(driverData, null, 2)
+      //     );
+
+      //     // 🚀 Broadcast to all connected vendors/drivers
+      //     for (const [, d] of connectedDrivers.entries()) {
+      //       d.socket.emit("driverLPStatus", {
+      //         driverData,
+      //         UpdatedAt: new Date(),
+      //       });
+      //     }
+
+      //     console.log("✅ driverLPStatus emitted | count =", driverData.length);
+
+      //     console.log("✅ driverLPStatus interval HIT", driverData.length);
+
+      //   } catch (err) {
+      //     console.error("❌ interval error:", err.message);
+      //   }
+      // }, 10000); // 10 sec
 
 
       console.log(`✅ Driver registered: ${data}`);
