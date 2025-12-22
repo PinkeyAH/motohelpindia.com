@@ -219,10 +219,7 @@ exports.CustomerPostStatus = async (req, res) => {
 
         const updateResult = await CustomerPostStatusDB(req.body);
         logger.log("info", `CustomerPostStatus update result: ${JSON.stringify(updateResult)}`);
-        if (updateResult.bstatus_code === "00") {
-
-            return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-        }
+      
 
 
         if (req.body.DriverStatus === "Accepted") {
@@ -233,39 +230,11 @@ exports.CustomerPostStatus = async (req, res) => {
             return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc, data: getcustomerprocess.data });
         }
 
-        // if (updateResult.bstatus_code === "01") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
+        if (req.body.DriverStatus === "Progress" || req.body.DriverStatus === "Reached" || req.body.DriverStatus === "Loading" || req.body.DriverStatus === "Loaded" ) {
 
-        // }
-        // if (updateResult.bstatus_code === "02") {
-        //     req.body.LoadPostID = req.body.CustomerPostID;
-
-        //     const getcustomerprocess = await getcustomerprocessDB(req.body);
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc, data: getcustomerprocess.data });
-        // }
-        // if (updateResult.bstatus_code === "03") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-
-        // }
-        // if (updateResult.bstatus_code === "04") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-
-        // }
-        // if (updateResult.bstatus_code === "05") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-
-        // } if (updateResult.bstatus_code === "06") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-
-        // }
-        // if (updateResult.bstatus_code === "07") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-
-        // }
-        // if (updateResult.bstatus_code === "08") {
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
-
-        // }
+            return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
+        }
+    
 
         return res.status(400).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
 
