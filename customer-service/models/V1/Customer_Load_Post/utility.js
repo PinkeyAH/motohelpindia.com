@@ -776,7 +776,9 @@ exports.getcustomerprocessDB = async (data) => {
                 console.log(`[INFO]: Executing Query - SELECT * FROM CustomerLoadPost WHERE LoadPostID = @LoadPostID`);
 
                 if (!data.LoadPostID) {
-                    return request.query(`SELECT        
+                    return request.query(`SELECT    
+                                                    CD.ContactNo AS Customer_ContactNo,
+                                                    CD.ContactPerson AS Customer_ContactPerson,    
 
                                                     clp.LoadPostID,
                                                     clp.CustomerID,
@@ -832,6 +834,8 @@ exports.getcustomerprocessDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
+                                                    JOIN Customer_Details CD
+													ON clp.CustomerID = CD.CustomerID
                                                     where cps.LP_Status = 'Progress' 
                                                     And clp.CustomerID = @CustomerID
                                               --      AND cps.customerpostid = @LoadPostID
@@ -839,7 +843,8 @@ exports.getcustomerprocessDB = async (data) => {
 `);
                 } else {
                     return request.query(`SELECT        
-
+                                                    CD.ContactNo AS Customer_ContactNo,
+                                                    CD.ContactPerson AS Customer_ContactPerson,  
                                                     clp.LoadPostID,
                                                     clp.CustomerID,
                                                     clp.Origin,             
@@ -894,6 +899,8 @@ exports.getcustomerprocessDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
+                                                    JOIN Customer_Details CD
+													ON clp.CustomerID = CD.CustomerID
                                                     WHERE clp.LoadPostID = @LoadPostID
                                                         AND cps.LP_Status = 'Progress'
                                                         AND clp.CustomerID = @CustomerID
