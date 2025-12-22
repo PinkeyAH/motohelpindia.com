@@ -68,7 +68,7 @@ const InsertDriverPhoto = async (Driver_ID, req, res) => {
                 DriverID: Driver_ID,  // or generate dynamically
                 photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
-                photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Driver/${path.basename(fullPath)}`,
+                photo_url: `https://motohelpindia.com/driver/uploads/Driver/${path.basename(fullPath)}`,
                 name: path.basename(fullPath),
                 doc_number: docNumber
             };
@@ -113,7 +113,7 @@ const InsertDriverPhoto = async (Driver_ID, req, res) => {
   //     DriverID: Driver_ID,  // or generate dynamically
   //     photo_id: '123',                    // or generate dynamically
   //     photo_type: key,                      // e.g. “CancelledCheque”
-  //     photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Driver/${path.basename(fullPath)}`,
+  //     photo_url: `https://motohelpindia.com/driver/uploads/Driver/${path.basename(fullPath)}`,
   //     name: path.basename(fullPath),
   //   }));
 
@@ -230,7 +230,7 @@ const UpdateImageUpload = async (driver_id, req, res) => {
       driver_id: driver_id,  // or generate dynamically
       photo_id: '123',                    // or generate dynamically
       photo_type: key,                      // e.g. “CancelledCheque”
-      photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Driver/${path.basename(fullPath)}`,
+      photo_url: `https://motohelpindia.com/driver/uploads/Driver/${path.basename(fullPath)}`,
       name: path.basename(fullPath),
     }));
 

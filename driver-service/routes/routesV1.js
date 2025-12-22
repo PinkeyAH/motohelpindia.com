@@ -17,7 +17,7 @@ const { getNearestCustomerpost ,CustomerPostStatus, getcustomerprocess ,getcusto
 // const { checkExpiryAlerts } = require("../schedulers/expiryChecker");
  
 const { getdriverscounts } = require("../controllers/V1/GetDriversCounts.js");
-
+const { loadingImage } = require('../controllers/V1/Loading_Image.js');
 // Driver Auth
 router.post('/Driver_SendOtp', Driver_send_OTP);
 router.post('/Driver_ValidateOtp', Driver_validate_OTP); 
@@ -57,6 +57,8 @@ router.post('/get_Nearest_Customer_post', getNearestCustomerpost);
 // router.post('/expiry-alerts',checkExpiryAlerts );
 
 router.post('/Customer_PostStatus', CustomerPostStatus);
+
+router.post('/loading_Image', loadingImage);  
 
 router.post('/customer_process_Trip', getcustomerprocess);
 router.post('/customer_active_Trip', getcustomeractive);
