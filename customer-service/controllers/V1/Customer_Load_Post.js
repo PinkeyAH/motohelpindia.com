@@ -5,7 +5,7 @@ addFormats(ajv);
 const logger = require('../../log/logger');
 const { getRandomSixDigitNumber, getDistanceFromLatLonInKm } = require("../../common/common");
 
-const { InsertcustomerloadpostDB, updatecustomerloadpostDB, getcustomerloadpostDB, deletecustomerloadpostDB, getVehicle_DetailsDB, 
+const { InsertcustomerloadpostDB, updatecustomerloadpostDB, getcustomerloadpostDB, deletecustomerloadpostDB, getVehicle_DetailsDB,
     getCargoTypesDB, getCustomerLoadPostViewsDB, getNearestCustomerposttDB, CustomerPostStatusDB, getcustomerprocessDB, getcustomeractiveDB,
     getcustomercompletedDB, getNearestDriversDB, VendorNearestCustomerPostDB, CargoTypeBodyTypeHistoryDB } = require('../../models/V1/Customer_Load_Post/utility');
 // const { customerLoadPostSchema, updateCustomerLoadPostSchema } = require('../../models/V1/Customer_Load_Post/schema');
@@ -167,38 +167,38 @@ exports.getCustomerLoadPostViews = async (req, res) => {
 }
 
 exports.getNearestCustomerpost = async (req, res) => {
-  try {
-    logger.log("info", `getNearestCustomerpost req.body: ${JSON.stringify(req.body)}`);
+    try {
+        logger.log("info", `getNearestCustomerpost req.body: ${JSON.stringify(req.body)}`);
 
-    const io = req.app.get("socketio"); // ✅ Access socket.io
-    const result = await getNearestCustomerposttDB(req.body);
+        const io = req.app.get("socketio"); // ✅ Access socket.io
+        const result = await getNearestCustomerposttDB(req.body);
 
-    logger.log("info", `getNearestCustomerpost result: ${JSON.stringify(result)}`);
+        logger.log("info", `getNearestCustomerpost result: ${JSON.stringify(result)}`);
 
-    if (result.status !== "00" || !Array.isArray(result.data)) {
-      return res.status(200).json(result);
+        if (result.status !== "00" || !Array.isArray(result.data)) {
+            return res.status(200).json(result);
+        }
+
+        // ✅ Emit nearest customer posts
+        if (io) {
+            console.log("📡 Emitting nearestCustomerPost event to all clients ************************************************");
+            io.emit("nearestCustomerPost", {
+                status: result.status,
+                message: result.message,
+                data: result.data
+            });
+        }
+
+        return res.status(200).json({
+            status: result.status,
+            message: result.message,
+            data: result.data
+        });
+
+    } catch (error) {
+        logger.log("error", `getNearestCustomerpost Error: ${error.message}`);
+        return res.status(500).json({ status: "99", message: "Internal server error" });
     }
-
-    // ✅ Emit nearest customer posts
-    if (io) {
-      console.log("📡 Emitting nearestCustomerPost event to all clients ************************************************");
-      io.emit("nearestCustomerPost", {
-        status: result.status,
-        message: result.message,
-        data: result.data
-      });
-    }
-
-    return res.status(200).json({
-      status: result.status,
-      message: result.message,
-      data: result.data
-    });
-
-  } catch (error) {
-    logger.log("error", `getNearestCustomerpost Error: ${error.message}`);
-    return res.status(500).json({ status: "99", message: "Internal server error" });
-  }
 };
 
 exports.CustomerPostStatus = async (req, res) => {
@@ -219,8 +219,8 @@ exports.CustomerPostStatus = async (req, res) => {
 
         const updateResult = await CustomerPostStatusDB(req.body);
         logger.log("info", `CustomerPostStatus update result: ${JSON.stringify(updateResult)}`);
-if (updateResult.bstatus_code === "00") {
-          
+        if (updateResult.bstatus_code === "00") {
+
             return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
         }
         // if (updateResult.bstatus_code === "00") {
@@ -265,7 +265,7 @@ if (updateResult.bstatus_code === "00") {
 
         // }
 
-            return res.status(400).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
+        return res.status(400).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
 
     } catch (error) {
         logger.log("error", `CustomerPostStatus Error: ${error.message}`);
@@ -301,7 +301,7 @@ exports.getcustomercompleted = async (req, res) => {
         const result = await getcustomercompletedDB(req.body);
         logger.log("info", `getcustomercompleted result: ${JSON.stringify(result)}`);
         return res.status(200).send({ status: result.status, message: result.message, data: result.data });
-    } catch (error) {   
+    } catch (error) {
         logger.log("error", `getcustomercompleted Error: ${error.message}`);
         return res.status(500).json({ status: "99", message: "Internal server error" });
     }
@@ -316,7 +316,7 @@ exports.getNearestDrivers = async (req, res) => {
 
         const io = req.app.get("socketio");
 
-        
+
         return res.status(200).json({
             status: result.status,
             message: result.message,
@@ -331,7 +331,7 @@ exports.getNearestDrivers = async (req, res) => {
 
 exports.VendorNearestCustomerPost = async (req, res) => {
     try {
-      logger.log("info", `VendorNearestCustomerPost req.body: ${JSON.stringify(req.body)}`);
+        logger.log("info", `VendorNearestCustomerPost req.body: ${JSON.stringify(req.body)}`);
         const result = await VendorNearestCustomerPostDB(req.body);
         logger.log("info", `VendorNearestCustomerPost result: ${JSON.stringify(result)}`);
         return res.status(200).json({
@@ -342,7 +342,7 @@ exports.VendorNearestCustomerPost = async (req, res) => {
     } catch (error) {
         logger.log("error", `VendorNearestCustomerPost Error: ${error.message}`);
         return res.status(500).json({ status: "99", message: "Internal server error" });
-    }   
+    }
 };
 
 exports.CargoTypeBodyTypeHistory = async (req, res) => {
