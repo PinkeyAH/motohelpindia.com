@@ -825,7 +825,7 @@ exports.getcustomerprocessDB = async (data) => {
 													dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
-													dll.MobileNo,
+													dll.MobileNo
                                                  --   cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
@@ -890,7 +890,7 @@ exports.getcustomerprocessDB = async (data) => {
 													dll.Lng AS DriverLng,
                                                  --   dll.UpdateTime AS DriverLocationUpdateTime,
                                                     dll.DriverID AS dllDriverID,
-													dll.MobileNo,
+													dll.MobileNo
                                                 --    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
