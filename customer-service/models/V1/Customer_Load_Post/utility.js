@@ -942,7 +942,7 @@ exports.getcustomeractiveDB = async (data) => {
                                                     clp.Destination,
                                                     clp.VehicleType,
                                                     clp.Weight,
-                                                    clp.verify_flag,
+                                               --     clp.verify_flag,
                                                     clp.BodyType,
                                                     clp.CargoContent,
                                                     clp.CargoPackageType,
@@ -989,7 +989,8 @@ exports.getcustomeractiveDB = async (data) => {
                                                         ON clp.LoadPostID = cps.CustomerPostID
                                                     JOIN DriverLiveLocation dll
                                                         ON cps.DriverID = dll.DriverID
-                                                    where cps.LP_Status = 'Active'
+                                                  where cps.LP_Status = 'Active'
+                                               --  where cps.LP_Status = 'Progress'
                                                     AND clp.CustomerID = @CustomerID
                                                  --   AND cps.customerpostid = @LoadPostID
 

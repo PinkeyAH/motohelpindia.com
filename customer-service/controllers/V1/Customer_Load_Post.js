@@ -223,13 +223,15 @@ exports.CustomerPostStatus = async (req, res) => {
 
             return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
         }
-        // if (updateResult.bstatus_code === "00") {
-        //     req.body.LoadPostID = req.body.CustomerPostID;
-        //     const getcustomeractive = await getcustomeractiveDB(req.body);
-        //     logger.log("info", `getcustomeractive result: ${JSON.stringify(getcustomeractive)}`);
-        //     console.log("getcustomeractive", getcustomeractive)
-        //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc, data: getcustomeractive.data });
-        // }
+
+
+        if (req.body.DriverStatus === "Accepted") {
+            req.body.LoadPostID = req.body.CustomerPostID;
+            const getcustomeractive = await getcustomerprocessDB(req.body);
+            logger.log("info", `getcustomeractive result: ${JSON.stringify(getcustomeractive)}`);
+            console.log("getcustomeractive", getcustomeractive)
+            return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc, data: getcustomeractive.data });
+        }
 
         // if (updateResult.bstatus_code === "01") {
         //     return res.status(200).json({ status: updateResult.bstatus_code, message: updateResult.bmessage_desc });
