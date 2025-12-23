@@ -1,6 +1,6 @@
 
 require('dotenv').config({ path: '../.env' });
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const express = require("express");
 const http = require("http");
 const cors = require('./middleware/corsHandler');
@@ -32,8 +32,18 @@ app.use(cors);
 // app.use(bodyParser.json());
 app.use(requestLogger);
 app.use(errorHandler);
-app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ limit: "100mb", extended: true }));
+// app.use(express.json({ limit: "100mb" }));
+// app.use(express.urlencoded({ limit: "100mb", extended: true }));
+app.use(bodyParser.json({
+  limit: '500mb',
+  type: 'application/json'
+}));
+
+app.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '500mb',
+  parameterLimit: 1000000
+}));
 
 
 // ✅ Service URLs

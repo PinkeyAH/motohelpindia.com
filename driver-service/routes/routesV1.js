@@ -11,7 +11,7 @@ const { Pancard , GST, DrivingLicense, Aadhaargenerateotp,Aadhaarverifyotp, Vehi
 const { insertOrUpdateDriverLiveLocation, getDriverLiveLocation, Driveronlineofflinestatus } = require("../controllers/V1/DriverLiveLocation.js");
 const { Insertdriverloadpost, updatedriverloadpost, getdriverloadpost, deletedriverloadpost, getdriverlocationbymobile , getNearestDrivers} = require('../controllers/V1/Driver_Load_Post');
 
-const { getNearestCustomerpost ,CustomerPostStatus, getcustomerprocess ,getcustomeractive} = require('../.././customer-service/controllers/V1/Customer_Load_Post.js');
+const { getNearestCustomerpost ,CustomerPostStatus, getcustomerprocess, getcustomeractive} = require('../.././customer-service/controllers/V1/Customer_Load_Post.js');
 // ActiveTrip
 // const { InsertActiveTrip, updateActiveTrip, getActiveTrip, deleteActiveTrip } = require("../Driver/controllers/V1/Active_Trip.js");
 // const { checkExpiryAlerts } = require("../schedulers/expiryChecker");
@@ -20,7 +20,7 @@ const { getdriverscounts } = require("../controllers/V1/GetDriversCounts.js");
 const { loadingImage } = require('../controllers/V1/Loading_Image.js');
 // Driver Auth
 router.post('/Driver_SendOtp', Driver_send_OTP);
-router.post('/Driver_ValidateOtp', Driver_validate_OTP); 
+router.post('/Driver_ValidateOtp', Driver_validate_OTP);
 router.post("/pincode/distance", getDistanceBetweenTwoPincodes);
 router.post("/Check_Distance", getCheckDistance);
 router.post("/get_state_district_block", get_state_district_block);

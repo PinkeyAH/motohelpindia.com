@@ -17,8 +17,16 @@ console.log("Socket.IO initialized" + io ? "✅" : "❌");
 // --------------------------
 // Must be **before** your routes
 app.use(express.json()); // Built-in JSON parser
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 50000 }));
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.json({
+  limit: '500mb',
+  type: 'application/json'
+}));
+
+app.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '500mb',
+  parameterLimit: 1000000
+}));
 
 // --------------------------
 // Routes
