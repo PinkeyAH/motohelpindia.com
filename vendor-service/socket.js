@@ -138,18 +138,19 @@ function initializeVendorSocket(io) {
       const driver_LPStatus = await get_DriverLiveLocationDB(data);
       console.log(`📍 driver_LPStatus for Vendor ${VendorID}: ${JSON.stringify(driver_LPStatus)}`);
       // Update in-memory store (driverLPStatus)?
-     
-          driverLPStatus({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
-      // Emit to vendor
-      //   socket.emit("driverLPStatus", {
-      //     driverData: driver_LPStatus.data || [],
-      //     UpdatedAt: new Date(),
-      //   });
 
-      // } catch (err) {
-      //   console.error("⚠️ driverLPDetails error:", err.message);
-      //   socket.emit("VendorError", { message: err.message });
-      // }
+      driverLPStatus({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
+ console.log({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
+ 
+      // Emit to vendor
+      vendorEntry.socket.emit("driverLPStatus", {
+        driverData: driver_LPStatus.data || [],
+        UpdatedAt: new Date(),
+      });
+      console.log({
+        driverData: driver_LPStatus.data || [],
+        UpdatedAt: new Date(),
+      });
     });
 
     // ------------------ Vendor Disconnect ------------------
