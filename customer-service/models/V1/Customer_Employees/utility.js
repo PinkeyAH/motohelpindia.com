@@ -54,8 +54,8 @@ exports.InsertcustomeremployeeDB = async (CustomerEmployeeDetails, CustomerID) =
                 // CREATE TVP (must match SQL TYPE exactly)
                 const tvp = new sql.Table();
                 tvp.columns.add('full_name', sql.NVarChar(100));
-                tvp.columns.add('contact_no', sql.NVarChar(15));
-                tvp.columns.add('email_id', sql.NVarChar(100));
+                tvp.columns.add('contact_No', sql.NVarChar(15));
+                tvp.columns.add('emailid', sql.NVarChar(100));
                 tvp.columns.add('designation', sql.NVarChar(100));
                 tvp.columns.add('department', sql.NVarChar(100));
                 tvp.columns.add('Authority_level', sql.NVarChar(50));
@@ -114,7 +114,7 @@ exports.updatecustomeremployeeDB = (CustomerEmployeeDetails) => {
                 request.input('designation', sql.NVarChar(255), CustomerEmployeeDetails.designation || null);
                 request.input('department', sql.NVarChar(255), CustomerEmployeeDetails.department || null);
                 request.input('Authority_level', sql.NVarChar(50), CustomerEmployeeDetails.Authority_level || null);
-                
+
 
                 // Outputs
                 request.output('bstatus_code', sql.NVarChar(255));
