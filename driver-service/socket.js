@@ -41,11 +41,8 @@ function initializeDriverSocket(io, app) {
         // ✅ 2. Emit live update to all
         io.emit("driverLocationUpdate", { ...data, UpdatedAt: new Date() });
         console.log("📤 Broadcasting driver location:", { ...data, UpdatedAt: new Date() });
-
-        // // ✅ 3. Fetch processTrip only once (right now)
-        // const processTrip = await getcustomerprocessDB(data);
-        // console.log(`📦 Process Trip for Driver ${DriverID}:`, processTrip);
-
+  
+    
         // ✅ 4. Update in-memory store (DriverLiveStore)
         // updateDriverLocation(DriverID, { Latitude, Longitude, CustomerID, processTrip: processTrip.data });
         updateDriverLocation(DriverID, { ...data, UpdatedAt: new Date() });
@@ -81,6 +78,26 @@ function initializeDriverSocket(io, app) {
           }
         }, 10000);
 
+
+        // 🔥 FLAG INTERVAL (ONLY ONCE)
+if (!driverEntry.flagInterval) {
+  driverEntry.flagInterval = setInterval(() => {
+    io.emit("driverLPFlag", {
+      ...data,
+      UpdatedAt: new Date()
+    });
+    console.log("🚩 driverLPFlag emitted:", ...data);
+  }, 5000);
+}
+
+
+    const allDrivers = getAlldriverLPStatus();
+      io.emit("driverLPStatus", {
+        allDrivers,
+        UpdatedAt: new Date()
+      });
+    
+
       } catch (err) {
         console.error("⚠️ driverLiveLocation error:", err.message);
       }
@@ -101,26 +118,26 @@ function initializeDriverSocket(io, app) {
 
 
   /* ============== CENTRAL BROADCAST LOOP ============== */
-setInterval(() => {
-  try {
-    const allDrivers = getAlldriverLPStatus();
+// setInterval(() => {
+//   try {
+//     const allDrivers = getAlldriverLPStatus();
 
-    for (const [vendorId, entry] of connectedDrivers.entries()) {
-      console.log(vendorId);
+//     for (const [vendorId, entry] of connectedDrivers.entries()) {
+//       console.log(vendorId);
 
-      if (!entry?.socket) continue;
-      console.log(allDrivers);
+//       if (!entry?.socket) continue;
+//       console.log(allDrivers);
 
-      entry.socket.emit("driverLPStatus", {
-        allDrivers,
-        UpdatedAt: new Date()
-      });
-    }
+//       entry.socket.emit("driverLPStatus", {
+//         allDrivers,
+//         UpdatedAt: new Date()
+//       });
+//     }
 
-  } catch (err) {
-    console.error("🔥 Error in setInterval:", err.message);
-  }
-}, 5000);
+//   } catch (err) {
+//     console.error("🔥 Error in setInterval:", err.message);
+//   }
+// }, 5000);
 
 
 }
