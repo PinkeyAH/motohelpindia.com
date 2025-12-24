@@ -52,30 +52,33 @@ exports.InsertcustomeremployeeDB = async (CustomerEmployeeDetails, CustomerID) =
             .then(pool => {
                 const request = pool.request();
                 // CREATE TVP (must match SQL TYPE exactly)
+
                 const tvp = new sql.Table();
-                tvp.columns.add('full_name', sql.NVarChar(100));
-                tvp.columns.add('contact_No', sql.NVarChar(15));
-                tvp.columns.add('emailid', sql.NVarChar(100));
                 tvp.columns.add('designation', sql.NVarChar(100));
                 tvp.columns.add('department', sql.NVarChar(100));
-                tvp.columns.add('Authority_level', sql.NVarChar(50));
+                tvp.columns.add('employeeid', sql.NVarChar(15));
+                tvp.columns.add('contact_No', sql.NVarChar(15));
+                tvp.columns.add('full_name', sql.NVarChar(100));
+                tvp.columns.add('emailid', sql.NVarChar(255));
+                tvp.columns.add('Authority_level', sql.NVarChar(100));
 
-                // FILL TVP ROWS
                 CustomerEmployeeDetails.forEach(cd => {
                     tvp.rows.add(
-                        cd.full_name,
-                        cd.contact_No,
-                        cd.emailid,
                         cd.designation,
                         cd.department,
+                        cd.employeeid,
+                        cd.contact_No,
+                        cd.full_name,
+                        cd.emailid,
                         cd.Authority_level
-                    )
-                      
+                    );
                 });
+
+                request.input('CustomerEmployeeDetailsType', tvp);
 
                 // INPUT PARAMETERS
                 request.input('CustomerID', sql.NVarChar(50), CustomerID);
-                request.input('CustomerEmployeeDetailsType', tvp);
+                // request.input('CustomerEmployeeDetailsType', tvp);
 
                 // OUTPUT PARAMETERS
                 request.output('bstatus_code', sql.NVarChar(50));
