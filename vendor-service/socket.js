@@ -136,7 +136,7 @@ function initializeVendorSocket(io) {
       console.log(`Vendor ${VendorID} is connected.`);
 
       const driver_LPStatus = await get_DriverLiveLocationDB(data);
-      console.log(`📍 driver_LPStatus for Vendor ${VendorID}: ${JSON.stringify(driver_LPStatus)}`);
+      console.log(`📍 driver_LPStatus for Vendor ${VendorID}: ${JSON.stringify(driver_LPStatus.data)}`);
       // Update in-memory store (driverLPStatus)?
 
       driverLPStatus({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
