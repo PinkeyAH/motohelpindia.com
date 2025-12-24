@@ -2,78 +2,161 @@ const sql = require('mssql');
 const pool = require('../../../db/db.js');
 const logger = require('../../../log/logger');
 
+// exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
+//     return new Promise((resolve, reject) => {
+//         sql.connect(pool)
+//             .then(pool => {
+//                 const request = pool.request();
+
+//                 request.input('LoadPostID', sql.NVarChar(10), LoadPost_ID);
+//                 request.input('CustomerID', sql.NVarChar(10), data.CustomerID);
+
+//                 request.input('Origin', sql.NVarChar(sql.MAX), data.origin.address);
+//                 request.input('Origin_1', sql.NVarChar(sql.MAX), data.Origin_1);
+//                 request.input('Origin_2', sql.NVarChar(sql.MAX), data.Origin_2);
+//                 request.input('ContactPerson', sql.NVarChar(sql.MAX), data.ContactPerson);
+//                 request.input('ContactNumber', sql.NVarChar(sql.MAX), data.ContactNumber);
+
+//                 request.input('Destination', sql.NVarChar(sql.MAX), data.destination.address);
+//                 request.input('Destination_1', sql.NVarChar(sql.MAX), data.Destination_1);
+//                 request.input('Destination_2', sql.NVarChar(sql.MAX), data.Destination_2);
+//                 request.input('ConsigneeName', sql.NVarChar(sql.MAX), data.ConsigneeName);
+//                 request.input('ConsigneeContactNumber', sql.NVarChar(sql.MAX), data.ConsigneeContactNumber);
+
+//                 request.input('VehicleType', sql.NVarChar(100), data.VehicleType);
+//                 request.input('Weight', sql.NVarChar(100), data.Weight);
+//                 request.input('cost', sql.NVarChar(50), data.cost);
+//                 request.input('BodyType', sql.NVarChar(50), data.BodyType);
+//                 request.input('CargoContent', sql.NVarChar(100), data.CargoContent);
+//                 request.input('CargoPackageType', sql.NVarChar(100), data.CargoPackageType);
+//                 request.input('ExpectedAvailableTime', sql.NVarChar(100), data.ExpectedAvailableTime);
+//                 request.input('Approximate_weight', sql.NVarChar(100), data.Approximate_weight);
+//                 request.input('cargo_type', sql.NVarChar(100), data.cargo_type);
+//                 request.input('PickupType', sql.NVarChar(100), data.PickupType);
+
+//                 request.input('Origin_Lat', sql.Decimal(9, 6), data.origin.coordinates.lat);
+//                 request.input('Origin_Lng', sql.Decimal(9, 6), data.origin.coordinates.lng);
+//                 request.input('Origin_City', sql.NVarChar(100), data.origin.components.place);
+//                 request.input('Origin_District', sql.NVarChar(100), data.origin.components.dist);
+//                 request.input('Origin_Taluka', sql.NVarChar(100), data.origin.components.tal);
+//                 request.input('Origin_State', sql.NVarChar(100), data.origin.components.state);
+//                 request.input('Origin_Pincode', sql.NVarChar(10), data.origin.components.pincode);
+
+//                 request.input('Destination_Lat', sql.Decimal(9, 6), data.destination.coordinates.lat);
+//                 request.input('Destination_Lng', sql.Decimal(9, 6), data.destination.coordinates.lng);
+//                 request.input('Destination_City', sql.NVarChar(100), data.destination.components.place);
+//                 request.input('Destination_District', sql.NVarChar(100), data.District ||  data.destination.components.dist);
+//                 request.input('Destination_Taluka', sql.NVarChar(100), data.Taluka || data.destination.components.tal);
+//                 request.input('Destination_State', sql.NVarChar(100), data.state || data.destination.components.state);
+//                 request.input('Destination_Pincode', sql.NVarChar(10), data.Pincode || data.destination.components.pincode);
+
+//                 // output
+//                 request.output('bstatus_code', sql.NVarChar(255));
+//                 request.output('bmessage_desc', sql.NVarChar(255));
+//                 request.output('CustomerDetails', sql.NVarChar(sql.MAX)); // Assuming this is a JSON string
+//                 // nearestDriversJson: result.output.NearestDrivers
+
+
+//                 // Call the stored procedure
+//                 return request.execute('CustomerLoadPostInsert');
+//             })
+//             .then(result => {
+//                 const output = {
+//                     bstatus_code: result.output.bstatus_code,
+//                     bmessage_desc: result.output.bmessage_desc,
+//                     CustomerDetails: result.output.CustomerDetails
+
+//                 };
+//                 resolve(output);
+//             })
+//             .catch(err => {
+//                 reject('SQL Error: ' + err);
+//             });
+//     });
+// };
+
 exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
-    return new Promise((resolve, reject) => {
-        sql.connect(pool)
-            .then(pool => {
-                const request = pool.request();
+  return new Promise((resolve, reject) => {
+    sql.connect(pool)
+      .then(pool => {
+        const request = pool.request();
 
-                request.input('LoadPostID', sql.NVarChar(10), LoadPost_ID);
-                request.input('CustomerID', sql.NVarChar(10), data.CustomerID);
+        // ================= COMMON =================
+        request.input('LoadPostID', sql.NVarChar(20), LoadPost_ID);
+        request.input('CustomerID', sql.NVarChar(20), data.customerId || '');
 
-                request.input('Origin', sql.NVarChar(sql.MAX), data.origin.address);
-                request.input('Origin_1', sql.NVarChar(sql.MAX), data.Origin_1);
-                request.input('Origin_2', sql.NVarChar(sql.MAX), data.Origin_2);
-                request.input('ContactPerson', sql.NVarChar(sql.MAX), data.ContactPerson);
-                request.input('ContactNumber', sql.NVarChar(sql.MAX), data.ContactNumber);
+        // ================= PICKUP (CustomerLoadPost) =================
+        request.input('PickupContactPerson', sql.NVarChar(100), data.pickup?.contactName || '');
+        request.input('PickupCompanyName', sql.NVarChar(150), data.pickup?.companyName || '');
+        request.input('PickupContactNumber', sql.NVarChar(20), data.pickup?.contactNumber || '');
+        request.input('PickupPlotBuilding', sql.NVarChar(150), data.pickup?.plotOrBuilding || '');
+        request.input('PickupStreetArea', sql.NVarChar(200), data.pickup?.streetArea || '');
+        request.input('PickupAddress', sql.NVarChar(sql.MAX), data.pickup?.googleAddress || data.pickup.origin?.address);
 
-                request.input('Destination', sql.NVarChar(sql.MAX), data.destination.address);
-                request.input('Destination_1', sql.NVarChar(sql.MAX), data.Destination_1);
-                request.input('Destination_2', sql.NVarChar(sql.MAX), data.Destination_2);
-                request.input('ConsigneeName', sql.NVarChar(sql.MAX), data.ConsigneeName);
-                request.input('ConsigneeContactNumber', sql.NVarChar(sql.MAX), data.ConsigneeContactNumber);
+        // ================= DELIVERY (CustomerLoadPost) =================
+        request.input('DeliveryContactPerson', sql.NVarChar(100), data.delivery?.consigneeName || '');
+        request.input('DeliveryCompanyName', sql.NVarChar(150), data.delivery?.companyName || '');
+        request.input('DeliveryContactNumber', sql.NVarChar(20), data.delivery?.contactNumber || '');
+        request.input('DeliveryPlotBuilding', sql.NVarChar(150), data.delivery?.plotOrBuilding || '');
+        request.input('DeliveryStreetArea', sql.NVarChar(200), data.delivery?.streetArea || '');
+        request.input('DeliveryAddress', sql.NVarChar(sql.MAX), data.delivery?.googleAddress || data.delivery.destination?.address);
 
-                request.input('VehicleType', sql.NVarChar(100), data.VehicleType);
-                request.input('Weight', sql.NVarChar(100), data.Weight);
-                request.input('cost', sql.NVarChar(50), data.cost);
-                request.input('BodyType', sql.NVarChar(50), data.BodyType);
-                request.input('CargoContent', sql.NVarChar(100), data.CargoContent);
-                request.input('CargoPackageType', sql.NVarChar(100), data.CargoPackageType);
-                request.input('ExpectedAvailableTime', sql.NVarChar(100), data.ExpectedAvailableTime);
-                request.input('Approximate_weight', sql.NVarChar(100), data.Approximate_weight);
-                request.input('cargo_type', sql.NVarChar(100), data.cargo_type);
-                request.input('PickupType', sql.NVarChar(100), data.PickupType);
+        // ================= LOAD / VEHICLE =================
+        request.input('VehicleType', sql.NVarChar(100), data.vehicle?.vehicleType || '');
+        request.input('Weight', sql.NVarChar(100), data.vehicle?.weightRange || '');
+        request.input('Approximate_weight', sql.Int, data.vehicle?.approximateWeightKg || 0);
+        request.input('BodyType', sql.NVarChar(100), data.load?.bodyType || '');
+        request.input('cargo_type', sql.NVarChar(50), data.load?.cargoType || '');
+        request.input('CargoContent', sql.NVarChar(100), data.load?.cargoContent || '');
+        request.input('CargoPackageType', sql.NVarChar(150), data.load?.packageType || '');
 
-                request.input('Origin_Lat', sql.Decimal(9, 6), data.origin.coordinates.lat);
-                request.input('Origin_Lng', sql.Decimal(9, 6), data.origin.coordinates.lng);
-                request.input('Origin_City', sql.NVarChar(100), data.origin.components.place);
-                request.input('Origin_District', sql.NVarChar(100), data.origin.components.dist);
-                request.input('Origin_Taluka', sql.NVarChar(100), data.origin.components.tal);
-                request.input('Origin_State', sql.NVarChar(100), data.origin.components.state);
-                request.input('Origin_Pincode', sql.NVarChar(10), data.origin.components.pincode);
+        request.input(
+          'ExpectedAvailableTime',
+          sql.NVarChar(50),
+          data.load?.expectedVehicleAvailability || ''
+        );
 
-                request.input('Destination_Lat', sql.Decimal(9, 6), data.destination.coordinates.lat);
-                request.input('Destination_Lng', sql.Decimal(9, 6), data.destination.coordinates.lng);
-                request.input('Destination_City', sql.NVarChar(100), data.destination.components.place);
-                request.input('Destination_District', sql.NVarChar(100), data.District ||  data.destination.components.dist);
-                request.input('Destination_Taluka', sql.NVarChar(100), data.Taluka || data.destination.components.tal);
-                request.input('Destination_State', sql.NVarChar(100), data.state || data.destination.components.state);
-                request.input('Destination_Pincode', sql.NVarChar(10), data.Pincode || data.destination.components.pincode);
+        request.input('cost', sql.Decimal(10, 2), data.cost || 0);
 
-                // output
-                request.output('bstatus_code', sql.NVarChar(255));
-                request.output('bmessage_desc', sql.NVarChar(255));
-                request.output('CustomerDetails', sql.NVarChar(sql.MAX)); // Assuming this is a JSON string
-                // nearestDriversJson: result.output.NearestDrivers
+        // ================= PICKUP ADDRESS (CustomerLoadPostAddress) =================
+        request.input('PickupCity', sql.NVarChar(100), data.pickup?.city || data.pickup.origin.components.place);
+        request.input('PickupDistrict', sql.NVarChar(100), data.pickup?.district || data.pickup.origin.components.dist);
+        request.input('PickupTaluka', sql.NVarChar(100), data.pickup?.taluka || data.pickup.origin.components.tal);
+        request.input('PickupState', sql.NVarChar(100), data.pickup?.state || data.pickup.origin.components.state);
+        request.input('PickupPincode', sql.NVarChar(10), data.pickup?.pincode || data.pickup.origin.components.pincode);
+        request.input('PickupLat', sql.Decimal(10, 7), data.pickup?.coordinates?.lat || data.pickup.origin.coordinates.lat);
+        request.input('PickupLng', sql.Decimal(10, 7), data.pickup?.coordinates?.lng || data.pickup.origin.coordinates.lng);
 
+        // ================= DELIVERY ADDRESS (CustomerLoadPostAddress) =================
+        request.input('DeliveryCity', sql.NVarChar(100), data.delivery?.city || data.delivery.destination.components.place);
+        request.input('DeliveryDistrict', sql.NVarChar(100), data.delivery?.district || data.delivery.destination.components.dist);
+        request.input('DeliveryTaluka', sql.NVarChar(100), data.delivery?.taluka || data.delivery.destination.components.tal);
+        request.input('DeliveryState', sql.NVarChar(100), data.delivery?.state || data.delivery.destination.components.state);
+        request.input('DeliveryPincode', sql.NVarChar(10), data.delivery?.pincode || data.delivery.destination.components.pincode);
+        request.input('DeliveryLat', sql.Decimal(10, 7), data.delivery?.coordinates?.lat || data.delivery.destination.coordinates.lat);
+        request.input('DeliveryLng', sql.Decimal(10, 7), data.delivery?.coordinates?.lng || data.delivery.destination.coordinates.lng);
 
-                // Call the stored procedure
-                return request.execute('CustomerLoadPostInsert');
-            })
-            .then(result => {
-                const output = {
-                    bstatus_code: result.output.bstatus_code,
-                    bmessage_desc: result.output.bmessage_desc,
-                    CustomerDetails: result.output.CustomerDetails
+        // ================= OUTPUT =================
+        request.output('bstatus_code', sql.NVarChar(50));
+        request.output('bmessage_desc', sql.NVarChar(255));
+        request.output('CustomerDetails', sql.NVarChar(sql.MAX)); 
+        
 
-                };
-                resolve(output);
-            })
-            .catch(err => {
-                reject('SQL Error: ' + err);
-            });
-    });
+        return request.execute('CustomerLoadPostInsert');
+      })
+      .then(result => {
+        resolve({
+          bstatus_code: result.output.bstatus_code,
+          bmessage_desc: result.output.bmessage_desc,
+           CustomerDetails: result.output.CustomerDetails
+        });
+      })
+      .catch(err => {
+        reject('SQL Error: ' + err);
+      });
+  });
 };
+
 
 exports.updatecustomerloadpostDB = async (data) => {
     return new Promise((resolve, reject) => {
@@ -138,7 +221,7 @@ exports.updatecustomerloadpostDB = async (data) => {
 };
 
 exports.getcustomerloadpostDB = async (data) => {
-  //  console.log(`[INFO]: Fetching customer load posts : ${JSON.stringify(data)}`);
+    //  console.log(`[INFO]: Fetching customer load posts : ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
@@ -265,7 +348,7 @@ exports.getcustomerloadpostDB = async (data) => {
                 }
             })
             .catch(error => {
-              //  console.error(`[ERROR]: getcustomerloadpost Error: SQL Error: ${error.message}`);
+                //  console.error(`[ERROR]: getcustomerloadpost Error: SQL Error: ${error.message}`);
                 logger.log("error", `getcustomerloadpostDB Error: ${error.message}`);
                 reject({ message: 'SQL Error: ' + error.message, status: "01" });
             });
@@ -329,12 +412,12 @@ exports.getVehicle_DetailsDB = async function (vehicleType, weightRange) {
                 WHERE VehicleType = @VehicleType;
             `);
             // result = await request.query(`
-                                //     SELECT DISTINCT VWRR.WeightRange, VWR.img
-                                //     FROM VehicleWeightRange VWRR
-                                //     JOIN Vehicle_Type VWR
-                                //         ON VWRR.VehicleType = VWR.VehicleType
-                                //     WHERE VWR.VehicleType = @VehicleType;
-                                // `);
+            //     SELECT DISTINCT VWRR.WeightRange, VWR.img
+            //     FROM VehicleWeightRange VWRR
+            //     JOIN Vehicle_Type VWR
+            //         ON VWRR.VehicleType = VWR.VehicleType
+            //     WHERE VWR.VehicleType = @VehicleType;
+            // `);
 
         }
 
@@ -430,13 +513,13 @@ exports.getNearestCustomerposttDB = async (data) => {
     try {
         const poolConn = await sql.connect(pool);
         const request = poolConn.request();
-                          
-                   // Inputs
-           request.input('lat', sql.Decimal(9, 6), data.Lat);
-           request.input('lng', sql.Decimal(9, 6), data.Lng);
-           request.input('radius', sql.Int, data.radius || 10000); // ✅ Default 5 km
-           request.input('vehicleType', sql.NVarChar(100), data.VehicleType || 'Multi Axle');
-           request.input('DriverID', sql.NVarChar(10), data.DriverID );
+
+        // Inputs
+        request.input('lat', sql.Decimal(9, 6), data.Lat);
+        request.input('lng', sql.Decimal(9, 6), data.Lng);
+        request.input('radius', sql.Int, data.radius || 10000); // ✅ Default 5 km
+        request.input('vehicleType', sql.NVarChar(100), data.VehicleType || 'Multi Axle');
+        request.input('DriverID', sql.NVarChar(10), data.DriverID);
         // const result = await request.query(`
         //                      SELECT TOP 50
         //                           clp.LoadPostID AS Customer_LoadPostID,
@@ -454,7 +537,7 @@ exports.getNearestCustomerposttDB = async (data) => {
         //                           dll.LastUpdated AS DriverLastUpdate,
         //                           dll.status AS DriverAvailabilityStatus,
         //                           dlp.vehiclestatus AS DriverVehicleStatus,
-		// 						  dlp.loadpostid AS DriverCurrentLoadPostID,
+        // 						  dlp.loadpostid AS DriverCurrentLoadPostID,
         //                           FORMAT(clp.insert_date, 'yyyy-MM-dd') AS PostDate,
         //                           cla.Origin AS PickupLocation,
         //                           cla.Origin_Lat,
@@ -484,14 +567,14 @@ exports.getNearestCustomerposttDB = async (data) => {
         //                         --  clp.verify_flag,
         //                          -- clp.verification_code,
         //                           clp.ExpectedAvailableTime,
-                          
+
         //                           -- Remaining Minutes
         //                           DATEDIFF(
         //                               MINUTE, 
         //                               GETDATE(), 
         //                               DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))
         //                           ) AS RemainingMinutes,
-                          
+
         //                           -- Remaining Time (formatted)
         //                           CASE 
         //                               WHEN DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) < 0 
@@ -512,12 +595,12 @@ exports.getNearestCustomerposttDB = async (data) => {
         //                                LEFT JOIN CustomerPostStatus cps
         //                                    ON clp.LoadPostID = cps.CustomerPostID
         //                                LEFT JOIN  VehicleWeightRange vwr
-		// 							       ON clp.VehicleType = vwr.VehicleType 
-		// 								   AND clp.Weight = vwr.WeightRange 
-		// 							   LEFT JOIN  CargoTypes ct
-		// 								   ON clp.CargoContent = ct.cargo_type
+        // 							       ON clp.VehicleType = vwr.VehicleType 
+        // 								   AND clp.Weight = vwr.WeightRange 
+        // 							   LEFT JOIN  CargoTypes ct
+        // 								   ON clp.CargoContent = ct.cargo_type
         //                             -- LEFT JOIN  Cargopackag cp
-		// 							  --   ON clp.CargoPackageType = cp.packaging_type
+        // 							  --   ON clp.CargoPackageType = cp.packaging_type
         //                                LEFT JOIN (
         //                                    SELECT packaging_type, cargo_type, MIN(Img) AS Img
         //                                    FROM Cargopackag
@@ -548,11 +631,11 @@ exports.getNearestCustomerposttDB = async (data) => {
         //                                            SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
         //                                        )
         //                                      ) <= @radius
-                                       
+
         //                       ORDER BY  PostDate ASC;
         //                   `);
 
-               const result = await request.query(`
+        const result = await request.query(`
                              SELECT TOP 50
     clp.LoadPostID AS Customer_LoadPostID,
     dll.status AS DriverStatus,
@@ -743,7 +826,7 @@ exports.CustomerPostStatusDB = async (data) => {
                 request.input('DriverStatus', sql.NVarChar(50), data.DriverStatus);
                 request.input('EnteredVerificationCode', sql.NVarChar(50), data.VerificationCode);
 
-                
+
 
                 // output
                 request.output('bstatus_code', sql.NVarChar(255));
@@ -765,7 +848,7 @@ exports.CustomerPostStatusDB = async (data) => {
 };
 
 exports.getcustomerprocessDB = async (data) => {
-//    console.log(`[INFO]: Fetching customer process : ${data}`);
+    //    console.log(`[INFO]: Fetching customer process : ${data}`);
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
@@ -921,7 +1004,7 @@ exports.getcustomerprocessDB = async (data) => {
                 }
             })
             .catch(error => {
-              //  console.error(`[ERROR]: getcustomerprocess Error: SQL Error: ${error.message}`);
+                //  console.error(`[ERROR]: getcustomerprocess Error: SQL Error: ${error.message}`);
                 logger.log("error", `getcustomerprocessDB Error: ${error.message}`);
                 reject({ message: 'SQL Error: ' + error.message, status: "01" });
             });
@@ -930,7 +1013,7 @@ exports.getcustomerprocessDB = async (data) => {
 };
 
 exports.getcustomeractiveDB = async (data) => {
-  //  console.log(`[INFO]: Fetching customer Active : ${data}`);
+    //  console.log(`[INFO]: Fetching customer Active : ${data}`);
     return new Promise((resolve, reject) => {
         sql.connect(pool)
             .then(pool => {
@@ -1079,7 +1162,7 @@ exports.getcustomeractiveDB = async (data) => {
                 }
             })
             .catch(error => {
-            //    console.error(`[ERROR]: getcustomerActive Error: SQL Error: ${error.message}`);
+                //    console.error(`[ERROR]: getcustomerActive Error: SQL Error: ${error.message}`);
                 logger.log("error", `getcustomerActive Error: ${error.message}`);
                 reject({ message: 'SQL Error: ' + error.message, status: "01" });
             });
@@ -1162,7 +1245,7 @@ exports.getcustomercompletedDB = async (data) => {
                                                     AND CAST(cps.update_date AS DATE) BETWEEN @FromDate AND @ToDate
                                                     ORDER BY clp.insert_date DESC;
 `);
-                    }       
+                    }
                     else {
                         return request.query(`SELECT
 
@@ -1336,10 +1419,10 @@ exports.getcustomercompletedDB = async (data) => {
                                                         AND clp.CustomerID = @CustomerID    
                                                     ORDER BY clp.insert_date DESC;
 `);
-                    }   
+                    }
                 }
 
-            }   )
+            })
             .then(result => {
                 if (result.recordset.length > 0) {
                     console.log(result.recordset[0]);
@@ -1352,8 +1435,8 @@ exports.getcustomercompletedDB = async (data) => {
                 }
             })
             .catch(error => {
-              //  console.error(`[ERROR]: getcustomerCompleted Error: SQL Error: ${error.message}`);
-              logger.log("error", `getcustomercompletedDB Error: ${error.message}`);
+                //  console.error(`[ERROR]: getcustomerCompleted Error: SQL Error: ${error.message}`);
+                logger.log("error", `getcustomercompletedDB Error: ${error.message}`);
                 reject({ message: 'SQL Error: ' + error.message, status: "01" });
             });
     });
@@ -1472,7 +1555,7 @@ exports.getNearestDriversDB = (data) => {
                         Customer_Destination_Lng: CustomerPostRow.Customer_Destination_Lng
                     };
                 });
-       //         console.log(`[SUCCESS]: Fetched NearestDrivers data: ${JSON.stringify(merged)}`);
+                //         console.log(`[SUCCESS]: Fetched NearestDrivers data: ${JSON.stringify(merged)}`);
 
                 resolve({
                     status: '00',
@@ -1488,20 +1571,20 @@ exports.getNearestDriversDB = (data) => {
 };
 
 exports.VendorNearestCustomerPostDB = async (data) => {
-   console.log(`[INFO]: Fetching nearest customer posts for data: ${JSON.stringify(data)}`);
+    console.log(`[INFO]: Fetching nearest customer posts for data: ${JSON.stringify(data)}`);
     try {
         const poolConn = await sql.connect(pool);
         const request = poolConn.request();
-                          
-                   // Inputs
-           request.input('vendorLat', sql.Decimal(9, 6), data.vendorLat);
-           request.input('vendorLng', sql.Decimal(9, 6), data.vendorLng);
-           request.input('radius', sql.Int, data.radius || 10000); // ✅ Default 5 km
-           request.input('vehicleType', sql.NVarChar(100), data.VehicleType || null);
-           request.input('VendorID', sql.NVarChar(10), data.VendorID );
-    
 
-               const result = await request.query(`SELECT TOP 50
+        // Inputs
+        request.input('vendorLat', sql.Decimal(9, 6), data.vendorLat);
+        request.input('vendorLng', sql.Decimal(9, 6), data.vendorLng);
+        request.input('radius', sql.Int, data.radius || 10000); // ✅ Default 5 km
+        request.input('vehicleType', sql.NVarChar(100), data.VehicleType || null);
+        request.input('VendorID', sql.NVarChar(10), data.VendorID);
+
+
+        const result = await request.query(`SELECT TOP 50
                                     clp.LoadPostID AS Customer_LoadPostID,
                                     cps.CustomerID,
                                     clp.VehicleType,
@@ -1619,7 +1702,7 @@ exports.CargoTypeBodyTypeHistoryDB = (data) => {
             .then(pool => {
                 const request = pool.request();
                 request.input('CustomerID', sql.NVarChar(10), data.CustomerID);
-                   const query = `
+                const query = `
                     SELECT  TOP 10
                         CargoContent,
                         BodyType,

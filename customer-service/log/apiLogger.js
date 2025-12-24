@@ -84,7 +84,7 @@ function saveLog(log) {
             request.input('api_name', sql.NVarChar, log.api_name);
             request.input('method', sql.NVarChar, log.method);
             request.input('request_body', sql.NVarChar(sql.MAX), log.request_body);
-            request.input('response_body', sql.NVarChar(sql.MAX), log.response_body);
+            request.input('response_body', sql.NVarChar(sql.MAX), typeof log.response_body === 'string' ? log.response_body : JSON.stringify(log.response_body || {}));
             request.input('status_code', sql.Int, log.status_code);
             request.input('error_message', sql.NVarChar(sql.MAX), log.error_message);
             request.input('time_taken_ms', sql.Int, log.time_taken_ms);
