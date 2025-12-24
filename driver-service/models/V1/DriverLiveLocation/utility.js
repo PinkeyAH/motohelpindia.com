@@ -104,7 +104,6 @@ exports.get_DriverLiveLocationDB = async (data) => {
     );
 }
 
-
 exports.get_DriverAvailableStatusDB = async (data) => {
  return new Promise((resolve, reject) => {
         sql.connect(pool)
@@ -190,3 +189,4 @@ exports.DriveronlineofflinestatusDB = async (data) => {
             });
     });
 };
+
