@@ -110,14 +110,11 @@ exports.updatecustomeremployeeDB = (CustomerEmployeeDetails) => {
                 // Contact Details
                 request.input('full_name', sql.NVarChar(255), CustomerEmployeeDetails.full_name);
                 request.input('contact_No', sql.NVarChar(15), CustomerEmployeeDetails.contact_no);
-                request.input('alternate_No', sql.NVarChar(15), CustomerEmployeeDetails.alternate_no || null);
                 request.input('email_id', sql.NVarChar(255), CustomerEmployeeDetails.email_id || null);
-                request.input('website', sql.NVarChar(255), CustomerEmployeeDetails.website || null);
                 request.input('designation', sql.NVarChar(255), CustomerEmployeeDetails.designation || null);
-                request.input('customDesignation', sql.NVarChar(255), CustomerEmployeeDetails.customDesignation || null);
-                request.input('username', sql.NVarChar(255), CustomerEmployeeDetails.username || null);
-                request.input('password', sql.NVarChar(255), CustomerEmployeeDetails.password || null);
-                // request.input('employee_count', sql.NVarChar(255), CustomerEmployeeDetails.employee_count || null);
+                request.input('department', sql.NVarChar(255), CustomerEmployeeDetails.department || null);
+                request.input('Authority_level', sql.NVarChar(50), CustomerEmployeeDetails.Authority_level || null);
+                
 
                 // Outputs
                 request.output('bstatus_code', sql.NVarChar(255));
