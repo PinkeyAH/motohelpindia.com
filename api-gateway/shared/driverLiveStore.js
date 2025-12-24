@@ -2,7 +2,7 @@ const connectedDrivers = new Map(); // DriverID -> { socket, refreshInterval }
 const driverLiveData = new Map();
 
 
-function driver_LPStatus(data) {
+function driverLPStatus(data) {
   connectedDrivers.set(data);
 }
 
@@ -24,8 +24,8 @@ function getAllDriverLocations() {
 }
 
 function getAlldriverLPStatus() {
-  console.log("📍 All connectedDrivers (Map):", connectedDrivers);
-    console.log("📍 All Driver Process Data:",JSON.stringify([...driverLiveData.entries()], null, 2));
+  console.log("📍 All connected Drivers (Map):", connectedDrivers);
+    console.log("📍 All Driver Process Data:",JSON.stringify([...connectedDrivers.entries()], null, 2));
 
   return connectedDrivers;
     // return Array.from(driverLiveData.entries());
@@ -33,7 +33,7 @@ function getAlldriverLPStatus() {
 
 
 module.exports = {
-  driver_LPStatus,
+  driverLPStatus,
   updateDriverLocation,
   getDriverLocation,
   getAllDriverLocations,

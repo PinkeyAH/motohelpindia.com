@@ -105,7 +105,7 @@
 
 // module.exports = initializeVendorSocket;
 const { get_DriverLiveLocationDB } = require("../driver-service/models/V1/DriverLiveLocation/utility");
-const { getAllDriverLocations, driver_LPStatus } = require("../api-gateway/shared/driverLiveStore");
+const { getAllDriverLocations, driverLPStatus } = require("../api-gateway/shared/driverLiveStore");
 
 /* ================= GLOBAL SCOPE ================= */
 const connectedVendors = new Map();   // ✅ accessible everywhere
@@ -133,17 +133,16 @@ function initializeVendorSocket(io) {
 
       const vendorEntry = connectedVendors.get(VendorID);
       if (!vendorEntry) return;
+      console.log(`Vendor ${VendorID} is connected.`);
 
-      // try {
-      //   // --------- Immediate Fetch ---------
-      //   const driverLPStatus = await get_DriverLiveLocationDB(data);
-      //   console.log(`📍 driverLPStatus for Vendor ${VendorID}: ${JSON.stringify(driverLPStatus)}`);
-
-      //   // ✅ 4. Update in-memory store (driverLPStatus)
-      //   getAllDriverLocations({ driverData: driverLPStatus.data || [], UpdatedAt: new Date() });
-      //   // Emit to vendor
+      const driver_LPStatus = await get_DriverLiveLocationDB(data);
+      console.log(`📍 driver_LPStatus for Vendor ${VendorID}: ${JSON.stringify(driver_LPStatus)}`);
+      // Update in-memory store (driverLPStatus)?
+     
+          driverLPStatus({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
+      // Emit to vendor
       //   socket.emit("driverLPStatus", {
-      //     driverData: driverLPStatus.data || [],
+      //     driverData: driver_LPStatus.data || [],
       //     UpdatedAt: new Date(),
       //   });
 

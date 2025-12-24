@@ -13,7 +13,7 @@ const {
   getcustomerprocessDB,
 } = require("../customer-service/models/V1/Customer_Load_Post/utility");
 
-const { updateDriverLocation } = require("../api-gateway/shared/driverLiveStore");
+const { updateDriverLocation, getAlldriverLPStatus } = require("../api-gateway/shared/driverLiveStore");
 
 function initializeDriverSocket(io, app) {
   console.log("🚛 Driver Socket initialized");
@@ -98,6 +98,33 @@ function initializeDriverSocket(io, app) {
       }
     });
   });
+
+
+  /* ============== CENTRAL BROADCAST LOOP ============== */
+setInterval(() => {
+  try {
+    const allDrivers = getAlldriverLPStatus();
+
+    for (const [vendorId, entry] of connectedDrivers.entries()) {
+      console.log(vendorId);
+
+      if (!entry?.socket) continue;
+      console.log(allDrivers);
+
+      entry.socket.emit("driverLPStatus", {
+        allDrivers,
+        UpdatedAt: new Date()
+      });
+    }
+
+  } catch (err) {
+    console.error("🔥 Error in setInterval:", err.message);
+  }
+}, 5000);
+
+
 }
+
+
 
 module.exports = initializeDriverSocket;
