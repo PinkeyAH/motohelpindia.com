@@ -128,11 +128,9 @@ function initializeVendorSocket(io) {
     socket.on("driverLPDetails", async (data) => {
       console.log(`✅driverLPDetails: ${JSON.stringify(data)}`);
 
-      const { VendorID } = data;
-      if (!VendorID) return;
+      const { VendorID, DriverID } = data;
+      connectedVendors.set(VendorID, { socket, refreshInterval: null });
 
-      const vendorEntry = connectedVendors.get(VendorID);
-      if (!vendorEntry) return;
       console.log(`Vendor ${VendorID} is connected.`);
 
       const driver_LPStatus = await get_DriverLiveLocationDB(data);
@@ -140,10 +138,10 @@ function initializeVendorSocket(io) {
       // Update in-memory store (driverLPStatus)?
 
       driverLPStatus({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
- console.log({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
- 
-      // Emit to vendor
-      vendorEntry.socket.emit("driverLPStatus", {
+      console.log({ driverData: driver_LPStatus.data || [], UpdatedAt: new Date() });
+
+
+      io.emit("driverLPStatus", {
         driverData: driver_LPStatus.data || [],
         UpdatedAt: new Date(),
       });
