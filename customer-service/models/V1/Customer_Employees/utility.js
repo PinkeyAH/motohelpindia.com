@@ -64,8 +64,8 @@ exports.InsertcustomeremployeeDB = async (CustomerEmployeeDetails, CustomerID) =
                 CustomerEmployeeDetails.forEach(cd => {
                     tvp.rows.add(
                         cd.full_name,
-                        cd.contact_no,
-                        cd.email_id,
+                        cd.contact_No,
+                        cd.emailid,
                         cd.designation,
                         cd.department,
                         cd.Authority_level
