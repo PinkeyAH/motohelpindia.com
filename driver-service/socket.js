@@ -92,6 +92,7 @@ if (!driverEntry.flagInterval) {
 
 
     const allDrivers = getAlldriverLPStatus();
+    console.log("****************allDrivers************driverLPStatus:", { allDrivers, UpdatedAt: new Date() });
       io.emit("driverLPStatus", {
         allDrivers,
         UpdatedAt: new Date()

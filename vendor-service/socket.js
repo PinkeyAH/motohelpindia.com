@@ -167,26 +167,26 @@ function initializeVendorSocket(io) {
   });
 }
 
-/* ============== CENTRAL BROADCAST LOOP ============== */
-setInterval(() => {
-  try {
-    const allDrivers = getAllDriverLocations();
+// /* ============== CENTRAL BROADCAST LOOP ============== */
+// setInterval(() => {
+//   try {
+//     const allDrivers = getAllDriverLocations();
 
-    for (const [vendorId, entry] of connectedVendors.entries()) {
-      console.log(vendorId);
+//     for (const [vendorId, entry] of connectedVendors.entries()) {
+//       console.log(vendorId);
 
-      if (!entry?.socket) continue;
-      console.log(allDrivers);
+//       if (!entry?.socket) continue;
+//       console.log(allDrivers);
 
-      entry.socket.emit("driverLPStatus", {
-        allDrivers,
-        UpdatedAt: new Date()
-      });
-    }
+//       entry.socket.emit("driverLPStatus", {
+//         allDrivers,
+//         UpdatedAt: new Date()
+//       });
+//     }
 
-  } catch (err) {
-    console.error("🔥 Error in setInterval:", err.message);
-  }
-}, 5000);
+//   } catch (err) {
+//     console.error("🔥 Error in setInterval:", err.message);
+//   }
+// }, 5000);
 
 module.exports = initializeVendorSocket;
