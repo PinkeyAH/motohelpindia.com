@@ -16,7 +16,10 @@ exports.InsertCustomerDB = async (data, CustomerID, Customer_EmployeeDetails) =>
                 request.input('ContactPerson', sql.NVarChar(255), data.ContactPerson);
                 request.input('ContactNo', sql.NVarChar(50), data.ContactNo);
                 request.input('EmailID', sql.NVarChar(255), data.EmailID);
-                request.input('Address_Type', sql.NVarChar(255), data.Address_Type);
+                // request.input('Address_Type', sql.NVarChar(255), data.Address_Type);
+                request.input('Factory', sql.NVarChar(2), data.Factory);    
+                request.input('Warehouse', sql.NVarChar(2), data.Warehouse);
+                request.input('Office', sql.NVarChar(2), data.Office);
                 request.input('Address', sql.NVarChar(500), data.Address || data.RegisteredAddress.fullAddress);
                 request.input('Address1', sql.NVarChar(255), data.Address1);
                 request.input('Address2', sql.NVarChar(255), data.Address2);
