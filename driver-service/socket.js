@@ -90,13 +90,21 @@ if (!driverEntry.flagInterval) {
   }, 5000);
 }
 
-
-    const allDrivers = getAlldriverLPStatus();
-    console.log("****************allDrivers************driverLPStatus:", { allDrivers, UpdatedAt: new Date() });
-      io.emit("driverLPStatus", {
-        allDrivers,
-        UpdatedAt: new Date()
-      });
+if (!driverEntry.flagInterval) {
+  driverEntry.flagInterval = setInterval(() => {
+    io.emit("driverLPStatus", {
+      ...data,
+      UpdatedAt: new Date()
+    });
+    console.log("🚩 driverLPStatus emitted:", ...data);
+  }, 5000);
+}
+    // const allDrivers = getAlldriverLPStatus();
+    // console.log("****************allDrivers************driverLPStatus:", { allDrivers, UpdatedAt: new Date() });
+    //   io.emit("driverLPStatus", {
+    //     allDrivers,
+    //     UpdatedAt: new Date()
+    //   });
     
 
       } catch (err) {
