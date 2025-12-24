@@ -117,6 +117,14 @@ if (!driverEntry.flagInterval) {
   });
 
 
+  
+    const allDrivers = getAlldriverLPStatus();
+      io.emit("driverLPStatus", {
+        allDrivers,
+        UpdatedAt: new Date()
+      });
+      console.log("****************************driverLPStatus:", { allDrivers, UpdatedAt: new Date() });
+
   /* ============== CENTRAL BROADCAST LOOP ============== */
 // setInterval(() => {
 //   try {
