@@ -57,8 +57,8 @@ exports.InsertcustomeremployeeDB = async (CustomerEmployeeDetails, CustomerID) =
                 tvp.columns.add('designation', sql.NVarChar(100));
                 tvp.columns.add('department', sql.NVarChar(100));
                 tvp.columns.add('employeeid', sql.NVarChar(15));
-                tvp.columns.add('contact_No', sql.NVarChar(15));
                 tvp.columns.add('full_name', sql.NVarChar(100));
+                tvp.columns.add('contact_No', sql.NVarChar(15));
                 tvp.columns.add('emailid', sql.NVarChar(255));
                 tvp.columns.add('Authority_level', sql.NVarChar(100));
 
@@ -67,8 +67,8 @@ exports.InsertcustomeremployeeDB = async (CustomerEmployeeDetails, CustomerID) =
                         cd.designation,
                         cd.department,
                         cd.employeeid,
-                        cd.contact_No,
                         cd.full_name,
+                        cd.contact_No,  
                         cd.emailid,
                         cd.Authority_level
                     );
