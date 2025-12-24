@@ -107,18 +107,20 @@
 const { get_DriverLiveLocationDB } = require("../driver-service/models/V1/DriverLiveLocation/utility");
 const { getAllDriverLocations, driver_LPStatus } = require("../api-gateway/shared/driverLiveStore");
 
+/* ================= GLOBAL SCOPE ================= */
+const connectedVendors = new Map();   // ✅ accessible everywhere
+
 function initializeVendorSocket(io) {
   console.log("🏢 Vendor Socket initialized");
-
-  const connectedVendors = new Map();
 
   io.on("connection", (socket) => {
     console.log(`🔌 New vendor socket connected: ${socket.id}`);
 
-    // ------------------ Vendor Registration ------------------
+    /* -------- Vendor Registration -------- */
     socket.on("registerVendor", (VendorID) => {
       if (!VendorID) return;
-      connectedVendors.set(VendorID, { socket, refreshInterval: null });
+
+      connectedVendors.set(VendorID, { socket });
       console.log(`✅ Vendor registered: ${VendorID}`);
     });
 
@@ -165,30 +167,26 @@ function initializeVendorSocket(io) {
   });
 }
 
-setInterval(async () => {
-    try {
-      for (const [vendorId, entry] of connectedVendors.entries()) {
-        console.log(vendorId);
-        
-        try {
-        
-          const allDrivers = getAllDriverLocations();
-          console.log(" Total Drivers:", allDrivers.size);
-          console.log(allDrivers,"******************************allDrivers**************************************");
-          
-          console.log(" All Drivers Data:", { allDrivers: Array.from(allDrivers.entries()), UpdatedAt: new Date() });
-          
-          entry.socket.emit("allDriverLocationsUpdate", { allDrivers: Array.from(allDrivers.entries()), UpdatedAt: new Date() });
+/* ============== CENTRAL BROADCAST LOOP ============== */
+setInterval(() => {
+  try {
+    const allDrivers = getAllDriverLocations();
 
-        
-            
-        } catch (err) {
-          console.error(`[ERROR] Vendor ${vendorId}:`, err.message);
-        }
-      }
-    } catch (err) {
-      console.error("🔥 Error in setInterval:", err);
+    for (const [vendorId, entry] of connectedVendors.entries()) {
+      console.log(vendorId);
+
+      if (!entry?.socket) continue;
+      console.log(allDrivers);
+
+      entry.socket.emit("driverLPStatus", {
+        allDrivers,
+        UpdatedAt: new Date()
+      });
     }
-  }, 5000);
+
+  } catch (err) {
+    console.error("🔥 Error in setInterval:", err.message);
+  }
+}, 5000);
 
 module.exports = initializeVendorSocket;
