@@ -51,32 +51,26 @@ exports.InsertcustomeremployeeDB = async (CustomerEmployeeDetails, CustomerID) =
         sql.connect(pool)
             .then(pool => {
                 const request = pool.request();
-
                 // CREATE TVP (must match SQL TYPE exactly)
                 const tvp = new sql.Table();
                 tvp.columns.add('full_name', sql.NVarChar(100));
                 tvp.columns.add('contact_no', sql.NVarChar(15));
-                tvp.columns.add('alternate_no', sql.NVarChar(15));
-                tvp.columns.add('email_id', sql.NVarChar(255));
-                tvp.columns.add('website', sql.NVarChar(255));
+                tvp.columns.add('email_id', sql.NVarChar(100));
                 tvp.columns.add('designation', sql.NVarChar(100));
-                tvp.columns.add('customDesignation', sql.NVarChar(100));
-                tvp.columns.add('username', sql.NVarChar(100));
-                tvp.columns.add('password', sql.NVarChar(100));
+                tvp.columns.add('department', sql.NVarChar(100));
+                tvp.columns.add('Authority_level', sql.NVarChar(50));
 
                 // FILL TVP ROWS
                 CustomerEmployeeDetails.forEach(cd => {
                     tvp.rows.add(
                         cd.full_name,
                         cd.contact_no,
-                        cd.alternate_no,
                         cd.email_id,
-                        cd.website,
                         cd.designation,
-                        cd.customDesignation,
-                        cd.username,
-                        cd.password
-                    );
+                        cd.department,
+                        cd.Authority_level
+                    )
+                      
                 });
 
                 // INPUT PARAMETERS
@@ -130,7 +124,7 @@ exports.updatecustomeremployeeDB = (CustomerEmployeeDetails) => {
                 request.output('bmessage_desc', sql.NVarChar(255));
 
                 // Call the stored procedure
-                return request.execute('CustomerEmployeeInsert');
+                return request.execute('CustomerEmployeeUpdate');
             })
             .then(result => {
                 const output = {
