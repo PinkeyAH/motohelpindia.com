@@ -22,6 +22,24 @@ exports.saveMultipleBase64Images = (imagesMap, destFolder) => {
     };
 
 
+exports.saveBase64Image = (base64, folder) =>{
+    const match = base64.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!match) return null;
+
+    const ext = match[1];
+    const buffer = Buffer.from(match[2], "base64");
+
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+    }
+
+    const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+    const fullPath = path.join(folder, fileName);
+
+    fs.writeFileSync(fullPath, buffer);
+    return fileName;
+}
+
     // Generate OTP function
 
 // exports.generateOTP = () => {

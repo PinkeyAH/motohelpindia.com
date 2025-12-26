@@ -73,13 +73,13 @@ exports.customerloadpostmasterDB = (data) => {
             request.input('gross_weight', sql.NVarChar(100), data.weight.gross_weight || null);
 
             // ================= CHARGES (FIXED SPELLINGS) =================
-            request.input('freightAmount', sql.NVarChar(100), data.chargers.freightAmount || null);
-            request.input('loadingcharge', sql.NVarChar(100), data.chargers.loadingcharge || null);
-            request.input('unloadingcharge', sql.NVarChar(100), data.chargers.unloadingcharge || null);
-            request.input('LRcharge', sql.NVarChar(100), data.chargers.LRcharge || null);
-            request.input('othercharge', sql.NVarChar(100), data.chargers.othercharge || null);
-            request.input('otherchargelabel', sql.NVarChar(100), data.chargers.otherchargelabel || null);
-            request.input('Advance', sql.NVarChar(100), data.chargers.Advance || null);
+            request.input('freightAmount', sql.NVarChar(100), data.charges.freightAmount || null);
+            request.input('loadingcharge', sql.NVarChar(100), data.charges.loadingcharge || null);
+            request.input('unloadingcharge', sql.NVarChar(100), data.charges.unloadingcharge || null);
+            request.input('LRcharge', sql.NVarChar(100), data.charges.LRcharge || null);
+            request.input('othercharge', sql.NVarChar(100), data.charges.othercharge || null);
+            request.input('otherchargelabel', sql.NVarChar(100), data.charges.otherchargelabel || null);
+            request.input('Advance', sql.NVarChar(100), data.charges.Advance || null);
 
             // ================= LR =================
             request.input('lr_no', sql.NVarChar(255), data.lr_no || null);
