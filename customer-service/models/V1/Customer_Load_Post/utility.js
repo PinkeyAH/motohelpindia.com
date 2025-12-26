@@ -511,8 +511,8 @@ exports.getNearestCustomerposttDB = async (data) => {
         const request = poolConn.request();
 
         // Inputs
-        request.input('lat', sql.Decimal(9, 6), data.Lat||19.0760);
-        request.input('lng', sql.Decimal(9, 6), data.Lng || 72.8777);
+        request.input('lat', sql.Decimal(9, 6), data.Lat );
+        request.input('lng', sql.Decimal(9, 6), data.Lng );
         request.input('radius', sql.Int, data.radius || 5000); // ✅ Default 5 km
         request.input('vehicleType', sql.NVarChar(100), data.VehicleType || 'Multi Axle');
         request.input('DriverID', sql.NVarChar(10), data.DriverID);
