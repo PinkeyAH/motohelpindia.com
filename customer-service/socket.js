@@ -185,6 +185,46 @@ function initializeCustomerSocket(io, app) {
       console.error("🔥 Error in setInterval:", err);
     }
   }, 5000);
+
+
+// 🔁 Every 5 sec send nearby drivers to customers
+setInterval(async () => {
+  try {
+    if (!connectedCustomers || connectedCustomers.size === 0) {
+      return;
+    }
+
+    const allDrivers = getAllDriverLocations(); // Map
+    console.log("🚗 Total Drivers:", allDrivers.size);
+
+    if (!allDrivers || allDrivers.size === 0) return;
+
+    for (const [customerId, customerSocket] of connectedCustomers.entries()) {
+      try {
+        const driversArray = [];
+
+        for (const [driverId, driverData] of allDrivers.entries()) {
+          if (!driverData) continue;
+          driversArray.push(driverData);
+        }
+
+        // Emit once per customer (BEST PRACTICE)
+        customerSocket.emit("driverLiveLocation", {
+          drivers: driversArray,
+        });
+
+        console.log(
+          `📍 Sent ${driversArray.length} drivers to Customer ${customerId}`
+        );
+      } catch (err) {
+        console.error(`❌ Customer ${customerId} Error:`, err.message);
+      }
+    }
+  } catch (err) {
+    console.error("🔥 Error in setInterval:", err);
+  }
+}, 5000);
+
 }
 
 module.exports = initializeCustomerSocket;
