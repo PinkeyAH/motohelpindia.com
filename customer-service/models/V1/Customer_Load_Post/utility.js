@@ -1456,11 +1456,10 @@ exports.getNearestDriversDB = (data) => {
                 -- 📌 INPUT PARAMETERS
 DECLARE @lat          FLOAT        = 19.0760;
 DECLARE @lng          FLOAT        = 72.8777;
-DECLARE @radius       FLOAT        = 500000000000000000;
+DECLARE @radius       FLOAT        = 1000;
 DECLARE @DriverID     NVARCHAR(50) = 'DR348884';
 DECLARE @vehicleType  NVARCHAR(50) = 'Multi Axle';
-DECLARE @LoadPostID  NVARCHAR(50) =  'LP326313';
-DECLARE @MaxKm NVARCHAR(50) =  '100';
+DECLARE @MaxKm NVARCHAR(50) =  '50';
 -- 1️⃣ Fetch customer origin & vehicle type
 SELECT
     @Lat = cla.PickupLat,
