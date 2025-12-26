@@ -1452,15 +1452,12 @@ exports.getNearestDriversDB = (data) => {
                 request.input('LoadPostID', sql.NVarChar, data.LoadPostID);
 
                 // Queries
-                const NearestDrivers = `
-                -- 📌 INPUT PARAMETERS
-DECLARE @lat          FLOAT        = 19.0760;
-DECLARE @lng          FLOAT        = 72.8777;
-DECLARE @radius       FLOAT        = 1000;
-DECLARE @DriverID     NVARCHAR(50) = 'DR348884';
-DECLARE @vehicleType  NVARCHAR(50) = 'Multi Axle';
-DECLARE @MaxKm NVARCHAR(50) =  '50';
--- 1️⃣ Fetch customer origin & vehicle type
+                const NearestDrivers = `DECLARE @Lat FLOAT;
+DECLARE @Lng FLOAT;
+DECLARE @VehicleType NVARCHAR(50);
+DECLARE @MaxKm INT;
+
+-- 1️⃣ Fetch pickup location & vehicle type
 SELECT
     @Lat = cla.PickupLat,
     @Lng = cla.PickupLng,
@@ -1470,37 +1467,28 @@ JOIN CustomerLoadPostAddress cla
     ON clp.LoadPostID = cla.LoadPostID
 WHERE clp.LoadPostID = @LoadPostID;
 
--- 2️⃣ Set MaxKm by Vehicle Type
+-- 2️⃣ Max distance based on vehicle
 SET @MaxKm = CASE
-                WHEN @VehicleType = 'Mini'        THEN 30
-                WHEN @VehicleType = 'Light'       THEN 1000
-                WHEN @VehicleType = 'Medium'      THEN 500
-                WHEN @VehicleType = 'Multi Axle'  THEN 2000
-                ELSE 8000
-             END;
+    WHEN @VehicleType = 'Mini'       THEN 30
+    WHEN @VehicleType = 'Light'      THEN 100
+    WHEN @VehicleType = 'Medium'     THEN 500
+    WHEN @VehicleType = 'Multi Axle' THEN 2000
+    ELSE 800
+END;
 
--- 3️⃣ Nearest Drivers
 ;WITH DriverDistances AS (
     SELECT
         dva.DriverID,
         dva.VehicleID,
         dva.VendorID,
         dva.MobileNo,
-        dva.AssignmentDate,
         dll.Status,
-        dll.Lat AS Driver_Origin_Lat,
-        dll.Lng AS Driver_Origin_Lng,
-        dll.City,
-        dll.District,
-        dll.Taluka,
-        dll.State,
-        dll.Pincode,
-        dll.Address,
+        dll.Lat,
+        dll.Lng,
 
-        -- ✅ SAFE DISTANCE CALCULATION
         CAST(
             6371 * ACOS(
-                CASE 
+                CASE
                     WHEN (
                         COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
                         COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
@@ -1519,22 +1507,18 @@ SET @MaxKm = CASE
                 END
             ) AS DECIMAL(10,2)
         ) AS DistanceInKm
-
     FROM DriverVehicleAssign dva
     JOIN DriverLiveLocation dll
         ON dll.DriverID = dva.DriverID
     WHERE
         dva.IsActive = 1
-        AND dll.Lat IS NOT NULL
-        AND dll.Lng IS NOT NULL
         AND dll.Status = 'Online'
 )
 
 SELECT TOP 10 *
 FROM DriverDistances
 WHERE DistanceInKm <= @MaxKm
-ORDER BY DistanceInKm ASC;   -- ✅ NEAREST FIRST
-
+ORDER BY DistanceInKm;
 `;
 
                 const CustomerPost = `
