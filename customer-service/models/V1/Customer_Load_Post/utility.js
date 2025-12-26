@@ -2,78 +2,6 @@ const sql = require('mssql');
 const pool = require('../../../db/db.js');
 const logger = require('../../../log/logger');
 
-// exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
-//     return new Promise((resolve, reject) => {
-//         sql.connect(pool)
-//             .then(pool => {
-//                 const request = pool.request();
-
-//                 request.input('LoadPostID', sql.NVarChar(10), LoadPost_ID);
-//                 request.input('CustomerID', sql.NVarChar(10), data.CustomerID);
-
-//                 request.input('Origin', sql.NVarChar(sql.MAX), data.origin.address);
-//                 request.input('Origin_1', sql.NVarChar(sql.MAX), data.Origin_1);
-//                 request.input('Origin_2', sql.NVarChar(sql.MAX), data.Origin_2);
-//                 request.input('ContactPerson', sql.NVarChar(sql.MAX), data.ContactPerson);
-//                 request.input('ContactNumber', sql.NVarChar(sql.MAX), data.ContactNumber);
-
-//                 request.input('Destination', sql.NVarChar(sql.MAX), data.destination.address);
-//                 request.input('Destination_1', sql.NVarChar(sql.MAX), data.Destination_1);
-//                 request.input('Destination_2', sql.NVarChar(sql.MAX), data.Destination_2);
-//                 request.input('ConsigneeName', sql.NVarChar(sql.MAX), data.ConsigneeName);
-//                 request.input('ConsigneeContactNumber', sql.NVarChar(sql.MAX), data.ConsigneeContactNumber);
-
-//                 request.input('VehicleType', sql.NVarChar(100), data.VehicleType);
-//                 request.input('Weight', sql.NVarChar(100), data.Weight);
-//                 request.input('cost', sql.NVarChar(50), data.cost);
-//                 request.input('BodyType', sql.NVarChar(50), data.BodyType);
-//                 request.input('CargoContent', sql.NVarChar(100), data.CargoContent);
-//                 request.input('CargoPackageType', sql.NVarChar(100), data.CargoPackageType);
-//                 request.input('ExpectedAvailableTime', sql.NVarChar(100), data.ExpectedAvailableTime);
-//                 request.input('Approximate_weight', sql.NVarChar(100), data.Approximate_weight);
-//                 request.input('cargo_type', sql.NVarChar(100), data.cargo_type);
-//                 request.input('PickupType', sql.NVarChar(100), data.PickupType);
-
-//                 request.input('Origin_Lat', sql.Decimal(9, 6), data.origin.coordinates.lat);
-//                 request.input('Origin_Lng', sql.Decimal(9, 6), data.origin.coordinates.lng);
-//                 request.input('Origin_City', sql.NVarChar(100), data.origin.components.place);
-//                 request.input('Origin_District', sql.NVarChar(100), data.origin.components.dist);
-//                 request.input('Origin_Taluka', sql.NVarChar(100), data.origin.components.tal);
-//                 request.input('Origin_State', sql.NVarChar(100), data.origin.components.state);
-//                 request.input('Origin_Pincode', sql.NVarChar(10), data.origin.components.pincode);
-
-//                 request.input('Destination_Lat', sql.Decimal(9, 6), data.destination.coordinates.lat);
-//                 request.input('Destination_Lng', sql.Decimal(9, 6), data.destination.coordinates.lng);
-//                 request.input('Destination_City', sql.NVarChar(100), data.destination.components.place);
-//                 request.input('Destination_District', sql.NVarChar(100), data.District ||  data.destination.components.dist);
-//                 request.input('Destination_Taluka', sql.NVarChar(100), data.Taluka || data.destination.components.tal);
-//                 request.input('Destination_State', sql.NVarChar(100), data.state || data.destination.components.state);
-//                 request.input('Destination_Pincode', sql.NVarChar(10), data.Pincode || data.destination.components.pincode);
-
-//                 // output
-//                 request.output('bstatus_code', sql.NVarChar(255));
-//                 request.output('bmessage_desc', sql.NVarChar(255));
-//                 request.output('CustomerDetails', sql.NVarChar(sql.MAX)); // Assuming this is a JSON string
-//                 // nearestDriversJson: result.output.NearestDrivers
-
-
-//                 // Call the stored procedure
-//                 return request.execute('CustomerLoadPostInsert');
-//             })
-//             .then(result => {
-//                 const output = {
-//                     bstatus_code: result.output.bstatus_code,
-//                     bmessage_desc: result.output.bmessage_desc,
-//                     CustomerDetails: result.output.CustomerDetails
-
-//                 };
-//                 resolve(output);
-//             })
-//             .catch(err => {
-//                 reject('SQL Error: ' + err);
-//             });
-//     });
-// };
 
 exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
   return new Promise((resolve, reject) => {
@@ -241,8 +169,6 @@ exports.updatecustomerloadpostDB = async (data) => {
   });
 };
 
-
-
 exports.getcustomerloadpostDB = async (data) => {
     //  console.log(`[INFO]: Fetching customer load posts : ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
@@ -254,14 +180,75 @@ exports.getcustomerloadpostDB = async (data) => {
 
                 console.log(`[INFO]: Executing Query - SELECT * FROM CustomerLoadPost`);
                 if (!data.LoadPostID) {
-                    return request.query(`SELECT 
-                                                *
-                                            FROM [MOTO_HELP_DB].[dbo].[CustomerLoadPost] clp
-                                            JOIN [MOTO_HELP_DB].[dbo].[CustomerLoadPostAddress] cla
-                                                ON clp.LoadPostID = cla.LoadPostID 
-                                            JOIN CustomerPostStatus cps
-                                                    ON clp.LoadPostID = cps.CustomerPostID
-                                            where cps.LP_Status = 'Pending' 
+                    return request.query(`SELECT
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
+
+FROM [MOTO_HELP_DB].[dbo].[CustomerLoadPost] clp
+INNER JOIN [MOTO_HELP_DB].[dbo].[CustomerLoadPostAddress] cla
+    ON clp.LoadPostID = cla.LoadPostID
+INNER JOIN [MOTO_HELP_DB].[dbo].[CustomerPostStatus] cps
+    ON clp.LoadPostID = cps.CustomerPostID
+WHERE cps.LP_Status = 'Pending'
+ 
                                             AND clp.CustomerID = @CustomerID
                                      --       AND cps.customerpostid = @LoadPostID
                                             ORDER BY clp.insert_date DESC;
@@ -269,13 +256,74 @@ exports.getcustomerloadpostDB = async (data) => {
 
                 } else {
                     return request.query(`SELECT
-                                                *
-                                                
-                                                FROM CustomerLoadPost clp
-                                                JOIN CustomerLoadPostAddress cla
-                                                    ON clp.LoadPostID = cla.LoadPostID
-                                                JOIN CustomerPostStatus cps
-                                                    ON clp.LoadPostID = cps.CustomerPostID
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
+
+FROM [MOTO_HELP_DB].[dbo].[CustomerLoadPost] clp
+INNER JOIN [MOTO_HELP_DB].[dbo].[CustomerLoadPostAddress] cla
+    ON clp.LoadPostID = cla.LoadPostID
+INNER JOIN [MOTO_HELP_DB].[dbo].[CustomerPostStatus] cps
+    ON clp.LoadPostID = cps.CustomerPostID
+
+
                                                 
                                                 WHERE clp.LoadPostID = @LoadPostID
                                                     AND cps.LP_Status = 'Pending'
@@ -697,7 +745,66 @@ exports.getcustomerprocessDB = async (data) => {
 
                 if (!data.LoadPostID) {
                     return request.query(`SELECT
-                                                    *
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -714,7 +821,66 @@ exports.getcustomerprocessDB = async (data) => {
 `);
                 } else {
                     return request.query(`SELECT
-                                                    *
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -765,7 +931,66 @@ exports.getcustomeractiveDB = async (data) => {
 
                 if (!data.LoadPostID) {
                     return request.query(`SELECT
-                                                    *
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -782,7 +1007,66 @@ exports.getcustomeractiveDB = async (data) => {
 `);
                 } else {
                     return request.query(`SELECT
-                                                    *
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -834,7 +1118,66 @@ exports.getcustomercompletedDB = async (data) => {
                 if (!data.LoadPostID) {
                     if (data.FromDate && data.ToDate) {
                         return request.query(`SELECT
-                                                    *
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp   
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -850,7 +1193,66 @@ exports.getcustomercompletedDB = async (data) => {
                     }
                     else {
                         return request.query(`SELECT
-*
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -868,7 +1270,66 @@ exports.getcustomercompletedDB = async (data) => {
                 else {
                     if (data.FromDate && data.ToDate) {
                         return request.query(`SELECT
-                                                    * 
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -882,7 +1343,66 @@ exports.getcustomercompletedDB = async (data) => {
 `);
                     } else {
                         return request.query(`SELECT
-                                                    *
+    -- ========= Load Post (clp) =========
+    clp.LoadPostID,
+    clp.CustomerID,
+    clp.PickupContactPerson,
+    clp.PickupCompanyName,
+    clp.PickupContactNumber,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupAddress,
+    clp.DeliveryContactPerson,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
+    clp.DeliveryAddress,
+    clp.VehicleType,
+    clp.Weight,
+    clp.Approximate_weight,
+    clp.cargo_type,
+    clp.BodyType,
+    clp.CargoContent,
+    clp.CargoPackageType,
+    clp.ExpectedAvailableTime,
+    clp.ScheduleDate,
+    clp.ScheduleTime,
+    clp.isVolumetric,
+    clp.DhalaLength,
+    clp.cost,
+    clp.master_status,
+    clp.verification_code,
+    clp.verify_flag,
+    clp.insert_date AS LoadPost_InsertDate,
+    clp.update_date AS LoadPost_UpdateDate,
+
+    -- ========= Address (cla) =========
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.insert_date AS Address_InsertDate,
+    cla.update_date AS Address_UpdateDate,
+
+    -- ========= Status (cps) =========
+    cps.CustomerPostID,
+    cps.VendorID,
+    cps.DriverID,
+    cps.CustomerStatus,
+    cps.VendorStatus,
+    cps.DriverStatus,
+    cps.LP_Status
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
