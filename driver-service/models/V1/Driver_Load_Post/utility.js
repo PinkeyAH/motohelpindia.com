@@ -490,78 +490,95 @@ exports.getNearestDriversDB = (data) => {
                 request.input('LoadPostID', sql.NVarChar, data.LoadPostID);
 
                 // Queries
-                const NearestDrivers = `DECLARE 
-                                        @OriginLat DECIMAL(9,6),
-                                        @OriginLng DECIMAL(9,6),
-                                        @VehicleType NVARCHAR(100),
-                                        @MaxKm INT;
-                                    
-                                    -- 1. Fetch customer origin & vehicle type
-                                    SELECT
-                                        @OriginLat = cla.Origin_Lat,
-                                        @OriginLng = cla.Origin_Lng,
-                                        @VehicleType = clp.VehicleType
-                                    FROM CustomerLoadPost clp
-                                    JOIN CustomerLoadPostAddress cla
-                                        ON clp.LoadPostID = cla.LoadPostID
-                                    WHERE clp.LoadPostID = @LoadPostID ; --  'LP499981';
-                                    
-                                    -- 2. Set MaxKm by Vehicle Type
-                                    SET @MaxKm = CASE
-                                                    WHEN @VehicleType = 'Mini' THEN 30
-                                                    WHEN @VehicleType = 'Light' THEN 1000
-                                                    WHEN @VehicleType = 'Medium' THEN 500
-                                                    WHEN @VehicleType = 'Multi Axle' THEN 2000
-                                                    ELSE 8000
-                                                END;
-                                    
-                                    -- 3. Final Nearest Drivers
-                                    ;WITH DriverDistances AS (
-                                        SELECT
-                                            dva.DriverID,
-                                            dva.VehicleID,
-                                            dva.VendorID,
-                                            dva.MobileNo,
-                                            dva.AssignmentDate,
-                                            dll.Status,
-                                            dll.Lat AS Driver_Origin_Lat,
-                                            dll.Lng AS Driver_Origin_Lng,
-                                            dll.City,
-                                            dll.District,
-                                            dll.Taluka,
-                                            dll.State,
-                                            dll.Pincode,
-                                            dll.Address,
-                                            CAST(
-                                                6371 * ACOS(
-                                                    COS(RADIANS(@OriginLat)) * COS(RADIANS(dll.Lat)) *
-                                                    COS(RADIANS(dll.Lng) - RADIANS(@OriginLng)) +
-                                                    SIN(RADIANS(@OriginLat)) * SIN(RADIANS(dll.Lat))
-                                                ) AS DECIMAL(10,2)
-                                            ) AS DistanceInKm
-                                        FROM DriverVehicleAssign dva
-                                        JOIN DriverLiveLocation dll ON dll.DriverID = dva.DriverID
-                                       -- JOIN Vehicle v ON dva.VehicleID = v.VehicleID  -- uncomment if you want vehicle type filter
-                                        WHERE dll.Lat IS NOT NULL 
-                                          AND dll.Lng IS NOT NULL
-                                          -- AND v.VehicleType = @VehicleType   -- ✅ if filtering by type
-                                          AND dva.IsActive = 1
-                                    )
-                                    SELECT TOP 10 *
-                                    FROM DriverDistances
-                                    WHERE DistanceInKm <= @MaxKm
-                                    -- ORDER BY DistanceInKm ASC;  -- ASC for nearest first
-                                    
-                                        ORDER BY DistanceInKm DESC;
+                const NearestDrivers = `
+                -- 📌 INPUT PARAMETERS
+DECLARE @lat          FLOAT        = 19.0760;
+DECLARE @lng          FLOAT        = 72.8777;
+DECLARE @radius       FLOAT        = 500000000000000000;
+DECLARE @DriverID     NVARCHAR(50) = 'DR348884';
+DECLARE @vehicleType  NVARCHAR(50) = 'Multi Axle';
+DECLARE @LoadPostID  NVARCHAR(50) =  'LP326313';
+DECLARE @MaxKm NVARCHAR(50) =  '100';
+-- 1️⃣ Fetch customer origin & vehicle type
+SELECT
+    @Lat = cla.PickupLat,
+    @Lng = cla.PickupLng,
+    @VehicleType = clp.VehicleType
+FROM CustomerLoadPost clp
+JOIN CustomerLoadPostAddress cla
+    ON clp.LoadPostID = cla.LoadPostID
+WHERE clp.LoadPostID = @LoadPostID;
+
+-- 2️⃣ Set MaxKm by Vehicle Type
+SET @MaxKm = CASE
+                WHEN @VehicleType = 'Mini'        THEN 30
+                WHEN @VehicleType = 'Light'       THEN 1000
+                WHEN @VehicleType = 'Medium'      THEN 500
+                WHEN @VehicleType = 'Multi Axle'  THEN 2000
+                ELSE 8000
+             END;
+
+-- 3️⃣ Nearest Drivers
+;WITH DriverDistances AS (
+    SELECT
+        dva.DriverID,
+        dva.VehicleID,
+        dva.VendorID,
+        dva.MobileNo,
+        dva.AssignmentDate,
+        dll.Status,
+        dll.Lat AS Driver_Origin_Lat,
+        dll.Lng AS Driver_Origin_Lng,
+        dll.City,
+        dll.District,
+        dll.Taluka,
+        dll.State,
+        dll.Pincode,
+        dll.Address,
+
+        -- ✅ SAFE DISTANCE CALCULATION
+        CAST(
+            6371 * ACOS(
+                CASE 
+                    WHEN (
+                        COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
+                        COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
+                        SIN(RADIANS(@Lat)) * SIN(RADIANS(dll.Lat))
+                    ) > 1 THEN 1
+                    WHEN (
+                        COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
+                        COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
+                        SIN(RADIANS(@Lat)) * SIN(RADIANS(dll.Lat))
+                    ) < -1 THEN -1
+                    ELSE (
+                        COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
+                        COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
+                        SIN(RADIANS(@Lat)) * SIN(RADIANS(dll.Lat))
+                    )
+                END
+            ) AS DECIMAL(10,2)
+        ) AS DistanceInKm
+
+    FROM DriverVehicleAssign dva
+    JOIN DriverLiveLocation dll
+        ON dll.DriverID = dva.DriverID
+    WHERE
+        dva.IsActive = 1
+        AND dll.Lat IS NOT NULL
+        AND dll.Lng IS NOT NULL
+        AND dll.Status = 'Online'
+)
+
+SELECT TOP 10 *
+FROM DriverDistances
+WHERE DistanceInKm <= @MaxKm
+ORDER BY DistanceInKm ASC;   -- ✅ NEAREST FIRST
+
 `;
 
                 const CustomerPost = `
                     SELECT 
-                        clp.LoadPostID AS Customer_LoadPostID,
-                        cla.Origin_Lat AS Customer_Origin_Lat ,
-                        cla.Origin_Lng AS Customer_Origin_Lng,
-                        cla.Destination_Lat  AS Customer_Destination_Lat,
-                        cla.Destination_Lng  AS Customer_Destination_Lng
+                        *
                     FROM CustomerLoadPost clp 
                     JOIN CustomerLoadPostAddress cla
                         ON cla.LoadPostID = clp.LoadPostID
@@ -582,11 +599,7 @@ exports.getNearestDriversDB = (data) => {
                 const merged = NearestDriversdetails.map(detail => {
                     return {
                         ...detail,
-                        Customer_LoadPostID: CustomerPostRow.Customer_LoadPostID,
-                        Customer_Origin_Lat: CustomerPostRow.Customer_Origin_Lat,
-                        Customer_Origin_Lng: CustomerPostRow.Customer_Origin_Lng,
-                        Customer_Destination_Lat: CustomerPostRow.Customer_Destination_Lat,
-                        Customer_Destination_Lng: CustomerPostRow.Customer_Destination_Lng
+                        CustomerPostdata: CustomerPostRow
                     };
                 });
        //         console.log(`[SUCCESS]: Fetched NearestDrivers data: ${JSON.stringify(merged)}`);

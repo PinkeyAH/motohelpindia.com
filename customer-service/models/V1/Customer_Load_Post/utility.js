@@ -465,283 +465,172 @@ exports.getNearestCustomerposttDB = async (data) => {
         // Inputs
         request.input('lat', sql.Decimal(9, 6), data.Lat);
         request.input('lng', sql.Decimal(9, 6), data.Lng);
-        request.input('radius', sql.Int, data.radius || 10000); // ✅ Default 5 km
+        request.input('radius', sql.Int, data.radius || 5000); // ✅ Default 5 km
         request.input('vehicleType', sql.NVarChar(100), data.VehicleType || 'Multi Axle');
         request.input('DriverID', sql.NVarChar(10), data.DriverID);
-        // const result = await request.query(`
-        //                      SELECT TOP 50
-        //                           clp.LoadPostID AS Customer_LoadPostID,
-        //                           dll.status AS DriverStatus,
-        //                           dll.DriverID,
-        //                           cps.CustomerID,
-        //                           dll.VendorID,
-        //                           cps.LP_Status,
-        //                           dll. Driver_LPStatus,
-        //                           cps.CustomerStatus ,
-        //                           dll.Lat AS DriverLat,
-        //                           dll.Lng AS DriverLng,
-        //                           dll.MobileNo AS DriverMobile,
-        //                           dll.VehicleID AS DriverVehicleNumber,
-        //                           dll.LastUpdated AS DriverLastUpdate,
-        //                           dll.status AS DriverAvailabilityStatus,
-        //                           dlp.vehiclestatus AS DriverVehicleStatus,
-        // 						  dlp.loadpostid AS DriverCurrentLoadPostID,
-        //                           FORMAT(clp.insert_date, 'yyyy-MM-dd') AS PostDate,
-        //                           cla.Origin AS PickupLocation,
-        //                           cla.Origin_Lat,
-        //                           cla.Origin_Lng, 
-        //                           cla.Destination_Lat, 
-        //                           cla.Destination_Lng,
-        //                           CAST(
-        //                               6371 * ACOS(
-        //                                   COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-        //                                   COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-        //                                   SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-        //                               ) AS DECIMAL(10,2)
-        //                           ) AS PickupDistanceKm,
-        //                           cla.Destination AS DestinationLocation,
-        //                           CAST(
-        //                               6371 * ACOS(
-        //                                   COS(RADIANS(cla.Origin_Lat)) * COS(RADIANS(cla.Destination_Lat)) *
-        //                                   COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) +
-        //                                   SIN(RADIANS(cla.Origin_Lat)) * SIN(RADIANS(cla.Destination_Lat))
-        //                               ) AS DECIMAL(10,2)
-        //                           ) AS DestinationDistanceKm,
-        //                           clp.VehicleType,
-        //                           clp.BodyType,
-        //                           clp.CargoContent,
-        //                           clp.CargoPackageType,
-        //                           clp.Weight AS ApproxWeight,
-        //                         --  clp.verify_flag,
-        //                          -- clp.verification_code,
-        //                           clp.ExpectedAvailableTime,
-
-        //                           -- Remaining Minutes
-        //                           DATEDIFF(
-        //                               MINUTE, 
-        //                               GETDATE(), 
-        //                               DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))
-        //                           ) AS RemainingMinutes,
-
-        //                           -- Remaining Time (formatted)
-        //                           CASE 
-        //                               WHEN DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) < 0 
-        //                               THEN 'Expired'
-        //                               ELSE CAST(
-        //                                       DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) / 60 
-        //                                   AS VARCHAR(3)) + 'h ' +
-        //                                   CAST(
-        //                                       DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) % 60 
-        //                                   AS VARCHAR(2)) + 'm'
-        //                           END AS RemainingTimeFormatted,
-        //                           ct.img AS CargoTypes_IMG ,
-        //                           cp.Img AS Cargopackag_IMG ,
-        //                           vwr.Img AS Vehicle_IMG
-        //                 FROM CustomerLoadPost clp
-        //                                INNER JOIN CustomerLoadPostAddress cla 
-        //                                    ON clp.LoadPostID = cla.LoadPostID
-        //                                LEFT JOIN CustomerPostStatus cps
-        //                                    ON clp.LoadPostID = cps.CustomerPostID
-        //                                LEFT JOIN  VehicleWeightRange vwr
-        // 							       ON clp.VehicleType = vwr.VehicleType 
-        // 								   AND clp.Weight = vwr.WeightRange 
-        // 							   LEFT JOIN  CargoTypes ct
-        // 								   ON clp.CargoContent = ct.cargo_type
-        //                             -- LEFT JOIN  Cargopackag cp
-        // 							  --   ON clp.CargoPackageType = cp.packaging_type
-        //                                LEFT JOIN (
-        //                                    SELECT packaging_type, cargo_type, MIN(Img) AS Img
-        //                                    FROM Cargopackag
-        //                                    GROUP BY packaging_type, cargo_type
-        //                                           ) cp
-        //                                   ON clp.CargoPackageType = cp.packaging_type
-        //                                   AND clp.CargoContent = cp.cargo_type
-
-        //                                OUTER APPLY (
-        //                                    SELECT TOP 1 dlp.*
-        //                                    FROM DriverLoadPost dlp
-        //                                    WHERE dlp.VehicleType = clp.VehicleType
-        //                                      AND dlp.DriverID = @DriverID
-        //                                    ORDER BY dlp.insert_date DESC
-        //                                ) dlp
-        //                                LEFT JOIN DriverLiveLocation dll
-        //                                    ON dlp.DriverID = dll.DriverID
-        //                                WHERE cla.Origin_Lat IS NOT NULL
-        //                                  AND cla.Origin_Lng IS NOT NULL
-        //                                  AND clp.VehicleType = @vehicleType
-        //                                  AND dll.Status = 'Available'
-        //                                  AND cps.LP_Status = 'Pending'
-        //                                  AND (cps.DriverStatus IS NULL)
-        //                                  AND (
-        //                                        6371 * ACOS(
-        //                                            COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-        //                                            COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-        //                                            SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-        //                                        )
-        //                                      ) <= @radius
-
-        //                       ORDER BY  PostDate ASC;
-        //                   `);
 
         const result = await request.query(`
-                             SELECT TOP 50
-    clp.LoadPostID AS Customer_LoadPostID,
-    dll.status AS DriverStatus,
-    dll.DriverID,
+                            -- 📌 INPUT PARAMETERS
+-- DECLARE @lat          FLOAT        = 19.0760;
+-- DECLARE @lng          FLOAT        = 72.8777;
+-- DECLARE @radius       FLOAT        = 500000000000000000;
+-- DECLARE @DriverID     NVARCHAR(50) = 'DR348884';
+-- DECLARE @vehicleType  NVARCHAR(50) = 'Multi Axle';
+
+SELECT TOP 50
+    -- 🔑 IDs
+    clp.LoadPostID,
     cps.CustomerID,
+    dll.DriverID,
     dll.VendorID,
-    cps.LP_Status,
-    dll.Driver_LPStatus,
-    cps.CustomerStatus,
-    dll.Lat AS DriverLat,
-    dll.Lng AS DriverLng,
-    dll.MobileNo AS DriverMobile,
-    dll.VehicleID AS DriverVehicleNumber,
-    dll.LastUpdated AS DriverLastUpdate,
-    dll.status AS DriverAvailabilityStatus,
-    dlp.vehiclestatus AS DriverVehicleStatus,
-    dlp.loadpostid AS DriverCurrentLoadPostID,
-    FORMAT(clp.insert_date, 'yyyy-MM-dd') AS PostDate,
-    cla.Origin AS PickupLocation,
-    cla.Origin_Lat,
-    cla.Origin_Lng, 
-    cla.Destination_Lat, 
-    cla.Destination_Lng,
 
-    -- ✅ Pickup Distance with clamp
-    CAST(
-        6371 * ACOS(
-            CASE 
-                WHEN (
-                    COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-                    COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-                ) > 1 THEN 1
-                WHEN (
-                    COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-                    COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-                ) < -1 THEN -1
-                ELSE (
-                    COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-                    COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-                )
-            END
-        ) AS DECIMAL(10,2)
-    ) AS PickupDistanceKm,
+    -- 📍 PICKUP DETAILS
+    cla.PickupAddress,
+    cla.PickupLat,
+    cla.PickupLng,
+    cla.PickupContactPerson,
+    cla.PickupContactNumber,
+    cla.PickupPlotBuilding,
+    cla.PickupStreetArea,
+    cla.PickupCity,
+    cla.PickupDistrict,
+    cla.PickupTaluka,
+    cla.PickupState,
+    cla.PickupPincode,
 
-    cla.Destination AS DestinationLocation,
+    -- 📦 DELIVERY DETAILS
+    cla.DeliveryAddress,
+    cla.DeliveryLat,
+    cla.DeliveryLng,
+    cla.DeliveryContactPerson,
+    cla.DeliveryContactNumber,
+    cla.DeliveryPlotBuilding,
+    cla.DeliveryStreetArea,
+    cla.DeliveryAddress,
+    cla.DeliveryCity,
+    cla.DeliveryDistrict,
+    cla.DeliveryTaluka,
+    cla.DeliveryState,
+    cla.DeliveryPincode,
 
-    -- ✅ Destination Distance with clamp
-    CAST(
-        6371 * ACOS(
-            CASE 
-                WHEN (
-                    COS(RADIANS(cla.Origin_Lat)) * COS(RADIANS(cla.Destination_Lat)) *
-                    COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) +
-                    SIN(RADIANS(cla.Origin_Lat)) * SIN(RADIANS(cla.Destination_Lat))
-                ) > 1 THEN 1
-                WHEN (
-                    COS(RADIANS(cla.Origin_Lat)) * COS(RADIANS(cla.Destination_Lat)) *
-                    COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) +
-                    SIN(RADIANS(cla.Origin_Lat)) * SIN(RADIANS(cla.Destination_Lat))
-                ) < -1 THEN -1
-                ELSE (
-                    COS(RADIANS(cla.Origin_Lat)) * COS(RADIANS(cla.Destination_Lat)) *
-                    COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) +
-                    SIN(RADIANS(cla.Origin_Lat)) * SIN(RADIANS(cla.Destination_Lat))
-                )
-            END
-        ) AS DECIMAL(10,2)
-    ) AS DestinationDistanceKm,
-
+    -- 🚚 VEHICLE & CARGO
     clp.VehicleType,
     clp.BodyType,
+    clp.Weight AS ApproxWeight,
     clp.CargoContent,
     clp.CargoPackageType,
-    clp.Weight AS ApproxWeight,
+
+    -- 🖼 IMAGES
+    vwr.Img AS Vehicle_IMG,
+    ct.img AS CargoType_IMG,
+    cp.Img AS CargoPackage_IMG,
+
+    -- 🧭 DRIVER LIVE DATA
+    dll.MobileNo AS DriverMobile,
+    dll.VehicleID AS VehicleNumber,
+    dll.Lat AS DriverLat,
+    dll.Lng AS DriverLng,
+    dll.Status AS DriverStatus,
+    dll.LastUpdated AS DriverLastUpdate,
+
+    -- 📌 STATUS
+    cps.LP_Status,
+    cps.CustomerStatus,
+    dlp.DriverStatus,
+    dlp.VehicleStatus AS DriverVehicleStatus,
+
+    -- ⏱ TIME
     clp.ExpectedAvailableTime,
+    FORMAT(clp.insert_date, 'yyyy-MM-dd') AS PostDate,
 
-    -- Remaining Minutes
-    DATEDIFF(
-        MINUTE, 
-        GETDATE(), 
-        DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))
-    ) AS RemainingMinutes,
-
-    -- Remaining Time (formatted)
-    CASE 
-        WHEN DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) < 0 
-        THEN 'Expired'
-        ELSE CAST(
-                DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) / 60 
-            AS VARCHAR(3)) + 'h ' +
-            CAST(
-                DATEDIFF(MINUTE, GETDATE(), DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', clp.ExpectedAvailableTime), CAST(GETDATE() AS DATETIME))) % 60 
-            AS VARCHAR(2)) + 'm'
-    END AS RemainingTimeFormatted,
-
-    ct.img AS CargoTypes_IMG,
-    cp.Img AS Cargopackag_IMG,
-    vwr.Img AS Vehicle_IMG
+    -- 📏 PICKUP DISTANCE (KM)
+    CAST(
+        6371 * ACOS(
+            CASE 
+                WHEN (
+                    COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                    COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+                ) > 1 THEN 1
+                WHEN (
+                    COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                    COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+                ) < -1 THEN -1
+                ELSE (
+                    COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                    COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+                )
+            END
+        ) AS DECIMAL(10,2)
+    ) AS PickupDistanceKm
 
 FROM CustomerLoadPost clp
-INNER JOIN CustomerLoadPostAddress cla 
+INNER JOIN CustomerLoadPostAddress cla
     ON clp.LoadPostID = cla.LoadPostID
+
 LEFT JOIN CustomerPostStatus cps
     ON clp.LoadPostID = cps.CustomerPostID
+
 LEFT JOIN VehicleWeightRange vwr
-    ON clp.VehicleType = vwr.VehicleType 
-    AND clp.Weight = vwr.WeightRange 
+    ON clp.VehicleType = vwr.VehicleType
+   AND clp.Weight = vwr.WeightRange
+
 LEFT JOIN CargoTypes ct
     ON clp.CargoContent = ct.cargo_type
+
 LEFT JOIN (
     SELECT packaging_type, cargo_type, MIN(Img) AS Img
     FROM Cargopackag
     GROUP BY packaging_type, cargo_type
 ) cp
     ON clp.CargoPackageType = cp.packaging_type
-    AND clp.CargoContent = cp.cargo_type
+   AND clp.CargoContent = cp.cargo_type
+
 OUTER APPLY (
-    SELECT TOP 1 dlp.*
-    FROM DriverLoadPost dlp
-    WHERE dlp.VehicleType = clp.VehicleType
-      AND dlp.DriverID = @DriverID
-    ORDER BY dlp.insert_date DESC
+    SELECT TOP 1 *
+    FROM DriverLoadPost
+    WHERE DriverID = @DriverID
+      AND VehicleType = clp.VehicleType
+    ORDER BY insert_date DESC
 ) dlp
+
 LEFT JOIN DriverLiveLocation dll
     ON dlp.DriverID = dll.DriverID
-WHERE cla.Origin_Lat IS NOT NULL
-  AND cla.Origin_Lng IS NOT NULL
-  AND clp.VehicleType = @vehicleType
- -- AND dll.Status = 'Available'
-   AND dll.Status = 'Online'
 
-  AND cps.LP_Status = 'Pending'
-  AND (cps.DriverStatus IS NULL)
-  AND (
-      6371 * ACOS(
-          CASE 
-              WHEN (
-                  COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-                  COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-                  SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-              ) > 1 THEN 1
-              WHEN (
-                  COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-                  COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-                  SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-              ) < -1 THEN -1
-              ELSE (
-                  COS(RADIANS(@lat)) * COS(RADIANS(cla.Origin_Lat)) *
-                  COS(RADIANS(cla.Origin_Lng) - RADIANS(@lng)) +
-                  SIN(RADIANS(@lat)) * SIN(RADIANS(cla.Origin_Lat))
-              )
-          END
-      )
-  ) <= @radius
-ORDER BY PostDate ASC
+WHERE
+   clp.VehicleType = @vehicleType
+    AND dll.Status = 'Online'
+    AND cps.LP_Status = 'Pending'
+   AND cps.DriverStatus IS NULL
+    AND cla.PickupLat IS NOT NULL
+    AND cla.PickupLng IS NOT NULL
+    AND
+	(
+        6371 * ACOS(
+            CASE 
+                WHEN (
+                    COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                    COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+                ) > 1 THEN 1
+                WHEN (
+                    COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                    COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+                ) < -1 THEN -1
+                ELSE (
+                    COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                    COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                    SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+                )
+            END
+        )
+    ) <= @radius
+
+ORDER BY clp.insert_date ASC;
+
                           `);
 
         if (result.recordset.length > 0) {
@@ -807,57 +696,8 @@ exports.getcustomerprocessDB = async (data) => {
                 console.log(`[INFO]: Executing Query - SELECT * FROM CustomerLoadPost WHERE LoadPostID = @LoadPostID`);
 
                 if (!data.LoadPostID) {
-                    return request.query(`SELECT    
-                                                    CD.ContactNo AS Customer_ContactNo,
-                                                    CD.ContactPerson AS Customer_ContactPerson,    
-
-                                                    clp.LoadPostID,
-                                                    clp.CustomerID,
-                                                    clp.Origin,             
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.verification_code,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,
-                                                    clp.Approximate_weight,
-                                                    clp.PickupType,
-
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-													dll.Lng AS DriverLng,
-                                                 --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-													dll.MobileNo
-                                                 --   cps.LP_Status
+                    return request.query(`SELECT
+                                                    *
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -873,56 +713,8 @@ exports.getcustomerprocessDB = async (data) => {
                                                     ORDER BY clp.insert_date DESC;
 `);
                 } else {
-                    return request.query(`SELECT        
-                                                    CD.ContactNo AS Customer_ContactNo,
-                                                    CD.ContactPerson AS Customer_ContactPerson,  
-                                                    clp.LoadPostID,
-                                                    clp.CustomerID,
-                                                    clp.Origin,             
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.verification_code,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,
-                                                    clp.Approximate_weight,
-                                                    clp.PickupType,
-
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-													dll.Lng AS DriverLng,
-                                                 --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-													dll.MobileNo
-                                                --    cps.LP_Status
+                    return request.query(`SELECT
+                                                    *
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -972,54 +764,8 @@ exports.getcustomeractiveDB = async (data) => {
                 console.log(`[INFO]: Executing Query - SELECT * FROM CustomerLoadPost WHERE LoadPostID = @LoadPostID `);
 
                 if (!data.LoadPostID) {
-                    return request.query(`SELECT        
-
-                                                    clp.LoadPostID,
-                                                    clp.CustomerID,
-                                                    clp.Origin,             
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                               --     clp.verify_flag,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,
-                                                    clp.Approximate_weight,
-                                                    clp.PickupType,
-
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-													dll.Lng AS DriverLng,
-                                                 --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-													dll.MobileNo,
-                                                    cps.LP_Status
+                    return request.query(`SELECT
+                                                    *
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -1035,54 +781,8 @@ exports.getcustomeractiveDB = async (data) => {
                                                     ORDER BY clp.insert_date DESC;
 `);
                 } else {
-                    return request.query(`SELECT        
-
-                                                    clp.LoadPostID,
-                                                    clp.CustomerID,
-                                                    clp.Origin,             
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,
-                                                    clp.Approximate_weight,
-                                                    clp.PickupType,
-
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-													dll.Lng AS DriverLng,
-                                                 --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-													dll.MobileNo,
-                                                    cps.LP_Status
+                    return request.query(`SELECT
+                                                    *
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID  
@@ -1134,53 +834,7 @@ exports.getcustomercompletedDB = async (data) => {
                 if (!data.LoadPostID) {
                     if (data.FromDate && data.ToDate) {
                         return request.query(`SELECT
-
-                                                    clp.LoadPostID,
-                                                    clp.CustomerID,
-                                                    clp.Origin,        
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,  
-                                                    clp.Approximate_weight, 
-                                                    clp.PickupType,
-
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-                                                    dll.Lng AS DriverLng,
-                                                 --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-                                                    dll.MobileNo,
-                                                    cps.LP_Status 
+                                                    *
                                                     FROM CustomerLoadPost clp   
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1196,53 +850,7 @@ exports.getcustomercompletedDB = async (data) => {
                     }
                     else {
                         return request.query(`SELECT
-
-                                                    clp.LoadPostID, 
-                                                    clp.CustomerID,
-                                                    clp.Origin,        
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,
-                                                    clp.Approximate_weight, 
-                                                    clp.PickupType,
-
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-                                                    dll.Lng AS DriverLng,
-                                                    --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-                                                    dll.MobileNo,
-                                                    cps.LP_Status 
+*
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1260,40 +868,7 @@ exports.getcustomercompletedDB = async (data) => {
                 else {
                     if (data.FromDate && data.ToDate) {
                         return request.query(`SELECT
-                                                    clp.LoadPostID,
-                                                    clp.CustomerID,
-                                                    clp.Origin,
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    cla.AddressLine1,
-                                                    cla.AddressLine2,
-                                                    cla.District,
-                                                    cla.Taluka,
-                                                    cla.State,
-                                                    cla.Pincode,
-                                                    cla.Lat,
-                                                    cla.Lng,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-                                                    dll.Lng AS DriverLng,
-                                                    --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-                                                    dll.MobileNo,
-                                                    cps.LP_Status 
+                                                    * 
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1307,54 +882,7 @@ exports.getcustomercompletedDB = async (data) => {
 `);
                     } else {
                         return request.query(`SELECT
-                                                    clp.LoadPostID, 
-                                                    clp.CustomerID,
-                                                    clp.Origin,        
-                                                    clp.Destination,
-                                                    clp.VehicleType,
-                                                    clp.Weight,
-                                                    clp.verify_flag,
-                                                    clp.BodyType,
-                                                    clp.CargoContent,
-                                                    clp.CargoPackageType,
-                                                    clp.ExpectedAvailableTime,
-                                                    clp.insert_date AS PostInsertDate,
-                                                    clp.update_date AS PostUpdateDate,
-                                                    clp.Approximate_weight, 
-                                                    clp.PickupType,
-                                                    
-                                                    cla.Origin_Lat,
-                                                    cla.Origin_Lng,
-                                                    cla.Origin_City,
-                                                    cla.Origin_District,
-                                                    cla.Origin_Taluka,
-                                                    cla.Destination_City,
-                                                    cla.Destination_District,
-                                                    cla.Destination_Taluka,
-                                                    cla.Origin_State,
-                                                    cla.Origin_Pincode,
-                                                    cla.Destination_Lat,
-                                                    cla.Destination_Lng,
-                                                    cla.Destination_State,
-                                                    cla.Destination_Pincode,
-                                                    cla.insert_date AS AddressInsertDate,
-                                                    cla.update_date AS AddressUpdateDate,
-                                                    cps.CustomerPostID,
-                                                    cps.CustomerID As cpsCustomerID,
-                                                    cps.VendorID,
-                                                    cps.DriverID,
-                                                    cps.CustomerStatus,
-                                                    cps.insert_date AS PostInsertDate,
-                                                    cps.update_date AS PostUpdateDate,
-                                                    cps.VendorStatus,
-                                                    cps.DriverStatus,
-                                                    cps.LP_Status ,
-                                                    dll.Lat AS DriverLat,
-                                                    dll.Lng AS DriverLng,
-                                                    --   dll.UpdateTime AS DriverLocationUpdateTime,
-                                                    dll.DriverID AS dllDriverID,
-                                                    dll.MobileNo,
-                                                    cps.LP_Status 
+                                                    *
                                                     FROM CustomerLoadPost clp
                                                     JOIN CustomerLoadPostAddress cla
                                                         ON clp.LoadPostID = cla.LoadPostID
@@ -1404,78 +932,95 @@ exports.getNearestDriversDB = (data) => {
                 request.input('LoadPostID', sql.NVarChar, data.LoadPostID);
 
                 // Queries
-                const NearestDrivers = `DECLARE 
-                                        @OriginLat DECIMAL(9,6),
-                                        @OriginLng DECIMAL(9,6),
-                                        @VehicleType NVARCHAR(100),
-                                        @MaxKm INT;
-                                    
-                                    -- 1. Fetch customer origin & vehicle type
-                                    SELECT
-                                        @OriginLat = cla.Origin_Lat,
-                                        @OriginLng = cla.Origin_Lng,
-                                        @VehicleType = clp.VehicleType
-                                    FROM CustomerLoadPost clp
-                                    JOIN CustomerLoadPostAddress cla
-                                        ON clp.LoadPostID = cla.LoadPostID
-                                    WHERE clp.LoadPostID = @LoadPostID ; --  'LP499981';
-                                    
-                                    -- 2. Set MaxKm by Vehicle Type
-                                    SET @MaxKm = CASE
-                                                    WHEN @VehicleType = 'Mini' THEN 30
-                                                    WHEN @VehicleType = 'Light' THEN 1000
-                                                    WHEN @VehicleType = 'Medium' THEN 500
-                                                    WHEN @VehicleType = 'Multi Axle' THEN 2000
-                                                    ELSE 8000
-                                                END;
-                                    
-                                    -- 3. Final Nearest Drivers
-                                    ;WITH DriverDistances AS (
-                                        SELECT
-                                            dva.DriverID,
-                                            dva.VehicleID,
-                                            dva.VendorID,
-                                            dva.MobileNo,
-                                            dva.AssignmentDate,
-                                            dll.Status,
-                                            dll.Lat AS Driver_Origin_Lat,
-                                            dll.Lng AS Driver_Origin_Lng,
-                                            dll.City,
-                                            dll.District,
-                                            dll.Taluka,
-                                            dll.State,
-                                            dll.Pincode,
-                                            dll.Address,
-                                            CAST(
-                                                6371 * ACOS(
-                                                    COS(RADIANS(@OriginLat)) * COS(RADIANS(dll.Lat)) *
-                                                    COS(RADIANS(dll.Lng) - RADIANS(@OriginLng)) +
-                                                    SIN(RADIANS(@OriginLat)) * SIN(RADIANS(dll.Lat))
-                                                ) AS DECIMAL(10,2)
-                                            ) AS DistanceInKm
-                                        FROM DriverVehicleAssign dva
-                                        JOIN DriverLiveLocation dll ON dll.DriverID = dva.DriverID
-                                       -- JOIN Vehicle v ON dva.VehicleID = v.VehicleID  -- uncomment if you want vehicle type filter
-                                        WHERE dll.Lat IS NOT NULL 
-                                          AND dll.Lng IS NOT NULL
-                                          AND dva.IsActive = 1
-                                          -- AND v.VehicleType = @VehicleType   -- ✅ if filtering by type
-                                    )
-                                    SELECT TOP 10 *
-                                    FROM DriverDistances
-                                    WHERE DistanceInKm <= @MaxKm
-                                    -- ORDER BY DistanceInKm ASC;  -- ASC for nearest first
-                                    
-                                        ORDER BY DistanceInKm DESC;
+                const NearestDrivers = `
+                -- 📌 INPUT PARAMETERS
+DECLARE @lat          FLOAT        = 19.0760;
+DECLARE @lng          FLOAT        = 72.8777;
+DECLARE @radius       FLOAT        = 500000000000000000;
+DECLARE @DriverID     NVARCHAR(50) = 'DR348884';
+DECLARE @vehicleType  NVARCHAR(50) = 'Multi Axle';
+DECLARE @LoadPostID  NVARCHAR(50) =  'LP326313';
+DECLARE @MaxKm NVARCHAR(50) =  '100';
+-- 1️⃣ Fetch customer origin & vehicle type
+SELECT
+    @Lat = cla.PickupLat,
+    @Lng = cla.PickupLng,
+    @VehicleType = clp.VehicleType
+FROM CustomerLoadPost clp
+JOIN CustomerLoadPostAddress cla
+    ON clp.LoadPostID = cla.LoadPostID
+WHERE clp.LoadPostID = @LoadPostID;
+
+-- 2️⃣ Set MaxKm by Vehicle Type
+SET @MaxKm = CASE
+                WHEN @VehicleType = 'Mini'        THEN 30
+                WHEN @VehicleType = 'Light'       THEN 1000
+                WHEN @VehicleType = 'Medium'      THEN 500
+                WHEN @VehicleType = 'Multi Axle'  THEN 2000
+                ELSE 8000
+             END;
+
+-- 3️⃣ Nearest Drivers
+;WITH DriverDistances AS (
+    SELECT
+        dva.DriverID,
+        dva.VehicleID,
+        dva.VendorID,
+        dva.MobileNo,
+        dva.AssignmentDate,
+        dll.Status,
+        dll.Lat AS Driver_Origin_Lat,
+        dll.Lng AS Driver_Origin_Lng,
+        dll.City,
+        dll.District,
+        dll.Taluka,
+        dll.State,
+        dll.Pincode,
+        dll.Address,
+
+        -- ✅ SAFE DISTANCE CALCULATION
+        CAST(
+            6371 * ACOS(
+                CASE 
+                    WHEN (
+                        COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
+                        COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
+                        SIN(RADIANS(@Lat)) * SIN(RADIANS(dll.Lat))
+                    ) > 1 THEN 1
+                    WHEN (
+                        COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
+                        COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
+                        SIN(RADIANS(@Lat)) * SIN(RADIANS(dll.Lat))
+                    ) < -1 THEN -1
+                    ELSE (
+                        COS(RADIANS(@Lat)) * COS(RADIANS(dll.Lat)) *
+                        COS(RADIANS(dll.Lng) - RADIANS(@Lng)) +
+                        SIN(RADIANS(@Lat)) * SIN(RADIANS(dll.Lat))
+                    )
+                END
+            ) AS DECIMAL(10,2)
+        ) AS DistanceInKm
+
+    FROM DriverVehicleAssign dva
+    JOIN DriverLiveLocation dll
+        ON dll.DriverID = dva.DriverID
+    WHERE
+        dva.IsActive = 1
+        AND dll.Lat IS NOT NULL
+        AND dll.Lng IS NOT NULL
+        AND dll.Status = 'Online'
+)
+
+SELECT TOP 10 *
+FROM DriverDistances
+WHERE DistanceInKm <= @MaxKm
+ORDER BY DistanceInKm ASC;   -- ✅ NEAREST FIRST
+
 `;
 
                 const CustomerPost = `
                     SELECT 
-                        clp.LoadPostID AS Customer_LoadPostID,
-                        cla.Origin_Lat AS Customer_Origin_Lat ,
-                        cla.Origin_Lng AS Customer_Origin_Lng,
-                        cla.Destination_Lat  AS Customer_Destination_Lat,
-                        cla.Destination_Lng  AS Customer_Destination_Lng
+                        *
                     FROM CustomerLoadPost clp 
                     JOIN CustomerLoadPostAddress cla
                         ON cla.LoadPostID = clp.LoadPostID
@@ -1496,11 +1041,8 @@ exports.getNearestDriversDB = (data) => {
                 const merged = NearestDriversdetails.map(detail => {
                     return {
                         ...detail,
-                        Customer_LoadPostID: CustomerPostRow.Customer_LoadPostID,
-                        Customer_Origin_Lat: CustomerPostRow.Customer_Origin_Lat,
-                        Customer_Origin_Lng: CustomerPostRow.Customer_Origin_Lng,
-                        Customer_Destination_Lat: CustomerPostRow.Customer_Destination_Lat,
-                        Customer_Destination_Lng: CustomerPostRow.Customer_Destination_Lng
+                   CustomerPostdata: CustomerPostRow
+
                     };
                 });
                 //         console.log(`[SUCCESS]: Fetched NearestDrivers data: ${JSON.stringify(merged)}`);
@@ -1535,18 +1077,6 @@ exports.VendorNearestCustomerPostDB = async (data) => {
         const result = await request.query(`SELECT TOP 50
                                     clp.LoadPostID AS Customer_LoadPostID,
                                     cps.CustomerID,
-                                    clp.VehicleType,
-                                    clp.BodyType,
-                                    clp.CargoContent,
-                                    clp.CargoPackageType,
-                                    clp.Weight AS ApproxWeight,
-                                    FORMAT(clp.insert_date, 'yyyy-MM-dd') AS PostDate,
-                                    cla.Origin AS PickupLocation,
-                                    cla.Origin_Lat,
-                                    cla.Origin_Lng,
-                                    cla.Destination AS DestinationLocation,
-                                    cla.Destination_Lat,
-                                    cla.Destination_Lng,
                                 
                                     -- ✅ Distance (Vendor → Customer Pickup)
                                     CAST(
