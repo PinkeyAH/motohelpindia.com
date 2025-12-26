@@ -30,11 +30,11 @@ exports.customerloadpostmasterDB = (data) => {
             request.input('pickup_area_street', sql.NVarChar(100), data.pickup?.pickup_area_street);
             request.input('pickup_pincode', sql.NVarChar(100), data.pickup?.pickup_pincode );
             request.input('pickup_state', sql.NVarChar(100), data.pickup?.pickup_state );
-            request.input('pickup_district', sql.NVarChar(10), data.pickup?.pickup_district );
-            request.input('pickup_taluka', sql.NVarChar(10), data.pickup?.pickup_taluka );
-            request.input('pickup_map_location', sql.NVarChar(10), data.pickup?.pickup_map_location );
-            request.input('pickup_Lat', sql.Decimal(10, 7), data.pickup?.pickup_Lat);
-            request.input('pickup_Lng', sql.Decimal(10, 7), data.pickup?.pickup_Lng);
+            request.input('pickup_district', sql.NVarChar(100), data.pickup?.pickup_district );
+            request.input('pickup_taluka', sql.NVarChar(100), data.pickup?.pickup_taluka );
+            request.input('pickup_map_location', sql.NVarChar(100), data.pickup?.pickup_map_location );
+            request.input('pickup_Lat', sql.NVarChar(100), data.pickup?.pickup_Lat);
+            request.input('pickup_Lng', sql.NVarChar(100), data.pickup?.pickup_Lng);
 
 
             // ================= CONSIGNEE =================
@@ -50,11 +50,11 @@ exports.customerloadpostmasterDB = (data) => {
             request.input('drop_area_street', sql.NVarChar(100), data.drop?.drop_area_street );
             request.input('drop_pincode', sql.NVarChar(100), data.drop?.drop_pincode );
             request.input('drop_state', sql.NVarChar(100), data.drop?.drop_state );
-            request.input('drop_district', sql.NVarChar(10), data.drop?.drop_district );
-            request.input('drop_taluka', sql.NVarChar(10), data.drop?.drop_taluka );
-            request.input('drop_map_location', sql.NVarChar(10), data.drop?.drop_map_location );
-            request.input('drop_Lat', sql.Decimal(10, 7), data.drop?.drop_Lat);
-            request.input('drop_Lng', sql.Decimal(10, 7), data.drop?.drop_Lng);
+            request.input('drop_district', sql.NVarChar(100), data.drop?.drop_district );
+            request.input('drop_taluka', sql.NVarChar(100), data.drop?.drop_taluka );
+            request.input('drop_map_location', sql.NVarChar(100), data.drop?.drop_map_location );
+            request.input('drop_Lat', sql.NVarChar(100), data.drop?.drop_Lat);
+            request.input('drop_Lng',sql.NVarChar(100), data.drop?.drop_Lng);
     
             
             // ================= CARGO =================
@@ -68,18 +68,18 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= WEIGHT =================
             request.input('No_of_package', sql.NVarChar(100), data.weight.No_of_package || null);
-            request.input('net_weight', sql.NVarChar(50), data.weight.net_weight || null);
-            request.input('approx_weight', sql.NVarChar(50), data.weight.approx_weight || null);
-            request.input('gross_weight', sql.NVarChar(50), data.weight.gross_weight || null);
+            request.input('net_weight', sql.NVarChar(100), data.weight.net_weight || null);
+            request.input('approx_weight', sql.NVarChar(100), data.weight.approx_weight || null);
+            request.input('gross_weight', sql.NVarChar(100), data.weight.gross_weight || null);
 
             // ================= CHARGES (FIXED SPELLINGS) =================
-            request.input('freightAmount', sql.NVarChar(50), data.chargers.freightAmount || null);
-            request.input('loadingcharge', sql.NVarChar(50), data.chargers.loadingcharge || null);
-            request.input('unloadingcharge', sql.NVarChar(50), data.chargers.unloadingcharge || null);
-            request.input('LRcharge', sql.NVarChar(50), data.chargers.LRcharge || null);
-            request.input('othercharge', sql.NVarChar(50), data.chargers.othercharge || null);
-            request.input('otherchargelabel', sql.NVarChar(50), data.chargers.otherchargelabel || null);
-            request.input('Advance', sql.NVarChar(50), data.chargers.Advance || null);
+            request.input('freightAmount', sql.NVarChar(100), data.chargers.freightAmount || null);
+            request.input('loadingcharge', sql.NVarChar(100), data.chargers.loadingcharge || null);
+            request.input('unloadingcharge', sql.NVarChar(100), data.chargers.unloadingcharge || null);
+            request.input('LRcharge', sql.NVarChar(100), data.chargers.LRcharge || null);
+            request.input('othercharge', sql.NVarChar(100), data.chargers.othercharge || null);
+            request.input('otherchargelabel', sql.NVarChar(100), data.chargers.otherchargelabel || null);
+            request.input('Advance', sql.NVarChar(100), data.chargers.Advance || null);
 
             // ================= LR =================
             request.input('lr_no', sql.NVarChar(255), data.lr_no || null);
@@ -87,11 +87,11 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= TVP : INVOICE =================
             const INVD = new sql.Table('invoice_Details');
-            INVD.columns.add('invoice_number', sql.NVarChar(50));
-            INVD.columns.add('invoice_date', sql.NVarChar(50));
-            INVD.columns.add('Unit', sql.NVarChar(50));
-            INVD.columns.add('quantity', sql.NVarChar(50));
-            INVD.columns.add('value_amount', sql.NVarChar(50));
+            INVD.columns.add('invoice_number', sql.NVarChar(100));
+            INVD.columns.add('invoice_date', sql.NVarChar(100));
+            INVD.columns.add('Unit', sql.NVarChar(100));
+            INVD.columns.add('quantity', sql.NVarChar(100));
+            INVD.columns.add('value_amount', sql.NVarChar(100));
             INVD.columns.add('invoice_img', sql.NVarChar(sql.MAX));
             INVD.columns.add('remarks', sql.NVarChar(255));
 
@@ -111,11 +111,11 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= TVP : CHALLAN =================
             const CHD = new sql.Table('Challan_Details');
-            CHD.columns.add('challan_number', sql.NVarChar(50));
-            CHD.columns.add('challan_date', sql.NVarChar(50));
-            CHD.columns.add('Unit', sql.NVarChar(50));
-            CHD.columns.add('quantity', sql.NVarChar(50));
-            CHD.columns.add('value_amount', sql.NVarChar(50));
+            CHD.columns.add('challan_number', sql.NVarChar(100));
+            CHD.columns.add('challan_date', sql.NVarChar(100));
+            CHD.columns.add('Unit', sql.NVarChar(100));
+            CHD.columns.add('quantity', sql.NVarChar(100));
+            CHD.columns.add('value_amount', sql.NVarChar(100));
             CHD.columns.add('challan_img', sql.NVarChar(sql.MAX));
             CHD.columns.add('remarks', sql.NVarChar(255));
 
@@ -137,7 +137,7 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= OUTPUT =================
             request.output('load_master_id', sql.NVarChar(30));
-            request.output('bstatus_code', sql.NVarChar(50));
+            request.output('bstatus_code', sql.NVarChar(100));
             request.output('bmessage_desc', sql.NVarChar(255));
 
             const result = await request.execute('CustomerLoadPostMasterInsert');
