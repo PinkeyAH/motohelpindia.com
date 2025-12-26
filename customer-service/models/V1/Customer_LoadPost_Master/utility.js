@@ -14,54 +14,52 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 request.input('LoadPostID', sql.NVarChar(150), customerloadpostmaster.LoadPostID);
                 request.input('CustomerID', sql.NVarChar(150), customerloadpostmaster.CustomerID);
 
-                request.input('contact_person', sql.NVarChar(150), customerloadpostmaster.contact_person);
-                request.input('contact_number', sql.NVarChar(20), customerloadpostmaster.contact_number);
-                request.input('pickup_plot_unit', sql.NVarChar(255), customerloadpostmaster.pickup_plot_unit);
-                request.input('pickup_area_street', sql.NVarChar(255), customerloadpostmaster.pickup_area_street);
-                request.input('pickup_pincode', sql.NVarChar(10), customerloadpostmaster.pickup_pincode);
-                request.input('pickup_state', sql.NVarChar(50), customerloadpostmaster.pickup_state);
-                request.input('pickup_district', sql.NVarChar(50), customerloadpostmaster.pickup_district);
-                request.input('pickup_taluka', sql.NVarChar(50), customerloadpostmaster.pickup_taluka);
-                request.input('pickup_map_location', sql.NVarChar(255), customerloadpostmaster.pickup_map_location);
+                //  consigner
+                request.input('consigner_name', sql.NVarChar(150), consigner.consigner_name);
+                request.input('consigner_gst', sql.NVarChar(150), consigner.consigner_gst);
+                request.input('consigner_address', sql.NVarChar(150), consigner.consigner_address);
+                request.input('consigner_pincode', sql.NVarChar(150), consigner.consigner_pincode);
+                request.input('consigner_origin', sql.NVarChar(150), consigner.consigner_origin);
+                request.input('consigner_state', sql.NVarChar(150), consigner.consigner_state);
 
-                request.input('consignee_name', sql.NVarChar(150), customerloadpostmaster.consignee_name);
-                request.input('consignee_mobile', sql.NVarChar(20), customerloadpostmaster.consignee_mobile);
-                request.input('drop_plot_unit', sql.NVarChar(255), customerloadpostmaster.drop_plot_unit);
-                request.input('drop_area_street', sql.NVarChar(255), customerloadpostmaster.drop_area_street);
-                request.input('drop_pincode', sql.NVarChar(10), customerloadpostmaster.drop_pincode);
-                request.input('drop_state', sql.NVarChar(50), customerloadpostmaster.drop_state);
-                request.input('drop_district', sql.NVarChar(50), customerloadpostmaster.drop_district);
-                request.input('drop_taluka', sql.NVarChar(50), customerloadpostmaster.drop_taluka);
-                request.input('drop_map_location', sql.NVarChar(255), customerloadpostmaster.drop_map_location);
+                //consignee
+                request.input('consignee_name', sql.NVarChar(150), consignee.consignee_name);
+                request.input('consignee_gst', sql.NVarChar(150), consignee.consignee_gst);
+                request.input('consignee_address', sql.NVarChar(150), consignee.consignee_address);
+                request.input('consignee_pincode', sql.NVarChar(150), consignee.consignee_pincode);
+                request.input('consignee_destination', sql.NVarChar(150), consignee.consignee_destination);
+                request.input('consignee_state', sql.NVarChar(150), consignee.consignee_state);
 
-                request.input('cargo_type', sql.NVarChar(20), customerloadpostmaster.cargo_type);
-                request.input('dhala_length', sql.NVarChar(10), customerloadpostmaster.dhala_length);
-                request.input('body_type', sql.NVarChar(100), customerloadpostmaster.body_type);
-                request.input('cargo_content', sql.NVarChar(100), customerloadpostmaster.cargo_content);
-                request.input('package_type', sql.NVarChar(100), customerloadpostmaster.package_type);
+                // cargo 
+                request.input('cargo_content', sql.NVarChar(100), cargo.cargo_content);
+                request.input('package_type', sql.NVarChar(100), cargo.package_type);
+                request.input('package_name', sql.NVarChar(100), cargo.package_name);
 
-                request.input('body_type_remarks', sql.NVarChar(100), customerloadpostmaster.body_type_remarks);
-                request.input('cargo_content_remarks', sql.NVarChar(100), customerloadpostmaster.cargo_content_remarks);
-                request.input('package_type_remarks', sql.NVarChar(100), customerloadpostmaster.package_type_remarks);
+                request.input('po_number', sql.NVarChar(100), customerloadpostmaster.po_number);
+                request.input('po_date', sql.NVarChar(100), customerloadpostmaster.po_date);
 
+                request.input('No_of_package', sql.NVarChar(100), customerloadpostmaster.No_of_package);
                 request.input('net_weight', sql.NVarChar(50), customerloadpostmaster.net_weight);
                 request.input('approx_weight', sql.NVarChar(50), customerloadpostmaster.approx_weight);
                 request.input('gross_weight', sql.NVarChar(50), customerloadpostmaster.gross_weight);
+// chargers
 
-                request.input('lab_report_applied', sql.Char(1), customerloadpostmaster.lab_report_applied ? 'Y' : 'N');
-                request.input('lab_report_available', sql.Char(1), customerloadpostmaster.lab_report_available ? 'Y' : 'N');
-                request.input('insurance', sql.Char(1), customerloadpostmaster.insurance ? 'Y' : 'N');
+                request.input('freightAmount', sql.NVarChar(50), chargers.freightAmount );
+                request.input('loadingcharge', sql.NVarChar(50), chargers.loadingcharge);
+                request.input('unlodingcharge', sql.NVarChar(50), chargers.unlodingcharge);
+                request.input('LRcharge', sql.NVarChar(50), chargersLRcharge);
+                request.input('otherchasrge', sql.NVarChar(50),chargers.otherchasrge);
+                request.input('otherchasrgelable', sql.NVarChar(50), chargers.otherchasrgelable);
+                request.input('Advanse', sql.NVarChar(50), chargers.Advanse);
 
-                request.input('transit_risk', sql.NVarChar(255), customerloadpostmaster.transit_risk);
                 request.input('lr_no', sql.NVarChar(255), customerloadpostmaster.lr_no || null);
                 request.input('lr_date', sql.NVarChar(255), customerloadpostmaster.lr_date || null);
 
                 // TVP INVOICE DETAILS (must match exact SP TVP definition)
                 const INVD = new sql.Table('invoice_Details');
-                INVD.columns.add('po_number', sql.NVarChar(50));
-                                INVD.columns.add('po_date', sql.NVarChar(50));
                 INVD.columns.add('invoice_number', sql.NVarChar(50));
                 INVD.columns.add('invoice_date', sql.NVarChar(50));
+                INVD.columns.add('Unit', sql.NVarChar(50));
                 INVD.columns.add('quantity', sql.NVarChar(50));
                 INVD.columns.add('value_amount', sql.NVarChar(50));
                 INVD.columns.add('invoice_img', sql.NVarChar(sql.MAX));
@@ -69,10 +67,9 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
 
                 customerloadpostmaster.invoiceDetails.forEach(item => {
                     INVD.rows.add(
-                        item.po_number,
-                        item.po_date,
                         item.invoice_number,
                         item.invoice_date,
+                        item.Unit,
                         item.quantity,
                         item.value_amount,
                         item.invoice_img,
@@ -81,6 +78,30 @@ exports.customerloadpostmasterDB = (customerloadpostmaster) => {
                 });
 
                 request.input('invoiceDetails', sql.TVP, INVD);
+
+                // TVP Challan DETAILS (must match exact SP TVP definition)
+                const CHD = new sql.Table('Challan_Details');
+                CHD.columns.add('challan_number', sql.NVarChar(50));
+                CHD.columns.add('challan_date', sql.NVarChar(50));
+                CHD.columns.add('Unit', sql.NVarChar(50));
+                CHD.columns.add('quantity', sql.NVarChar(50));
+                CHD.columns.add('value_amount', sql.NVarChar(50));
+                CHD.columns.add('challan_img', sql.NVarChar(sql.MAX));
+                CHD.columns.add('remarks', sql.NVarChar(255));
+
+                customerloadpostmaster.challanDetails.forEach(item => {
+                    CHD.rows.add(
+                        item.challan_number,
+                        item.challan_date,
+                        item.Unit,
+                        item.quantity,
+                        item.value_amount,
+                        item.challan_img,
+                        item.remarks
+                    );
+                });
+
+                request.input('challanDetails', sql.TVP, CHD);
 
                 request.output('load_master_id', sql.NVarChar(30));
                 request.output('bstatus_code', sql.NVarChar(50));
@@ -306,12 +327,12 @@ exports.getcustomerloadpostmasterDB = (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_Status AS LPStatus,
                                                     dll.Lat AS DriverLat,
 													dll.Lng AS DriverLng,
                                                     dll.DriverID AS dllDriverID,
 													dll.MobileNo,
-                                                    cps.trip_status,
+                                                    cps.LP_status,
 													clp.master_status
 
                                                     FROM CustomerLoadPost clp
@@ -323,7 +344,7 @@ exports.getcustomerloadpostmasterDB = (data) => {
                                                         ON cps.DriverID = dll.DriverID
 													JOIN Driver_Details dd
                                                         ON dll.DriverID = dd.driver_id
-                                                    where cps.trip_status = 'Active'
+                                                    where cps.LP_Status = 'Active'
                                                     AND  clp.master_status = 'N'
                                                     AND clp.CustomerID = @CustomerID
                                                     ORDER BY clp.insert_date DESC;
@@ -373,12 +394,12 @@ exports.getcustomerloadpostmasterDB = (data) => {
                                                     cps.CustomerStatus,
                                                     cps.VendorStatus,
                                                     cps.DriverStatus,
-                                                    cps.trip_status AS tripStatus,
+                                                    cps.LP_status AS LPStatus,
                                                     dll.Lat AS DriverLat,
 													dll.Lng AS DriverLng,
                                                     dll.DriverID AS dllDriverID,
 													dll.MobileNo,
-                                                    cps.trip_status,
+                                                    cps.LP_status,
 													clp.master_status
 
                                                     FROM CustomerLoadPost clp
@@ -390,7 +411,7 @@ exports.getcustomerloadpostmasterDB = (data) => {
                                                         ON cps.DriverID = dll.DriverID
 													JOIN Driver_Details dd
                                                         ON dll.DriverID = dd.driver_id
-                                                    where cps.trip_status = 'Active'
+                                                    where cps.LP_status = 'Active'
                                                     AND  clp.master_status = 'N'
                                                     AND clp.CustomerID = @CustomerID
                                                     AND clp.LoadPostID = @LoadPostID

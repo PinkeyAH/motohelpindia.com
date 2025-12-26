@@ -255,40 +255,7 @@ exports.getcustomerloadpostDB = async (data) => {
                 console.log(`[INFO]: Executing Query - SELECT * FROM CustomerLoadPost`);
                 if (!data.LoadPostID) {
                     return request.query(`SELECT 
-                                                clp.LoadPostID,
-                                                clp.CustomerID,
-                                                clp.Origin,
-                                                clp.Destination,
-                                                clp.VehicleType,
-                                                clp.Weight,
-                                                clp.verify_flag,
-                                                clp.verification_code,
-                                                cps.LP_Status,
-                                                clp.BodyType,
-                                                clp.CargoContent,
-                                                clp.CargoPackageType,
-                                                clp.ExpectedAvailableTime,
-                                                clp.insert_date AS PostInsertDate,
-                                                clp.update_date AS PostUpdateDate,
-                                                clp.Approximate_weight,
-                                                clp.PickupType,
-                                            
-                                                cla.Origin_Lat,
-                                                cla.Origin_Lng,
-                                                cla.Origin_City,
-                                                cla.Origin_District,
-                                                cla.Origin_Taluka,
-                                                cla.Origin_State,
-                                                cla.Origin_Pincode,
-                                                cla.Destination_Lat,
-                                                cla.Destination_Lng,
-                                                cla.Destination_City,
-                                                cla.Destination_District,
-                                                cla.Destination_Taluka,
-                                                cla.Destination_State,
-                                                cla.Destination_Pincode,
-                                                cla.insert_date AS AddressInsertDate,
-                                                cla.update_date AS AddressUpdateDate
+                                                *
                                             FROM [MOTO_HELP_DB].[dbo].[CustomerLoadPost] clp
                                             JOIN [MOTO_HELP_DB].[dbo].[CustomerLoadPostAddress] cla
                                                 ON clp.LoadPostID = cla.LoadPostID 
@@ -302,49 +269,7 @@ exports.getcustomerloadpostDB = async (data) => {
 
                 } else {
                     return request.query(`SELECT
-                                                clp.LoadPostID,
-                                                clp.CustomerID,
-                                                clp.Origin,
-                                                clp.Destination,
-                                                clp.VehicleType,
-                                                clp.Weight,
-                                                clp.verify_flag,
-                                                clp.verification_code,
-                                                cps.LP_Status,
-                                                clp.BodyType,
-                                                clp.CargoContent,
-                                                clp.CargoPackageType,
-                                                clp.ExpectedAvailableTime,
-                                                clp.insert_date AS PostInsertDate,
-                                                clp.update_date AS PostUpdateDate,
-                                                clp.Approximate_weight,
-                                                clp.PickupType,
-                                            
-                                                cla.Origin_Lat,
-                                                cla.Origin_Lng,
-                                                cla.Origin_City,
-                                                cla.Origin_District,
-                                                cla.Origin_Taluka,
-                                                cla.Origin_State,
-                                                cla.Origin_Pincode,
-                                                cla.Destination_Lat,
-                                                cla.Destination_Lng,
-                                                cla.Destination_City,
-                                                cla.Destination_District,
-                                                cla.Destination_Taluka,
-                                                cla.Destination_State,
-                                                cla.Destination_Pincode,
-                                                cla.insert_date AS AddressInsertDate,
-                                                cla.update_date AS AddressUpdateDate,
-                                                cps.CustomerPostID,
-                                                cps.CustomerID As cpsCustomerID,
-                                                cps.VendorID,
-                                                cps.DriverID,
-                                                cps.CustomerStatus,
-                                                cps.VendorStatus,
-                                                cps.DriverStatus,
-                                                cps. LP_Status 
-
+                                                *
                                                 
                                                 FROM CustomerLoadPost clp
                                                 JOIN CustomerLoadPostAddress cla
