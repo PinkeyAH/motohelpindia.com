@@ -1586,19 +1586,19 @@ exports.VendorNearestCustomerPostDB = async (data) => {
                                         6371 * ACOS(
                                             CASE 
                                                 WHEN (
-                                                    COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.Origin_Lat)) *
-                                                    COS(RADIANS(cla.Origin_Lng) - RADIANS(@vendorLng)) +
-                                                    SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.Origin_Lat))
+                                                    COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.PickupLat)) *
+                                                    COS(RADIANS(cla.PickupLng) - RADIANS(@vendorLng)) +
+                                                    SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.PickupLat))
                                                 ) > 1 THEN 1
                                                 WHEN (
-                                                    COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.Origin_Lat)) *
-                                                    COS(RADIANS(cla.Origin_Lng) - RADIANS(@vendorLng)) +
-                                                    SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.Origin_Lat))
+                                                    COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.PickupLat)) *
+                                                    COS(RADIANS(cla.PickupLng) - RADIANS(@vendorLng)) +
+                                                    SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.PickupLat))
                                                 ) < -1 THEN -1
                                                 ELSE (
-                                                    COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.Origin_Lat)) *
-                                                    COS(RADIANS(cla.Origin_Lng) - RADIANS(@vendorLng)) +
-                                                    SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.Origin_Lat))
+                                                    COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.PickupLat)) *
+                                                    COS(RADIANS(cla.PickupLng) - RADIANS(@vendorLng)) +
+                                                    SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.PickupLat))
                                                 )
                                             END
                                         ) AS DECIMAL(10,2)
@@ -1637,26 +1637,26 @@ exports.VendorNearestCustomerPostDB = async (data) => {
                                 ) cp
                                     ON clp.CargoPackageType = cp.packaging_type
                                     AND clp.CargoContent = cp.cargo_type
-                                WHERE cla.Origin_Lat IS NOT NULL
-                                  AND cla.Origin_Lng IS NOT NULL
+                                WHERE cla.PickupLat IS NOT NULL
+                                  AND cla.PickupLng IS NOT NULL
                                   AND cps.LP_Status = 'Pending'
                                   AND (
                                       6371 * ACOS(
                                           CASE 
                                               WHEN (
-                                                  COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.Origin_Lat)) *
-                                                  COS(RADIANS(cla.Origin_Lng) - RADIANS(@vendorLng)) +
-                                                  SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.Origin_Lat))
+                                                  COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.PickupLat)) *
+                                                  COS(RADIANS(cla.PickupLng) - RADIANS(@vendorLng)) +
+                                                  SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.PickupLat))
                                               ) > 1 THEN 1
                                               WHEN (
-                                                  COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.Origin_Lat)) *
-                                                  COS(RADIANS(cla.Origin_Lng) - RADIANS(@vendorLng)) +
-                                                  SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.Origin_Lat))
+                                                  COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.PickupLat)) *
+                                                  COS(RADIANS(cla.PickupLng) - RADIANS(@vendorLng)) +
+                                                  SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.PickupLat))
                                               ) < -1 THEN -1
                                               ELSE (
-                                                  COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.Origin_Lat)) *
-                                                  COS(RADIANS(cla.Origin_Lng) - RADIANS(@vendorLng)) +
-                                                  SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.Origin_Lat))
+                                                  COS(RADIANS(@vendorLat)) * COS(RADIANS(cla.PickupLat)) *
+                                                  COS(RADIANS(cla.PickupLng) - RADIANS(@vendorLng)) +
+                                                  SIN(RADIANS(@vendorLat)) * SIN(RADIANS(cla.PickupLat))
                                               )
                                           END
                                       )
