@@ -188,42 +188,76 @@ function initializeCustomerSocket(io, app) {
 
 
 // 🔁 Every 5 sec send nearby drivers to customers
-setInterval(async () => {
+setInterval(() => {
   try {
-    if (!connectedCustomers || connectedCustomers.size === 0) {
-      return;
-    }
+    if (!connectedCustomers || connectedCustomers.size === 0) return;
 
-    const allDrivers = getAllDriverLocations(); // Map
-    console.log("🚗 Total Drivers:", allDrivers.size);
+    const allDrivers = getAllDriverLocations(); // Map<driverId, location>
 
     if (!allDrivers || allDrivers.size === 0) return;
 
-    for (const [customerId, customerSocket] of connectedCustomers.entries()) {
-      try {
-        const driversArray = [];
+    console.log("🚗 Total Drivers:", allDrivers.size);
 
-        for (const [driverId, driverData] of allDrivers.entries()) {
-          if (!driverData) continue;
-          driversArray.push(driverData);
-        }
+    // Convert Map → Array ONCE
+    const driversArray = [];
 
-        // Emit once per customer (BEST PRACTICE)
-        customerSocket.emit("driverLiveLocation", {
-          drivers: driversArray,
-        });
-
-        console.log(
-          `📍 Sent ${driversArray.length} drivers to Customer ${customerId}`
-        );
-      } catch (err) {
-        console.error(`❌ Customer ${customerId} Error:`, err.message);
-      }
+    for (const driverData of allDrivers.values()) {
+      if (driverData) driversArray.push(driverData);
     }
+
+    // Emit ONCE per customer
+    for (const [customerId, customerSocket] of connectedCustomers.entries()) {
+      customerSocket.emit("driverLiveLocation", {
+        drivers: driversArray,
+        UpdatedAt: new Date()
+      });
+
+      console.log(
+        `📍 Sent ${driversArray.length} drivers to Customer ${customerId}`
+      );
+    }
+
   } catch (err) {
-    console.error("🔥 Error in setInterval:", err);
+    console.error("🔥 Error in driver broadcast interval:", err.message);
   }
 }, 5000);
+
+// setInterval(async () => {
+//   try {
+//     if (!connectedCustomers || connectedCustomers.size === 0) {
+//       return;
+//     }
+
+//     const allDrivers = getAllDriverLocations(); // Map
+//     console.log("🚗 Total Drivers:", allDrivers.size);
+
+//     if (!allDrivers || allDrivers.size === 0) return;
+
+//     for (const [customerId, customerSocket] of connectedCustomers.entries()) {
+//       try {
+//         const driversArray = [];
+
+//         for (const [driverId, driverData] of allDrivers.entries()) {
+//           if (!driverData) continue;
+//           driversArray.push(driverData);
+//         }
+
+//         // Emit once per customer (BEST PRACTICE)
+//         customerSocket.emit("driverLiveLocation", {
+//           drivers: driversArray,
+//         });
+
+//         console.log(
+//           `📍 Sent ${driversArray.length} drivers to Customer ${customerId}`
+//         );
+//       } catch (err) {
+//         console.error(`❌ Customer ${customerId} Error:`, err.message);
+//       }
+//     }
+//   } catch (err) {
+//     console.error("🔥 Error in setInterval:", err);
+//   }
+// }, 5000);
 
 }
 
