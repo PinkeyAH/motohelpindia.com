@@ -80,26 +80,30 @@ function initializeDriverSocket(io, app) {
 
 
         // 🔥 FLAG INTERVAL (ONLY ONCE)
-if (driverEntry.refreshInterval) clearInterval(driverEntry.refreshInterval);
+if (!driverEntry.flagInterval) {
   driverEntry.flagInterval = setInterval(async () => {
-    if (!data) {
-            const driverLiveLocation  = await get_DriverLiveLocationDB(data);
+    try {
+      let payload;
 
-    io.emit("driverLPFlag", {
-      driverLiveLocation ,
-      UpdatedAt: new Date()
-    });
-          console.log("🚩 *****************driverLPFlag emitted:",driverLiveLocation );
+      if (!data) {
+        const driverLiveLocation = await get_DriverLiveLocationDB(data);
+        payload = driverLiveLocation;
+      } else {
+        payload = data;
+      }
 
-    } else {
-    io.emit("driverLPFlag", {
-      ...data,
-      UpdatedAt: new Date()
-    });
-        console.log("🚩 driverLPFlag emitted:", ...data);
+      io.emit("driverLPFlag", {
+        payload,
+        UpdatedAt: new Date()
+      });
 
-     }
+      console.log("🚩 driverLPFlag emitted:", payload);
+
+    } catch (err) {
+      console.error("🚩 driverLPFlag interval error:", err.message);
+    }
   }, 5000);
+}
 
 
 if (!driverEntry.flagInterval) {
