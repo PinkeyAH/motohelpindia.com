@@ -84,14 +84,13 @@ if (!driverEntry.flagInterval) {
   driverEntry.flagInterval = setInterval(async () => {
     try {
       let payload;
- const driverLiveLocation = await get_DriverLiveLocationDB(data);
+
+      if (!data) {
+        const driverLiveLocation = await get_DriverLiveLocationDB(data);
         payload = driverLiveLocation;
-      // if (!data) {
-      //   const driverLiveLocation = await get_DriverLiveLocationDB(data);
-      //   payload = driverLiveLocation;
-      // } else {
-      //   payload = data;
-      // }
+      } else {
+        payload = data;
+      }
 
       io.emit("driverLPFlag", {
         payload,
