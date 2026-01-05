@@ -60,8 +60,8 @@ exports.get_DriverLiveLocationDB = async (data) => {
                 request.input('VendorID', sql.NVarChar(10), data.Vendorid || data.VendorID);
                 // request.input('VehicleID', sql.NVarChar(10), data.VehicleID);
                     logger.log("info", `get_DriverLiveLocationDB called with data: ${JSON.stringify(data.Driverid || data.DriverID)} , ${JSON.stringify(data.Vendorid || data.VendorID)}`);
-
-                                return request.query(` SELECT 
+  if (data.VendorID || data.Vendorid) {
+     return request.query(` SELECT 
                         dva.DriverID,
                         dva.VendorID,
 						dll.Status,
@@ -91,6 +91,38 @@ exports.get_DriverLiveLocationDB = async (data) => {
                       AND dll.vendorid = @VendorID
                       AND dva.IsActive = 1
                 `);
+  } else {
+     return request.query(` SELECT 
+                        dva.DriverID,
+                        dva.VendorID,
+						dll.Status,
+						dll.Driver_LPStatus,
+                        d.full_name,
+                        d.Phone,
+                        dva.MobileNo,
+                        dva.VehicleID,
+                        v.registration_no,
+                        v.VehicleType,
+                        dva.AssignmentDate,
+                        dll.Lat,
+                        dll.Lng,
+                        dll.City,
+						dll.State,
+                        dll.District,
+                        dll.Taluka,
+                        dll.Pincode,
+                        dll.Address,
+                        dll.insert_date,
+                        dll.update_date
+                    FROM DriverVehicleAssign AS dva
+                    JOIN Driver_Details AS d ON d.driver_id = dva.DriverID
+                    JOIN VehicleDetailsNew AS v ON v.vehicleid = dva.VehicleID
+                    JOIN DriverLiveLocation AS dll ON dll.DriverID = d.driver_id
+                    WHERE dva.DriverID = @DriverID
+                      AND dva.IsActive = 1
+                `);
+  }
+                               
             })
             .then(result => {
                 resolve({ bstatus_code: "00", bmessage_desc: "Success", data: result.recordset });

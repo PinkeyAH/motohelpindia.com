@@ -1,5 +1,5 @@
 const {
-  insertOrUpdate_DriverLiveLocationDB,
+  insertOrUpdate_DriverLiveLocationDB,get_DriverLiveLocationDB
 } = require("./models/V1/DriverLiveLocation/utility");
 
 const {
@@ -80,15 +80,27 @@ function initializeDriverSocket(io, app) {
 
 
         // 🔥 FLAG INTERVAL (ONLY ONCE)
-if (!driverEntry.flagInterval) {
-  driverEntry.flagInterval = setInterval(() => {
+if (driverEntry.refreshInterval) clearInterval(driverEntry.refreshInterval);
+  driverEntry.flagInterval = setInterval(async () => {
+    if (!data) {
+            const driverLiveLocation  = await get_DriverLiveLocationDB(data);
+
+    io.emit("driverLPFlag", {
+      driverLiveLocation ,
+      UpdatedAt: new Date()
+    });
+          console.log("🚩 *****************driverLPFlag emitted:",driverLiveLocation );
+
+    } else {
     io.emit("driverLPFlag", {
       ...data,
       UpdatedAt: new Date()
     });
-    console.log("🚩 driverLPFlag emitted:", ...data);
+        console.log("🚩 driverLPFlag emitted:", ...data);
+
+     }
   }, 5000);
-}
+
 
 if (!driverEntry.flagInterval) {
   driverEntry.flagInterval = setInterval(() => {
