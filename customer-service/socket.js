@@ -94,6 +94,14 @@ function initializeCustomerSocket(io) {
 
         emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers, vendors: nearVendors });
         // emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers });
+
+        console.log({
+           loadPost: payload, 
+           drivers: nearDrivers, 
+           vendors: nearVendors,
+          UpdatedAt: new Date()
+        });
+        
         // Update cache
         updateAllNearbyCustomerLoadPost(CustomerID, {
            loadPost: payload, 
@@ -101,6 +109,7 @@ function initializeCustomerSocket(io) {
            vendors: nearVendors,
           UpdatedAt: new Date()
         });
+
         socket.emit("loadPostCreated", payload);
 
       } catch (err) {

@@ -172,19 +172,18 @@ function initializeDriverSocket(io, app) {
         allNearbyCustomerLoadPost.forEach((loc, driverId) => {
           const payload = {
             loc,
-
             source: "CACHE",
             UpdatedAt: new Date()
           };
 
-          connectedVendors.forEach((vendorSocket) => {
-            vendorSocket.emit("NearbyCustomerLoadPost", payload);
-            console.log('**************NearbyCustomerLoadPost******vendorSocket*************', payload);
-          });
+          // connectedVendors.forEach((vendorSocket) => {
+          //   vendorSocket.emit("NearbyCustomerLoadPost", payload);
+          //   console.log('**************NearbyCustomerLoadPost******vendorSocket*************', payload);
+          // });
 
           connectedCustomers.forEach((customerSocket) => {
             customerSocket.emit("NearbyCustomerLoadPost", payload);
-            console.log('**************🏢 NearbyCustomerLoadPost nearby load:*************', payload);
+            console.log('**************🏢 NearbyCustomerLoadPost nearby load:*************', payload, JSON.parse(payload.loc));
           });
         });
 
