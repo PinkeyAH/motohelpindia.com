@@ -294,19 +294,19 @@ exports.CustomerPostAddressDB = async (data) => {
 let query= `SELECT 
     clp.LoadPostID ,
     clp.CustomerID ,
-    clp.Origin AS Origin,
-    clp.Origin_1,
-    clp.Origin_2,
-    clp.ContactPerson,
-    clp.ContactNumber,
-    clp.Destination AS Destination,
-    clp.Destination_1,
-    clp.Destination_2,
+    clp.PickupAddress,
+    clp.PickupPlotBuilding,
+    clp.PickupStreetArea,
+    clp.PickupContactPerson,
+    clp.PickupContactNumber,
+    clp.DeliveryAddress,
+    clp.DeliveryPlotBuilding,
+    clp.DeliveryStreetArea,
     clp.Approximate_weight,
     clp.cargo_type,
     clp.cost,
-    clp.ConsigneeName,
-    clp.ConsigneeContactNumber,
+    clp.DeliveryCompanyName,
+    clp.DeliveryContactNumber,
     clp.VehicleType,
     clp.Weight,
     clp.verification_code,
@@ -315,34 +315,34 @@ let query= `SELECT
     clp.CargoContent,
     clp.CargoPackageType,
     clp.ExpectedAvailableTime,
-    clp.PickupType,
+    clp.VehicleType,
 
     
  --   clpa.LoadPostID ,
    -- clpa.CustomerID ,
-    clpa.Origin_Lat,
-    clpa.Origin_Lng,
-    clpa.Origin_City,
-    clpa.Origin_District,
-    clpa.Origin_Taluka,
-    clpa.Origin_State,
-    clpa.Origin_Pincode,
+    clpa.PickupLat,
+    clpa.PickupLng,
+    clpa.PickupCity,
+    clpa.PickupState,
+    clpa.PickupTaluka,
+    clpa.PickupDistrict,
+    clpa.PickupPincode,
   --  clpa.Origin AS CLPA_Origin,
-    clpa.Destination_Lat,
-    clpa.Destination_Lng,
-    clpa.Destination_City,
-    clpa.Destination_District,
-    clpa.Destination_Taluka,
-    clpa.Destination_State,
-    clpa.Destination_Pincode,
+    clpa.DeliveryLat,
+    clpa.DeliveryLng,
+    clpa.DeliveryCity,
+    clpa.DeliveryPincode,
+    clpa.DeliveryDistrict,
+    clpa.DeliveryState,
+    clpa.DeliveryTaluka,
   --  clpa.Destination AS CLPA_Destination,
  
     
     val.value AS address
 FROM CustomerLoadPost clp
-CROSS APPLY (VALUES (clp.destination), (clp.origin)) AS val(value)
+CROSS APPLY (VALUES (clp.DeliveryAddress), (clp.PickupAddress)) AS val(value)
 LEFT JOIN CustomerLoadPostAddress clpa
-       ON val.value = clpa.destination OR val.value = clpa.origin
+       ON val.value = clpa.DeliveryAddress OR val.value = clpa.PickupAddress
 
 `;  
     //            console.log(`[INFO]: Executing Query: ${query} (fetching all addresses)`);
