@@ -69,7 +69,7 @@ function initializeDriverSocket(io, app) {
       try {
         const { DriverID, Latitude, Longitude } = data;
         if (!DriverID) return;
-        console.log(data ,"*****************************driver side");
+        console.log(data, "*****************************driver side");
 
         // Update cache
         updateDriverLocation(DriverID, {
@@ -92,14 +92,14 @@ function initializeDriverSocket(io, app) {
         // 🔔 Vendors
         connectedVendors.forEach((vendorSocket) => {
           vendorSocket.emit("driverLiveLocation", data);
-          console.log(data ,"*****************************vendor side");
-          
+          console.log(data, "*****************************vendor side");
+
         });
 
         // 🔔 Customers
         connectedCustomers.forEach((customerSocket) => {
           customerSocket.emit("driverLiveLocation", data);
-          console.log(data ,"*****************************customer side");
+          console.log(data, "*****************************customer side");
         });
 
       } catch (err) {
@@ -113,7 +113,7 @@ function initializeDriverSocket(io, app) {
       try {
         const allDrivers = getAllDriverLocations();
         if (!allDrivers || allDrivers.size === 0) return;
-console.log(allDrivers ,"*****************************allDrivers side");
+        console.log(allDrivers, "*****************************allDrivers side");
 
         allDrivers.forEach((loc, driverId) => {
           const payload = {
@@ -140,13 +140,17 @@ console.log(allDrivers ,"*****************************allDrivers side");
 
           connectedVendors.forEach((vendorSocket) => {
             vendorSocket.emit("driverLiveLocation", payload);
-            console.log('**************driverLiveLocation******vendorSocket*************', payload );
-            
+            console.log('**************driverLiveLocation******vendorSocket*************', payload);
+
           });
 
           connectedCustomers.forEach((customerSocket) => {
             customerSocket.emit("driverLiveLocation", payload);
-            console.log('**************driverLiveLocation******customerSocket*************', payload );
+            console.log('**************driverLiveLocation******customerSocket*************', payload);
+          });
+          connectedCustomers.forEach((customerSocket) => {
+            customerSocket.emit("NearbyCustomerLoadPost", payload);
+            console.log('**************🏢 Vendor received nearby load:*************', payload.loadPost);
           });
         });
 
@@ -158,50 +162,55 @@ console.log(allDrivers ,"*****************************allDrivers side");
 
     // customr post
 
-socket.on("createCustomerLoadPost", (payload) => {
-  try {
-    console.log("📦 Load post received:", payload);
+    socket.on("createCustomerLoadPost", (payload) => {
+      try {
+        console.log("📦 Load post received:", payload);
 
-    const {
-      PickupLat,
-      PickupLng
-    } = payload;
+        const {
+          PickupLat,
+          PickupLng
+        } = payload;
 
-    const allDrivers = getAllDriverLocations();
+        const allDrivers = getAllDriverLocations();
 
-    console.log("🚗 Total drivers:", allDrivers.size);
+        console.log("🚗 Total drivers:", allDrivers.size);
 
-    allDrivers.forEach((driverLoc, driverId) => {
-      if (!driverLoc?.Latitude || !driverLoc?.Longitude) return;
+        allDrivers.forEach((driverLoc, driverId) => {
+          if (!driverLoc?.Latitude || !driverLoc?.Longitude) return;
 
-      const distance = getDistance(
-        PickupLat,
-        PickupLng,
-        driverLoc.Latitude,
-        driverLoc.Longitude
-      );
+          const distance = getDistance(
+            PickupLat,
+            PickupLng,
+            driverLoc.Latitude,
+            driverLoc.Longitude
+          );
 
-      console.log(`📏 Driver ${driverId} distance:`, distance);
+          console.log(`📏 Driver ${driverId} distance:`, distance);
 
-      // ✅ 5 KM filter
-      if (distance <= 5) {
-        const driverEntry = connectedDrivers.get(driverId);
-        if (!driverEntry) return;
+          // ✅ 5 KM filter
+          if (distance <= 5) {
+            const driverEntry = connectedDrivers.get(driverId);
+            if (!driverEntry) return;
 
-        driverEntry.socket.emit("NearbyCustomerLoadPost", {
-          ...payload,
-          distance: distance.toFixed(2)
+            driverEntry.socket.emit("NearbyCustomerLoadPost", {
+              ...payload,
+              distance: distance.toFixed(2)
+            });
+
+            console.log(`✅ Load sent to Driver ${driverId} at distance ${distance.toFixed(2)} KM`);
+          }
         });
 
-        console.log(`✅ Load sent to Driver ${driverId} at distance ${distance.toFixed(2)} KM`);
+      } catch (err) {
+        console.error("❌ createCustomerLoadPost error:", err.message);
       }
     });
 
-  } catch (err) {
-    console.error("❌ createCustomerLoadPost error:", err.message);
-  }
-});
 
+    // /* ============== NearbyCustomerLoadPost ============== */
+    socket.on("NearbyCustomerLoadPost", (payload) => {
+      console.log("🏢 Vendor received nearby load:", payload.loadPost);
+    });
 
     /* ================= DISCONNECT ================= */
     socket.on("disconnect", () => {
