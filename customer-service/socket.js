@@ -189,7 +189,7 @@ function emitLoadPostToNearby({ loadPost, drivers }) {
     if (!driverEntry) return;
 
     if (driverEntry?.socket) {
-      driverEntry.socket.emit("newCustomerLoadPost", {
+      driverEntry.socket.emit("NearbyCustomerLoadPost", {
         loadPost,
         type: "NEARBY"
       });
@@ -207,7 +207,7 @@ function emitLoadPostToNearby({ loadPost, drivers }) {
 //   const driverEntry = connectedDrivers.get(d.DriverID);
 
 //   if (driverEntry?.socket) {
-//     driverEntry.socket.emit("newCustomerLoadPost", {
+//     driverEntry.socket.emit("NearbyCustomerLoadPost", {
 //       loadPost,
 //       type: "NEARBY"
 //     });
@@ -220,7 +220,7 @@ function emitLoadPostToNearby({ loadPost, drivers }) {
 //   // vendors?.forEach(v => {
 //   //   const socket = getConnectedVendors(v.VendorID);
 //   //   if (socket) {
-//   //     socket.emit("newCustomerLoadPost", {
+//   //     socket.emit("NearbyCustomerLoadPost", {
 //   //       loadPost,
 //   //       type: "NEARBY"
 //   //     });
