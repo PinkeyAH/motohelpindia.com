@@ -90,16 +90,20 @@ function initializeDriverSocket(io, app) {
 
         // 🔔 Vendors
         connectedVendors.forEach((vendorSocket) => {
-          vendorSocket.emit("driverLiveLocation", payload);
+          vendorSocket.emit("driverLiveLocation", data);
+          console.log(data ,"*****************************vendor side");
+          
         });
 
         // 🔔 Customers
         connectedCustomers.forEach((customerSocket) => {
-          customerSocket.emit("driverLiveLocation", payload);
+          customerSocket.emit("driverLiveLocation", data);
+          console.log(data ,"*****************************customer side");
         });
 
       } catch (err) {
         console.error("⚠️ driverLiveLocation error:", err.message);
+
       }
     });
 
@@ -120,10 +124,13 @@ function initializeDriverSocket(io, app) {
 
           connectedVendors.forEach((vendorSocket) => {
             vendorSocket.emit("driverLiveLocation", payload);
+            console.log('**************driverLiveLocation******vendorSocket*************', payload );
+            
           });
 
           connectedCustomers.forEach((customerSocket) => {
             customerSocket.emit("driverLiveLocation", payload);
+            console.log('**************driverLiveLocation******customerSocket*************', payload );
           });
         });
 
@@ -170,7 +177,7 @@ socket.on("createCustomerLoadPost", (payload) => {
           distance: distance.toFixed(2)
         });
 
-        console.log(`✅ Load sent to Driver ${driverId}`);
+        console.log(`✅ Load sent to Driver ${driverId} at distance ${distance.toFixed(2)} KM`);
       }
     });
 

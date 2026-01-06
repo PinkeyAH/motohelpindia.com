@@ -13,6 +13,7 @@ const {
   DriverNearestCustomerPostDB,
   VendorsNearestCustomerPostDB
 } = require("./models/V1/soket/Customer_Load_Post/utility.js");
+const { log } = require("async");
 
 // ✅ Haversine Formula
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -62,7 +63,7 @@ function initializeCustomerSocket(io) {
     socket.on("createCustomerLoadPost", async (payload) => {
       try {
         const { CustomerID, PickupLat, PickupLng, VehicleType } = payload;
-
+        console.log("📦 New Load Post from Customer:", CustomerID,PickupLat, PickupLng, VehicleType, payload);
         // const loadPost = await saveCustomerLoadPostDB(payload);
         const allDrivers = getAllDriverLocations();
         if (!allDrivers || allDrivers.size === 0) return;
@@ -161,7 +162,7 @@ function initializeCustomerSocket(io) {
       if (!allDrivers || allDrivers.size === 0) return;
 
       const driversArray = Array.from(allDrivers.values());
-
+      console.log("📍 Broadcasting live locations to customers:", driversArray);
       for (const socket of connectedCustomers.values()) {
         socket.emit("driverLiveLocation", {
           drivers: driversArray,
@@ -183,9 +184,10 @@ function emitLoadPostToNearby({ loadPost, drivers, vendors }) {
       if (driverEntry?.socket) {
         driverEntry.socket.emit("NearbyCustomerLoadPost", {
           loadPost,
+          drivers,
           type: "NEARBY"
         });
-        console.log("📨 Load sent to driver:", d.DriverID);
+        console.log("📨 Load sent to driver:", d.DriverID, loadPost);
       }
     });
   }
@@ -197,9 +199,10 @@ function emitLoadPostToNearby({ loadPost, drivers, vendors }) {
       if (vendorSocket) {
         vendorSocket.emit("NearbyCustomerLoadPost", {
           loadPost,
+          vendors,
           type: "NEARBY"
         });
-        console.log("📨 Load sent to vendor:", v.VendorID);
+        console.log("📨 Load sent to vendor:", v.VendorID, loadPost);
       }
     });
   }
