@@ -2,6 +2,7 @@ const connectedCustomers = new Map(); // CustomerID -> socket
 const connectedDrivers = new Map(); // DriverID -> socket
 const connectedVendors = new Map(); // VendorID -> socket
 const driverLiveData = new Map();   // DriverID -> { Latitude, Longitude }
+const NearbyCustomerLoadPost = new Map();   // DriverID -> { Latitude, Longitude }
 
 function setCustomerSocket(customerId, socket) { connectedCustomers.set(customerId, socket); }
 function getConnectedCustomers() { return connectedCustomers; }
@@ -23,6 +24,8 @@ function updateDriverLocation(driverId, data) {
 
 function getAllDriverLocations() { return driverLiveData; }
 
+function getAllNearbyCustomerLoadPost() { return NearbyCustomerLoadPost; }
+
 function getAlldriverLPStatus() {
     console.log("📍 All connected Drivers getAlldriverLPStatus (Map):", connectedDrivers);
     console.log("📍 getAlldriverLPStatus:",JSON.stringify([...connectedDrivers.entries()], null, 2));
@@ -42,7 +45,8 @@ module.exports = {
   getConnectedCustomers,
   updateDriverLocation,
   getAllDriverLocations,
-  getAlldriverLPStatus
+  getAlldriverLPStatus,
+  getAllNearbyCustomerLoadPost
 };
 
 

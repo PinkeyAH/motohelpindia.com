@@ -160,6 +160,40 @@ function initializeDriverSocket(io, app) {
     }, 5000);
 
 
+    // 🔁 DRIVER STATUS BROADCAST
+
+        setInterval(() => {
+      try {
+        const allNearbyCustomerLoadPost = getAllNearbyCustomerLoadPost();
+        if (!allNearbyCustomerLoadPost || allNearbyCustomerLoadPost.size === 0) return;
+        console.log(allNearbyCustomerLoadPost, "*****************************allNearbyCustomerLoadPost side");
+
+        allNearbyCustomerLoadPost.forEach((loc, driverId) => {
+          const payload = {
+            loc,
+
+            source: "CACHE",
+            UpdatedAt: new Date()
+          };
+
+          connectedVendors.forEach((vendorSocket) => {
+            vendorSocket.emit("NearbyCustomerLoadPost", payload);
+            console.log('**************NearbyCustomerLoadPost******vendorSocket*************', payload);
+          });
+          
+          connectedCustomers.forEach((customerSocket) => {
+            customerSocket.emit("NearbyCustomerLoadPost", payload);
+            console.log('**************🏢 NearbyCustomerLoadPost nearby load:*************', payload);
+          });
+        });
+
+      } catch (err) {
+        console.error("🔥 Live location broadcast error:", err.message);
+      }
+    }, 5000);
+
+
+
     // customr post
 
     socket.on("createCustomerLoadPost", (payload) => {
