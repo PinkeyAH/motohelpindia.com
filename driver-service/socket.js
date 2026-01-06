@@ -150,7 +150,7 @@ function initializeDriverSocket(io, app) {
           });
           connectedCustomers.forEach((customerSocket) => {
             customerSocket.emit("NearbyCustomerLoadPost", payload);
-            console.log('**************🏢 Vendor received nearby load:*************', payload.loadPost);
+            console.log('**************🏢 NearbyCustomerLoadPost nearby load:*************', payload);
           });
         });
 

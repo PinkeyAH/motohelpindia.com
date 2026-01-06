@@ -195,26 +195,79 @@ function initializeVendorSocket(io) {
   });
 }
 
-// /* ============== CENTRAL BROADCAST LOOP ============== */
-setInterval(() => {
-  try {
-    const allDrivers = getAllDriverLocations();
+// // /* ============== CENTRAL BROADCAST LOOP ============== */
+// setInterval(() => {
+//   try {
+//     const allDrivers = getAllDriverLocations();
 
-    for (const [vendorId, entry] of connectedVendors.entries()) {
-      console.log(vendorId);
+//     for (const [vendorId, entry] of connectedVendors.entries()) {
+//       console.log(vendorId);
 
-      if (!entry?.socket) continue;
-      console.log(allDrivers);
+//       if (!entry?.socket) continue;
+//       console.log(allDrivers);
 
-      entry.socket.emit("driverLPStatus", {
-        allDrivers,
-        UpdatedAt: new Date()
-      });
-    }
+//       entry.socket.emit("driverLPStatus", {
+//         allDrivers,
+//         UpdatedAt: new Date()
+//       });
+//     }
 
-  } catch (err) {
-    console.error("🔥 Error in setInterval:", err.message);
-  }
-}, 5000);
+//   } catch (err) {
+//     console.error("🔥 Error in setInterval:", err.message);
+//   }
+// }, 5000);
+
+    /* ================= CACHE BROADCAST ================= */
+    setInterval(() => {
+      try {
+        const allDrivers = getAllDriverLocations();
+        if (!allDrivers || allDrivers.size === 0) return;
+        console.log(allDrivers, "*****************************allDrivers side");
+
+        allDrivers.forEach((loc, driverId) => {
+          const payload = {
+            DriverID: loc.DriverID,
+            VendorID: loc.VendorID,
+            VehicleID: loc.VehicleID,
+            MobileNo: loc.MobileNo,
+            Lat: loc.Lat,
+            Lng: loc.Lng,
+            Speed: loc.Speed,
+            Direction: loc.Direction,
+            City: loc.City,
+            District: loc.District,
+            Taluka: loc.Taluka,
+            State: loc.State,
+            Pincode: loc.Pincode,
+            Address: loc.Address,
+            Driver_LPStatus: loc.Driver_LPStatus,
+            Status: loc.Status,
+
+            source: "CACHE",
+            UpdatedAt: new Date()
+          };
+
+          connectedVendors.forEach((vendorSocket) => {
+            vendorSocket.emit("driverLiveLocation", payload);
+            console.log('**************driverLiveLocation******vendorSocket*************', payload);
+
+          });
+
+          connectedCustomers.forEach((customerSocket) => {
+            customerSocket.emit("driverLiveLocation", payload);
+            console.log('**************driverLiveLocation******customerSocket*************', payload);
+          });
+          
+          connectedCustomers.forEach((customerSocket) => {
+            customerSocket.emit("NearbyCustomerLoadPost", payload);
+            console.log('**************🏢 NearbyCustomerLoadPost nearby load:*************', payload);
+          });
+        });
+
+      } catch (err) {
+        console.error("🔥 Live location broadcast error:", err.message);
+      }
+    }, 5000);
+
 
 module.exports = initializeVendorSocket;
