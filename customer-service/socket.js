@@ -11,7 +11,7 @@ const {
 const {
   // saveCustomerLoadPostDB,
   DriverNearestCustomerPostDB,
-  // getNearestVendorsDB
+  VendorsNearestCustomerPostDB
 } = require("./models/V1/soket/Customer_Load_Post/utility.js");
 
 // ✅ Haversine Formula
@@ -82,13 +82,15 @@ function initializeCustomerSocket(io) {
           vehicleType: allDrivers.VehicleType || 'Multi Axle',
         });
 
-        // const nearVendors = await getNearestVendorsDB({
-        //   Latitude: PickupLat || '19.0760',
-        //   Longitude: PickupLng || '72.8777'
-        // });
+        const nearVendors = await VendorsNearestCustomerPostDB({
+          lat: allDrivers.lat || '19.1623701',
+          lng: allDrivers.lng || '72.9376316',
+          radius: 5000,
+          vehicleType: allDrivers.VehicleType || 'Multi Axle',
+        });
 
-        // emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers, vendors: nearVendors });
-        emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers });
+        emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers, vendors: nearVendors });
+        // emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers });
 
         socket.emit("loadPostCreated", payload);
 
@@ -172,7 +174,7 @@ function initializeCustomerSocket(io) {
   }, 5000);
 }
 
-function emitLoadPostToNearby({ loadPost, drivers }) {
+function emitLoadPostToNearby({ loadPost, drivers ,vendors}) {
 
   const connectedDrivers = new Map();
 
@@ -197,7 +199,38 @@ function emitLoadPostToNearby({ loadPost, drivers }) {
       console.log("📨 Load sent to driver:", d.DriverID);
     }
   });
-}
+
+    if (!Array.isArray(vendors)) {
+    console.error("❌ vendors is not array:", vendors);
+    return;
+  }
+
+  vendors.forEach(v => {
+    const socket = getConnectedVendors(v.VendorID);
+    if (socket) {
+      socket.emit("NearbyCustomerLoadPost", {
+        loadPost,
+        type: "NEARBY"
+      });
+    }
+  });
+    // const driverEntry = connectedDrivers.get(d.DriverID);
+
+    // 3️⃣ Get driver entry
+    const driverEntry = connectedDrivers.get(d.DriverID);
+    if (!driverEntry) return;
+
+    if (driverEntry?.socket) {
+      driverEntry.socket.emit("NearbyCustomerLoadPost", {
+        loadPost,
+        type: "NEARBY"
+      });
+
+      console.log("📨 Load sent to driver:", d.DriverID);
+    }
+  }
+
+  
 
 
 // // 🔔 EMIT LOAD POST
@@ -217,15 +250,15 @@ function emitLoadPostToNearby({ loadPost, drivers }) {
 // });
 
 
-//   // vendors?.forEach(v => {
-//   //   const socket = getConnectedVendors(v.VendorID);
-//   //   if (socket) {
-//   //     socket.emit("NearbyCustomerLoadPost", {
-//   //       loadPost,
-//   //       type: "NEARBY"
-//   //     });
-//   //   }
-//   // });
-// }
+// //   // vendors?.forEach(v => {
+// //   //   const socket = getConnectedVendors(v.VendorID);
+// //   //   if (socket) {
+// //   //     socket.emit("NearbyCustomerLoadPost", {
+// //   //       loadPost,
+// //   //       type: "NEARBY"
+// //   //     });
+// //   //   }
+// //   // });
+// // }
 
 module.exports = initializeCustomerSocket;

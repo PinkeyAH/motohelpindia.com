@@ -2,6 +2,7 @@ const sql = require('mssql');
 const pool = require('../../../../db/db.js');
 const logger = require('../../../../log/logger');
 const { log } = require('async');
+
 exports.DriverNearestCustomerPostDB = async (data) => {
   console.log("[INFO]: Fetching nearest customer posts", data);
 
@@ -86,6 +87,89 @@ console.log({
   }
 };
 
+exports.VendorsNearestCustomerPostDB = async (data) => {
+  console.log("[INFO]: Fetching nearest customer posts", data);
+
+  try {
+    const poolConn = await sql.connect(pool);
+    const request = poolConn.request();
+
+    const lat = Number(data.lat);
+    const lng = Number(data.lng);
+    const radius = Number(data.radius || 5000);
+
+    request.input("lat", sql.Float, lat);
+    request.input("lng", sql.Float, lng);
+    request.input("radius", sql.Int, radius);
+    request.input("vehicleType", sql.NVarChar(100), data.vehicleType);
+console.log({
+  lat: typeof lat,
+  lng: typeof lng,
+  radius,
+  vehicleType: data.vehicleType
+});
+
+    const result = await request.query(`
+      SELECT TOP 50
+        clp.LoadPostID,
+        cps.CustomerID,
+        cla.PickupAddress,
+        cla.PickupLat,
+        cla.PickupLng,
+        clp.VehicleType,
+
+        CAST(
+          6371 * ACOS(
+            CASE 
+              WHEN (
+                COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+              ) > 1 THEN 1
+              WHEN (
+                COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+              ) < -1 THEN -1
+              ELSE (
+                COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+                COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+                SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+              )
+            END
+          ) AS DECIMAL(10,2)
+        ) AS PickupDistanceKm
+
+      FROM CustomerLoadPost clp
+      JOIN CustomerLoadPostAddress cla
+        ON clp.LoadPostID = cla.LoadPostID
+      LEFT JOIN CustomerPostStatus cps
+        ON clp.LoadPostID = cps.CustomerPostID
+
+      WHERE LOWER(LTRIM(RTRIM(clp.VehicleType))) =
+            LOWER(LTRIM(RTRIM(@vehicleType)))
+        AND (
+          6371 * ACOS(
+            COS(RADIANS(@lat)) * COS(RADIANS(cla.PickupLat)) *
+            COS(RADIANS(cla.PickupLng) - RADIANS(@lng)) +
+            SIN(RADIANS(@lat)) * SIN(RADIANS(cla.PickupLat))
+          ) <= (@radius / 1000.0)
+        )
+      ORDER BY clp.insert_date DESC
+    `);
+
+    console.log("[INFO] Rows found:", result.recordset.length);
+
+    return {
+      status: result.recordset.length ? "00" : "01",
+      data: result.recordset
+    };
+
+  } catch (err) {
+    console.error("❌ ERROR:", err);
+    throw err;
+  }
+};
 
 
 // exports.DriverNearestCustomerPostDB = async (data) => {
