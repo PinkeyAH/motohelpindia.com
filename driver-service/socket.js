@@ -113,6 +113,7 @@ function initializeDriverSocket(io, app) {
       try {
         const allDrivers = getAllDriverLocations();
         if (!allDrivers || allDrivers.size === 0) return;
+console.log(allDrivers ,"*****************************allDrivers side");
 
         allDrivers.forEach((loc, driverId) => {
           const payload = {
@@ -120,8 +121,8 @@ function initializeDriverSocket(io, app) {
             VendorID: loc.VendorID,
             VehicleID: loc.VehicleID,
             MobileNo: loc.MobileNo,
-            Lat: loc.Latitude,
-            Lng: loc.Longitude,
+            Lat: loc.Lat,
+            Lng: loc.Lng,
             Speed: loc.Speed,
             Direction: loc.Direction,
             City: loc.City,
