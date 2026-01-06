@@ -176,8 +176,8 @@ function initializeVendorSocket(io) {
 
 
 
-    // /* ============== newCustomerLoadPost ============== */
-    socket.on("newCustomerLoadPost", (payload) => {
+    // /* ============== NearbyCustomerLoadPost ============== */
+    socket.on("NearbyCustomerLoadPost", (payload) => {
       console.log("🏢 Vendor received nearby load:", payload.loadPost);
     });
 

@@ -165,7 +165,7 @@ socket.on("createCustomerLoadPost", (payload) => {
         const driverEntry = connectedDrivers.get(driverId);
         if (!driverEntry) return;
 
-        driverEntry.socket.emit("newCustomerLoadPost", {
+        driverEntry.socket.emit("NearbyCustomerLoadPost", {
           ...payload,
           distance: distance.toFixed(2)
         });
