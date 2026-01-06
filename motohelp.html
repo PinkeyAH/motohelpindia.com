@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Moto Help Logistics — Full Featured</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/743/743131.png">
+    <style>
+      /* Theme colors handled by JS class on <html> (theme-blue, theme-orange, theme-red, theme-green) */
+      :root{--accent:#0ea5e9}
+      .theme-orange{--accent:#f97316}
+      .theme-blue{--accent:#0ea5e9}
+      .theme-red{--accent:#ef4444}
+      .theme-green{--accent:#10b981}
+
+      .btn-accent{background:var(--accent);color:white}
+      /* simple fade/slide animations */
+      .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease}
+      .reveal.visible{opacity:1;transform:none}
+
+      /* Slider styles */
+      .slider{position:relative;overflow:hidden;border-radius:12px}
+      .slides{display:flex;transition:transform .6s ease}
+      .slide{min-width:100%;height:420px;background-size:cover;background-position:center}
+      .slider-controls{position:absolute;left:12px;right:12px;top:12px;display:flex;justify-content:space-between}
+      .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.6);margin:0 6px}
+      .dot.active{background:white}
+
+      /* smaller helpers */
+      .map-mock { background: url('https://images.unsplash.com/photo-1500048993959-d53f6d212e9d?auto=format&fit=crop&w=1200&q=60'); background-size:cover; background-position:center; border-radius:0.75rem; height:320px; display:flex;align-items:center;justify-content:center; color: white; font-weight: 700; text-shadow:0 3px 8px rgba(0,0,0,0.4); }
+    </style>
+  </head>
+  <body class="theme-blue bg-gradient-to-br from-slate-50 to-slate-200 text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-white/90 shadow backdrop-blur sticky top-0 z-40">
+      <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img src="https://cdn-icons-png.flaticon.com/512/743/743131.png" class="w-12 h-12" alt="logo"/>
+          <div>
+            <div class="font-bold text-xl text-[var(--accent)]">Moto Help</div>
+            <div class="text-xs text-slate-500">Logistics & Roadside Assistance</div>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+          <a href="#about" class="hover:text-[var(--accent)]">About</a>
+          <a href="#services" class="hover:text-[var(--accent)]">Services</a>
+          <a href="#fleet" class="hover:text-[var(--accent)]">Fleet</a>
+          <a href="#tracking" class="hover:text-[var(--accent)]">Tracking</a>
+          <a href="#pricing" class="hover:text-[var(--accent)]">Pricing</a>
+          <a href="#contact" class="hover:text-[var(--accent)]">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden md:flex items-center gap-2">
+            <button class="px-3 py-1 rounded text-sm border" onclick="setTheme('theme-blue')">🔵</button>
+            <button class="px-3 py-1 rounded text-sm border" onclick="setTheme('theme-orange')">🟠</button>
+            <button class="px-3 py-1 rounded text-sm border" onclick="setTheme('theme-red')">🔴</button>
+            <button class="px-3 py-1 rounded text-sm border" onclick="setTheme('theme-green')">🟢</button>
+          </div>
+
+          <button class="hidden md:inline-flex items-center gap-2 btn-accent px-4 py-2 rounded-lg" onclick="openLogin()">Login</button>
+
+          <button id="mobileOpen" class="md:hidden p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+
+      <!-- HERO + SLIDER -->
+      <section class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="reveal" data-reveal>
+          <div class="inline-block bg-[var(--accent)]/10 text-[var(--accent)] px-3 py-1 rounded-full text-sm">Serving 200+ Cities</div>
+          <h1 class="mt-4 text-3xl md:text-4xl font-extrabold leading-tight">Smart logistics — faster deliveries, real-time tracking, optimized routes</h1>
+          <p class="mt-4 text-slate-600">Moto Help connects vendors, drivers, and customers with an end-to-end logistics platform: order management, fleet tracking, warehouse automation, and analytics.</p>
+
+          <div class="mt-6 flex gap-3">
+            <a href="#contact" class="px-4 py-2 btn-accent rounded-lg font-semibold">Request a Demo</a>
+            <a href="#services" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-700">Explore Services</a>
+          </div>
+
+          <div class="mt-8 grid grid-cols-2 gap-3">
+            <div class="p-4 bg-white rounded-lg shadow">
+              <div class="text-sm text-slate-500">Starting price</div>
+              <div class="font-bold text-lg">₹199</div>
+            </div>
+            <div class="p-4 bg-white rounded-lg shadow">
+              <div class="text-sm text-slate-500">Towing rates</div>
+              <div class="font-bold text-lg">₹39 / km</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" data-reveal>
+          <div class="slider shadow-lg">
+            <div class="slider-controls px-3">
+              <div class="rounded-full bg-black/30 px-3 py-1 text-white text-sm">Live tracking</div>
+              <div class="flex items-center">
+                <button onclick="prevSlide()" class="p-2 rounded bg-white/20 mr-2">◀</button>
+                <button onclick="nextSlide()" class="p-2 rounded bg-white/20">▶</button>
+              </div>
+            </div>
+            <div class="slides" id="slides">
+              <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=1400&q=60')"></div>
+              <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=60')"></div>
+              <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1400&q=60')"></div>
+            </div>
+            <div class="flex justify-center gap-2 py-3" id="dots"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services -->
+      <section id="services" class="pt-12">
+        <h2 class="text-2xl font-bold text-center">Core Services</h2>
+        <p class="text-center text-slate-500 mt-2">Vendor, driver and customer focused features. Built for scale and simplicity.</p>
+
+        <div class="mt-8 grid md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl p-6 shadow reveal" data-reveal>
+            <h3 class="font-semibold text-lg text-[var(--accent)]">Vendor Portal</h3>
+            <ul class="mt-3 text-slate-600 list-disc pl-5 space-y-2">
+              <li>Onboard vendors & manage inventory</li>
+              <li>Create shipments, print invoices</li>
+              <li>View analytics & shipment history</li>
+            </ul>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow reveal" data-reveal>
+            <h3 class="font-semibold text-lg text-[var(--accent)]">Driver App (Web)</h3>
+            <ul class="mt-3 text-slate-600 list-disc pl-5 space-y-2">
+              <li>Assigned trips & optimized routing</li>
+              <li>Turn-by-turn navigation & OTP delivery</li>
+              <li>Digital POD, images & signatures</li>
+            </ul>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 shadow reveal" data-reveal>
+            <h3 class="font-semibold text-lg text-[var(--accent)]">Customer Portal</h3>
+            <ul class="mt-3 text-slate-600 list-disc pl-5 space-y-2">
+              <li>Track shipments in real-time</li>
+              <li>Automated SMS/Email updates</li>
+              <li>Download invoice & documents</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fleet -->
+      <section id="fleet" class="py-12">
+        <h2 class="text-2xl font-bold text-center">Fleet & Vehicles</h2>
+        <div class="grid md:grid-cols-4 gap-6 mt-6">
+          <div class="bg-white shadow rounded-lg p-6 text-center reveal" data-reveal>
+            <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=600&q=60" class="w-28 mx-auto rounded" />
+            <div class="font-semibold mt-3">Mini Trucks</div>
+            <div class="text-sm text-slate-500">500kg – 1T</div>
+          </div>
+
+          <div class="bg-white shadow rounded-lg p-6 text-center reveal" data-reveal>
+            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=60" class="w-28 mx-auto rounded" />
+            <div class="font-semibold mt-3">Closed Trucks</div>
+            <div class="text-sm text-slate-500">10T – 18T</div>
+          </div>
+
+          <div class="bg-white shadow rounded-lg p-6 text-center reveal" data-reveal>
+            <img src="https://images.unsplash.com/photo-1549923746-c502d488b3ea?auto=format&fit=crop&w=600&q=60" class="w-28 mx-auto rounded" />
+            <div class="font-semibold mt-3">Container Trucks</div>
+            <div class="text-sm text-slate-500">20ft / 32ft</div>
+          </div>
+
+          <div class="bg-white shadow rounded-lg p-6 text-center reveal" data-reveal>
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=60" class="w-28 mx-auto rounded" />
+            <div class="font-semibold mt-3">Reefer / Special</div>
+            <div class="text-sm text-slate-500">Cold & Liquid</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Warehouse -->
+      <section class="py-12 bg-slate-50 rounded-xl p-6">
+        <h2 class="text-2xl font-bold text-center">Warehouse Management</h2>
+        <p class="text-center text-slate-500 mt-2 max-w-2xl mx-auto">Barcode scanning, storage location mapping, dispatch automation, and stock alerts help keep warehouses lean and efficient.</p>
+
+        <div class="mt-6 grid md:grid-cols-3 gap-4">
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <h4 class="font-semibold">Inbound Scanning</h4>
+            <p class="text-slate-600 mt-2">Quick barcode-based inbound checks with automatic SKU mapping.</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <h4 class="font-semibold">Storage & Picking</h4>
+            <p class="text-slate-600 mt-2">Map storage locations and generate optimized pick lists.</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <h4 class="font-semibold">Dispatch Automation</h4>
+            <p class="text-slate-600 mt-2">Batch shipments and automated carrier assignment.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tracking & Reports -->
+      <section id="tracking" class="py-12">
+        <h2 class="text-2xl font-bold text-center">Tracking & Analytics</h2>
+        <p class="text-center text-slate-500 mt-2 max-w-2xl mx-auto">Dashboards, SLA alerts, fuel usage and route efficiency — actionable analytics for operations teams.</p>
+
+        <div class="mt-6 grid md:grid-cols-2 gap-4">
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>Charts & KPIs mockup</div>
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>Reports & export scheduler mockup</div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section class="py-12">
+        <h2 class="text-2xl font-bold text-center">What customers say</h2>
+        <div class="mt-6 grid md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <p class="text-slate-600">"Fast response and transparent pricing — helped us reduce downtime."</p>
+            <div class="mt-4 font-semibold">— Rajesh, Operations Manager</div>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <p class="text-slate-600">"Driver app is easy, and POD feature saved us time during deliveries."</p>
+            <div class="mt-4 font-semibold">— Meera, Vendor</div>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <p class="text-slate-600">"Live tracking gives visibility to our customers and reduces calls."</p>
+            <div class="mt-4 font-semibold">— Kunal, E-com Owner</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section id="pricing" class="py-12 bg-gradient-to-b from-white to-slate-50 rounded-xl p-6">
+        <h2 class="text-2xl font-bold text-center">Pricing</h2>
+        <p class="text-center text-slate-500 mt-2">Simple, transparent pricing for different needs.</p>
+
+        <div class="mt-6 grid md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <div class="text-sm text-slate-500">Standard</div>
+            <div class="font-bold text-2xl mt-2">₹199</div>
+            <div class="mt-4 text-slate-600">Minor repairs & on-spot assistance</div>
+            <ul class="mt-4 text-slate-600 list-disc pl-5">
+              <li>Flat tyre repair</li>
+              <li>Battery jump</li>
+              <li>Fuel delivery (small)</li>
+            </ul>
+            <div class="mt-6 text-center"><button class="px-4 py-2 btn-accent rounded">Choose</button></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <div class="text-sm text-slate-500">Tow</div>
+            <div class="font-bold text-2xl mt-2">₹39 / km</div>
+            <div class="mt-4 text-slate-600">Towing to nearest workshop (per km)</div>
+            <ul class="mt-4 text-slate-600 list-disc pl-5">
+              <li>Local towing</li>
+              <li>Long-distance towing</li>
+            </ul>
+            <div class="mt-6 text-center"><button class="px-4 py-2 btn-accent rounded">Choose</button></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow reveal" data-reveal>
+            <div class="text-sm text-slate-500">Enterprise</div>
+            <div class="font-bold text-2xl mt-2">Custom</div>
+            <div class="mt-4 text-slate-600">Accident recovery & logistics solutions</div>
+            <ul class="mt-4 text-slate-600 list-disc pl-5">
+              <li>Custom SLAs</li>
+              <li>Dedicated account manager</li>
+            </ul>
+            <div class="mt-6 text-center"><button class="px-4 py-2 btn-accent rounded">Contact Sales</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact/Form -->
+      <section id="contact" class="py-14 bg-gradient-to-r from-sky-700 to-cyan-500 text-white">
+      <div class="container mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+
+        <!-- Contact Form -->
+        <div>
+          <h2 class="text-3xl font-bold mb-4">Contact Us</h2>
+          <p class="mb-6 text-white/90">Have questions? Need logistics support? We're here 24/7.</p>
+          <form class="space-y-4">
+            <input type="text" placeholder="Your Name" class="w-full p-3 rounded text-slate-800" />
+            <input type="email" placeholder="Your Email" class="w-full p-3 rounded text-slate-800" />
+            <textarea placeholder="Message" class="w-full p-3 rounded text-slate-800 h-28"></textarea>
+            <button class="bg-white text-sky-700 px-6 py-3 rounded-lg font-semibold">Send Message</button>
+          </form>
+        </div>
+
+        <!-- Map + Image Added -->
+        <div class="space-y-6">
+          <img src="https://images.unsplash.com/photo-1544829728-e5cb9ceed5d5?auto=format&fit=crop&w=800&q=60" class="rounded-xl shadow-lg" />
+
+          <iframe class="w-full h-64 rounded-xl shadow-lg"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609794403!2d72.74109856027872!3d19.08219783983854!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63f1b2fae8d%3A0xdeb6e8ff9e4a14e1!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+
+      </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 bg-slate-900 text-white py-8">
+      <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <div class="font-semibold text-lg">Moto Help</div>
+          <div class="text-sm text-slate-400 mt-2">A complete logistics management ecosystem built for speed, accuracy, and real-time visibility.</div>
+        </div>
+
+        <div>
+          <div class="font-semibold">Quick Links</div>
+          <ul class="mt-2 text-slate-300">
+            <li><a href="#services" class="hover:text-white">Services</a></li>
+            <li><a href="#tracking" class="hover:text-white">Track Shipment</a></li>
+            <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="font-semibold">Contact</div>
+          <div class="text-slate-300 mt-2">support@motohelp.com<br>+91 98765 43210<br>Mumbai, India</div>
+          <div class="flex gap-3 mt-4">
+            <a href="#" class="p-2 rounded bg-white/10 hover:bg-white/20"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" class="w-5" /></a>
+            <a href="#" class="p-2 rounded bg-white/10 hover:bg-white/20"><img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" class="w-5" /></a>
+            <a href="#" class="p-2 rounded bg-white/10 hover:bg-white/20"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" class="w-5" /></a>
+          </div>
+        </div>
+
+      </div>
+      <div class="text-center text-slate-500 mt-6">© <span id="yr"></span> Moto Help Private Limited. All rights reserved.</div>
+    </footer>
+
+    <!-- Login Modal (vendor / driver / customer) -->
+    <div id="loginModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-lg w-full max-w-2xl p-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold">Login</h3>
+          <button onclick="closeLogin()" class="text-slate-500">✕</button>
+        </div>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-slate-600">Select role</label>
+            <select id="role" class="w-full mt-1 p-2 border rounded">
+              <option>Vendor</option>
+              <option>Driver</option>
+              <option>Customer</option>
+            </select>
+            <div class="mt-3">
+              <label class="text-sm text-slate-600">Phone</label>
+              <input id="loginPhone" class="w-full mt-1 p-2 border rounded" placeholder="Mobile number" />
+            </div>
+            <div class="mt-3">
+              <label class="text-sm text-slate-600">OTP</label>
+              <input id="loginOtp" class="w-full mt-1 p-2 border rounded" placeholder="Enter OTP" />
+            </div>
+            <div class="mt-4"><button onclick="alert('Logged in (demo)')" class="px-4 py-2 btn-accent rounded">Login</button></div>
+          </div>
+          <div class="bg-slate-50 p-4 rounded">
+            <div class="font-semibold">Need an account?</div>
+            <p class="text-sm text-slate-600 mt-2">Contact sales or use vendor onboarding to register your company with Moto Help.</p>
+            <div class="mt-4"><button class="px-4 py-2 border rounded" onclick="alert('Vendor onboarding demo')">Request Onboarding</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Year
+      document.getElementById('yr').textContent = new Date().getFullYear();
+
+      // Theme switcher
+      function setTheme(cls){
+        document.documentElement.classList.remove('theme-blue','theme-orange','theme-red','theme-green');
+        document.documentElement.classList.add(cls);
+      }
+
+      // Login modal
+      function openLogin(){document.getElementById('loginModal').classList.remove('hidden');document.getElementById('loginModal').classList.add('flex');}
+      function closeLogin(){document.getElementById('loginModal').classList.add('hidden');document.getElementById('loginModal').classList.remove('flex');}
+
+      // Simple reveal on scroll
+      const reveals = document.querySelectorAll('[data-reveal]');
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+      },{threshold:0.12});
+      reveals.forEach(r=>io.observe(r));
+
+      // Slider
+      const slidesEl = document.getElementById('slides');
+      const slides = slidesEl.children;
+      let idx = 0;
+      const dotsEl = document.getElementById('dots');
+      function buildDots(){ for(let i=0;i<slides.length;i++){ const d=document.createElement('div'); d.className='dot'; d.onclick=(()=>{goTo(i)}); dotsEl.appendChild(d);} updateDots(); }
+      function updateDots(){Array.from(dotsEl.children).forEach((d,i)=>d.classList.toggle('active',i===idx));}
+      function goTo(i){ idx=i; slidesEl.style.transform = `translateX(-${idx*100}%)`; updateDots(); }
+      function nextSlide(){ idx = (idx+1)%slides.length; goTo(idx); }
+      function prevSlide(){ idx = (idx-1+slides.length)%slides.length; goTo(idx); }
+      buildDots(); setInterval(nextSlide,4500);
+
+      // Mobile nav (simple)
+      document.getElementById('mobileOpen').addEventListener('click', ()=>{ alert('Mobile menu demo — integrate your mobile nav here.'); });
+    </script>
+  </body>
+</html>

@@ -116,7 +116,9 @@ function initializeVendorSocket(io) {
   io.on("connection", (socket) => {
     console.log(`🔌 New vendor socket connected: ${socket.id}`);
 
-    /* -------- Vendor Registration -------- */
+    /* ------------------------------------ Vendor Registration -------- */
+    // Vendor
+  
     socket.on("registerVendor", (VendorID) => {
       if (!VendorID) return;
 
@@ -151,6 +153,34 @@ function initializeVendorSocket(io) {
       });
     });
 
+
+
+    //     socket.on(`vendor_flag_${VendorID}`, (payload) => {
+    //   console.log("🚩 VENDOR RECEIVED DRIVER FLAG:", payload);
+
+    //   socket.emit("driverPostUpdate", payload);
+    // });
+    socket.on("VendorDetails", (data) => {
+      const VendorID = data.vendorId || data;
+      socket.VendorID = VendorID;
+      connectedVendors.set(VendorID, socket);
+
+      console.log(`✅ Vendor registered: ${VendorID}`);
+
+      // ✅ Event should use socket.VendorID
+      socket.on(`vendor_flag_${VendorID}`, (payload) => {
+        console.log("🚩 VENDOR RECEIVED FLAG:", payload);
+        socket.emit("vendorPostUpdate", payload);
+      });
+    });
+
+
+
+    // /* ============== newCustomerLoadPost ============== */
+    socket.on("newCustomerLoadPost", (payload) => {
+      console.log("🏢 Vendor received nearby load:", payload.loadPost);
+    });
+
     // ------------------ Vendor Disconnect ------------------
     socket.on("disconnect", () => {
       for (const [vendorId, entry] of connectedVendors.entries()) {
@@ -166,25 +196,25 @@ function initializeVendorSocket(io) {
 }
 
 // /* ============== CENTRAL BROADCAST LOOP ============== */
-// setInterval(() => {
-//   try {
-//     const allDrivers = getAllDriverLocations();
+setInterval(() => {
+  try {
+    const allDrivers = getAllDriverLocations();
 
-//     for (const [vendorId, entry] of connectedVendors.entries()) {
-//       console.log(vendorId);
+    for (const [vendorId, entry] of connectedVendors.entries()) {
+      console.log(vendorId);
 
-//       if (!entry?.socket) continue;
-//       console.log(allDrivers);
+      if (!entry?.socket) continue;
+      console.log(allDrivers);
 
-//       entry.socket.emit("driverLPStatus", {
-//         allDrivers,
-//         UpdatedAt: new Date()
-//       });
-//     }
+      entry.socket.emit("driverLPStatus", {
+        allDrivers,
+        UpdatedAt: new Date()
+      });
+    }
 
-//   } catch (err) {
-//     console.error("🔥 Error in setInterval:", err.message);
-//   }
-// }, 5000);
+  } catch (err) {
+    console.error("🔥 Error in setInterval:", err.message);
+  }
+}, 5000);
 
 module.exports = initializeVendorSocket;

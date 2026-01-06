@@ -263,3 +263,186 @@ function normalizeDriverLPStatus(allDrivers) {
 }
 
 module.exports = initializeDriverSocket;
+// function initializeDriverSocket(io, app) {
+//   console.log("🚛 Driver Socket initialized");
+//   const connectedDrivers = new Map();
+
+//   const connectedCustomers = new Map();
+//   const connectedVendors = new Map();
+
+//   io.on("connection", (socket) => {
+
+//     // ********************🟢 Driver registration
+//     socket.on("registerDriver", (driverId) => {
+//       connectedDrivers.set(driverId, {
+//         socket,
+//         refreshInterval: null,
+//         flagInterval: null
+//       });
+//       console.log(`✅ Driver registered: ${driverId}`);
+//     });
+
+//      /* 👤 CUSTOMER REGISTER */
+//   socket.on("registerCustomer", (CustomerID) => {
+//     connectedCustomers.set(CustomerID, socket);
+//     console.log("👤 Customer connected:", CustomerID);
+//   });
+
+//   /* 🏢 VENDOR REGISTER */
+//   socket.on("registerVendor", (VendorID) => {
+//     connectedVendors.set(VendorID, socket);
+//     console.log("🏢 Vendor connected:", VendorID);
+//   });
+
+
+
+
+//     // ********************************✅ LOCATION RESOLVER (LIVE → CACHE → DB)
+
+//     socket.on("driverLiveLocation", async (data) => {
+//       try {
+//         const { DriverID, Latitude, Longitude } = data;
+//         if (!DriverID) return;
+
+//         // 1️⃣ Update in-memory store
+//         updateDriverLocation(DriverID, {
+//           ...data,
+//           UpdatedAt: new Date()
+//         });
+
+//         // 2️⃣ Save to DB
+//         await insertOrUpdate_DriverLiveLocationDB(data);
+
+//         // 3️⃣ Resolve location fallback
+//         let location = null;
+//         if (Latitude && Longitude) {
+//           location = { lat: Latitude, lng: Longitude, source: "LIVE" };
+//         } else {
+//           const cached = getAllDriverLocations().get(DriverID);
+//           if (cached?.Latitude && cached?.Longitude) {
+//             location = { lat: cached.Latitude, lng: cached.Longitude, source: "CACHE" };
+//           } else {
+//             const dbLoc = await get_DriverLiveLocationDB({ DriverID });
+//             if (dbLoc?.Latitude && dbLoc?.Longitude) {
+//               location = { lat: dbLoc.Latitude, lng: dbLoc.Longitude, source: "DB" };
+//             }
+//           }
+//         }
+
+//         if (!location) return; // If no location, skip
+
+
+//   // 🔔 Vendors
+//     for (const [, vendorSocket] of global.getConnectedVendors()) {
+//       vendorSocket.emit("driverLiveLocation", payload);
+//     }
+
+//     // 🔔 Customers
+//     for (const [, customerSocket] of global.getConnectedCustomers()) {
+//       customerSocket.emit("driverLiveLocation", payload);
+//     }
+
+
+//       } catch (err) {
+//         console.error("⚠️ driverLiveLocation error:", err.message);
+//       }
+//     });
+
+    
+//     // ********************************✅ setInterval LOCATION RESOLVER (LIVE → CACHE → DB)
+
+//     setInterval(() => {
+//       try {
+//         const allDrivers = getAllDriverLocations();
+//         if (!allDrivers || allDrivers.size === 0) return;
+
+//         // 🔔 Vendors
+//     for (const [, vendorSocket] of global.getConnectedVendors()) {
+//       vendorSocket.emit("driverLiveLocation", payload);
+//     }
+
+//     // 🔔 Customers
+//     for (const [, customerSocket] of global.getConnectedCustomers()) {
+//       customerSocket.emit("driverLiveLocation", payload);
+//     }
+
+
+//       } catch (err) {
+//         console.error("🔥 Live location broadcast error:", err.message);
+//       }
+//     }, 5000); // every 5 sec
+
+
+//     //******************** **************************************************************************  */
+
+//     // newCustomerLoadPost
+//     socket.on("newCustomerLoadPost", (payload) => {
+//       console.log("🚛 New nearby load:", payload.loadPost);
+//     });
+
+//     // ❌ Disconnect
+//     socket.on("disconnect", () => {
+//       for (const [driverId, entry] of connectedDrivers) {
+//         if (entry.socket.id === socket.id) {
+//           clearInterval(entry.refreshInterval);
+//           clearInterval(entry.flagInterval);
+//           connectedDrivers.delete(driverId);
+//           console.log(`❌ Driver disconnected: ${driverId}`);
+//         }
+//       }
+//     });
+
+    
+//   });
+
+//   // 🌍 Global broadcast (initial)
+//   const allDrivers = getAlldriverLPStatus();
+//   io.emit("driverLPStatus", {
+//     allDrivers,
+//     UpdatedAt: new Date()
+//   });
+
+
+//   // 🚩 DRIVER POST / ACTION FLAG
+//   io.on("driverPostAction", (data) => {
+//     try {
+//       /*
+//         data = {
+//           DriverID,
+//           LoadPostID,
+//           CustomerID,
+//           VendorID,
+//           Action   // CREATED | ACCEPTED | INTERESTED | CANCELLED
+//         }
+//       */
+
+//       console.log("🚛 Driver Post Action:", data);
+
+//       // 🔔 CUSTOMER FLAG
+//       if (data.CustomerID) {
+//         io.emit(`customer_flag_${data.CustomerID}`, {
+//           type: "DRIVER_POST",
+//           data,
+//           UpdatedAt: new Date()
+//         });
+//       }
+
+//       // 🔔 VENDOR FLAG
+//       if (data.VendorID) {
+//         io.emit(`vendor_flag_${data.VendorID}`, {
+//           type: "DRIVER_POST",
+//           data,
+//           UpdatedAt: new Date()
+//         });
+//       }
+
+//     } catch (err) {
+//       console.error("❌ driverPostAction error:", err.message);
+//     }
+//   });
+
+// }
+// global.getConnectedCustomers = () => connectedCustomers;
+// global.getConnectedVendors = () => connectedVendors;
+
+// module.exports = initializeDriverSocket;

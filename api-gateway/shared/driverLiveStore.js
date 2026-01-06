@@ -1,27 +1,27 @@
-const connectedDrivers = new Map(); // DriverID -> { socket, refreshInterval }
-const driverLiveData = new Map();
+const connectedCustomers = new Map(); // CustomerID -> socket
+const connectedDrivers = new Map(); // DriverID -> socket
+const connectedVendors = new Map(); // VendorID -> socket
+const driverLiveData = new Map();   // DriverID -> { Latitude, Longitude }
+
+function setCustomerSocket(customerId, socket) { connectedCustomers.set(customerId, socket); }
+function getConnectedCustomers() { return connectedCustomers; }
 
 
-function driverLPStatus(data) {
-  connectedDrivers.set(data);
-}
+function driverLPStatus(data) { connectedDrivers.set(data);}
+
+function setDriverSocket(driverId, socket) { connectedDrivers.set(driverId, socket);}
+
+function setVendorSocket(vendorId, socket) { connectedVendors.set(vendorId, socket)}
+
+function getConnectedDrivers(driverId) { return connectedDrivers.get(driverId);}
+
+function getConnectedVendors(vendorId) {return connectedVendors.get(vendorId);}
 
 function updateDriverLocation(driverId, data) {
   driverLiveData.set(driverId, data);
 }
 
-
-function getDriverLocation(driverId) {
-  return driverLiveData.get(driverId);
-}
-
-function getAllDriverLocations() {
-  console.log("📍 All Drivers (Map):", driverLiveData);
-  console.log("📦 Size of Map:", driverLiveData.size);
-  console.log("📍 All Driver Process Data:",JSON.stringify([...driverLiveData.entries()], null, 2));
-  return driverLiveData;
-    // return Array.from(driverLiveData.entries());
-}
+function getAllDriverLocations() { return driverLiveData; }
 
 function getAlldriverLPStatus() {
     console.log("📍 All connected Drivers getAlldriverLPStatus (Map):", connectedDrivers);
@@ -33,9 +33,20 @@ function getAlldriverLPStatus() {
 
 
 module.exports = {
-  driverLPStatus,
+
+  setDriverSocket,
+  setVendorSocket,
+  setCustomerSocket,
+  getConnectedDrivers,
+  getConnectedVendors,
+  getConnectedCustomers,
   updateDriverLocation,
-  getDriverLocation,
   getAllDriverLocations,
-  getAlldriverLPStatus,
+  getAlldriverLPStatus
 };
+
+
+
+
+
+

@@ -1,106 +1,18 @@
-// const { getcustomerprocessDB } = require("../customer-service/models/V1/Customer_Load_Post/utility");
-// const { getAllDriverLocations } = require("../api-gateway/shared/driverLiveStore");
+const {
+  getcustomerprocessDB
+} = require("../customer-service/models/V1/Customer_Load_Post/utility");
 
-// // ✅ Haversine Formula
-// function getDistance(lat1, lon1, lat2, lon2) {
-//   const R = 6371;
-//   const dLat = (lat2 - lat1) * Math.PI / 180;
-//   const dLon = (lon2 - lon1) * Math.PI / 180;
-//   const a =
-//     Math.sin(dLat / 2) ** 2 +
-//     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-//     Math.sin(dLon / 2) ** 2;
-//   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-// }
+const {
+  getAllDriverLocations,
+  getConnectedDrivers,
+  getConnectedVendors
+} = require("../api-gateway/shared/driverLiveStore");
 
-// function initializeCustomerSocket(io, app) {
-//   console.log("👤 Customer Socket initialized");
-
-//   const connectedCustomers = new Map();
-
-//   io.on("connection", (socket) => {
-//     socket.on("CustomerDetails", (customerId) => {
-//           // socket.on("CustomerDetails", (data) => {
-
-//       connectedCustomers.set(customerId, socket);
-//       socket.customerId = customerId;
-//       console.log(`✅ Customer registered: ${customerId}`);
-//       console.log(`✅ Customer CustomerDetails: ${JSON.stringify(customerId)}`);
-
-//     });
-
-//     socket.on("disconnect", () => {
-//       if (socket.customerId) {
-//         connectedCustomers.delete(socket.customerId);
-//         console.log(`❌ Customer disconnected: ${socket.customerId}`);
-//       }
-//     });
-//   });
-
-
-//   // 🔁 Every 5 sec check nearby drivers
-//   setInterval(async () => {
-//     for (const [customerId, customerSocket] of connectedCustomers.entries()) {
-
-//       try {
-
-//         const pickup = await getcustomerprocessDB(customerId);
-//         const pickupData = pickup?.data?.[0];
-//         if (!pickupData?.Origin_Lat || !pickupData?.Origin_Lng) continue;
-
-//         const allDrivers = getAllDriverLocations();
-//         console.log("📍 All Drivers:", allDrivers);
-//         console.log("📦 Size of Map:", allDrivers.size);
-
-//         for (const [driverId, driverData] of allDrivers.entries()) {
-//           if (!driverData) continue;
-
-//           const distance = getDistance(
-//             pickupData.Origin_Lat,
-//             pickupData.Origin_Lng,
-//             driverData.Lat || driverData.Latitude,
-//             driverData.Lng || driverData.Longitude
-
-//           );
-//           console.log(`🚛 ************************************************` + JSON.stringify(distance));
-//           // console.log("📦 Driver Process Data:", {
-//           //   message: `Driver ${driverId} is within ${distance.toFixed(2)} km.`,
-//           //   driver: driverData,
-//           //   allData: pickup.data,
-//           // }
-//         // );
-
-
-//           if (distance <= 0.5) {
-//             console.log(`🚛 Driver ${driverId} is ${distance.toFixed(2)} km from Customer ${customerId}`);
-//             customerSocket.emit("driverNearbyAlert", {
-//                         // io.emit("driverNearbyAlert", {
-//               message: `Driver ${driverId} is within ${distance.toFixed(2)} km.`,
-//               driver: driverData,
-//               allData: pickup.data,
-//             });
-
-//             console.log(`🚛 ************************************************` + {
-//               message: `Driver ${driverId} is within ${distance.toFixed(2)} km.`,
-//               driver: driverData,
-//               allData: pickup.data
-//             });
-
-//           }
-//         }
-//       } catch (err) {
-//         console.error(`[ERROR] Customer ${customerId}:`, err.message);
-//       }
-//     }
-//   }, 5000);
-// }
-
-// module.exports = initializeCustomerSocket;
-
-
-
-const { getcustomerprocessDB } = require("../customer-service/models/V1/Customer_Load_Post/utility");
-const { getAllDriverLocations } = require("../api-gateway/shared/driverLiveStore");
+const {
+  // saveCustomerLoadPostDB,
+  DriverNearestCustomerPostDB,
+  // getNearestVendorsDB
+} = require("./models/V1/soket/Customer_Load_Post/utility.js");
 
 // ✅ Haversine Formula
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -109,27 +21,88 @@ function getDistance(lat1, lon1, lat2, lon2) {
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) ** 2;
+
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function initializeCustomerSocket(io, app) {
+function initializeCustomerSocket(io) {
   console.log("👤 Customer Socket initialized");
 
+  const connectedDrivers = new Map();
   const connectedCustomers = new Map();
-  console.log(`👤 Connected Customers: ${connectedCustomers.size}`);
-  console.log(`👤 Connected Customers: ${connectedCustomers}`);
+  const connectedVendors = new Map();
 
   io.on("connection", (socket) => {
-    socket.on("CustomerDetails", (data) => {
-      const { customerId } = data.customerId ? data : { customerId: data };
-      connectedCustomers.set(customerId, socket);
-      socket.customerId = customerId;
-      console.log(`✅ Customer registered: ${data.customerId}`);
-      console.log(`✅ Customer CustomerDetails: ${JSON.stringify(data)}`);
+
+    /* ================= DRIVER REGISTER ================= */
+    socket.on("registerDriver", (driverId) => {
+      connectedDrivers.set(driverId, { socket });
+      console.log(`✅ Driver registered: ${driverId}`);
     });
 
+    /* ================= CUSTOMER REGISTER ================= */
+    socket.on("registerCustomer", (CustomerID) => {
+      connectedCustomers.set(CustomerID, socket);
+      console.log("👤 Customer connected:", CustomerID);
+    });
+
+    /* ================= VENDOR REGISTER ================= */
+    socket.on("registerVendor", (VendorID) => {
+      connectedVendors.set(VendorID, socket);
+      console.log("🏢 Vendor connected:", VendorID);
+    });
+
+
+
+    // 📦 CUSTOMER LOAD POST (SOCKET EVENT)
+
+    socket.on("createCustomerLoadPost", async (payload) => {
+      try {
+        const { CustomerID, PickupLat, PickupLng, VehicleType } = payload;
+
+        // const loadPost = await saveCustomerLoadPostDB(payload);
+        const allDrivers = getAllDriverLocations();
+        if (!allDrivers || allDrivers.size === 0) return;
+        console.log("*********************************************", allDrivers);
+
+        console.log({
+          lat: allDrivers.lat || '19.1623701',
+          lng: allDrivers.lng || '19.1623701',
+          radius: 5000,
+          vehicleType: allDrivers.VehicleType || 'Multi Axle',
+        });
+
+        const nearDrivers = await DriverNearestCustomerPostDB({
+          lat: allDrivers.lat || '19.1623701',
+          lng: allDrivers.lng || '72.9376316',
+          radius: 5000,
+          vehicleType: allDrivers.VehicleType || 'Multi Axle',
+        });
+
+        // const nearVendors = await getNearestVendorsDB({
+        //   Latitude: PickupLat || '19.0760',
+        //   Longitude: PickupLng || '72.8777'
+        // });
+
+        // emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers, vendors: nearVendors });
+        emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers });
+
+        socket.emit("loadPostCreated", payload);
+
+      } catch (err) {
+        console.error("❌ Load post error:", err.message);
+      }
+    });
+
+    // 🚩 DRIVER FLAG TO CUSTOMER
+    socket.on("customer_driver_flag", (payload) => {
+      socket.emit("driverPostUpdate", payload);
+    });
+
+    // 🔴 DISCONNECT
     socket.on("disconnect", () => {
       if (socket.customerId) {
         connectedCustomers.delete(socket.customerId);
@@ -138,127 +111,121 @@ function initializeCustomerSocket(io, app) {
     });
   });
 
-  // 🔁 Every 5 sec check nearby drivers
+  // 🔁 EVERY 5 SEC → CHECK NEARBY DRIVERS
   setInterval(async () => {
     try {
+      if (connectedCustomers.size === 0) return;
+
+      const allDrivers = getAllDriverLocations();
+      if (!allDrivers || allDrivers.size === 0) return;
+
       for (const [customerId, customerSocket] of connectedCustomers.entries()) {
-        try {
-          const pickup = await getcustomerprocessDB(customerId);
-          const pickupData = pickup?.data?.[0];
-          if (!pickupData?.Origin_Lat || !pickupData?.Origin_Lng) continue;
 
-          const allDrivers = getAllDriverLocations();
-          console.log("📦 Total Drivers:", allDrivers.size);
+        const pickup = await getcustomerprocessDB(customerId);
+        const pickupData = pickup?.data?.[0];
+        if (!pickupData?.Origin_Lat || !pickupData?.Origin_Lng) continue;
 
-          for (const [driverId, driverData] of allDrivers.entries()) {
-            if (!driverData) continue;
-            console.log("📦 Driver Data:", driverData);
-            const distance = getDistance(
-              pickupData.Origin_Lat,
-              pickupData.Origin_Lng,
-              driverData.Lat || driverData.Latitude || 19.141814,
-              driverData.Lng || driverData.Longitude || 72.931421
-            );
-            console.log("🚛 ************************************************", + JSON.stringify(distance));
-            console.log("🚛 ************************************************", + JSON.stringify(driverData.Lat ));
+        for (const [driverId, driverData] of allDrivers.entries()) {
+          if (!driverData) continue;
 
-            if (distance <= 5) {
-              console.log(`🚛 Driver ${driverId} is ${distance.toFixed(2)} km from Customer ${customerId}`);
-              customerSocket.emit("driverNearbyAlert", {
-                message: `Driver ${driverId} is within ${distance.toFixed(2)} km.`,
-                driver: driverData,
-                allData: pickup.data,
-              });
+          const distance = getDistance(
+            pickupData.Origin_Lat,
+            pickupData.Origin_Lng,
+            driverData.Latitude,
+            driverData.Longitude
+          );
 
-              console.log("🚛 ************************************************", {
-                message: `Driver ${driverId} is within ${distance.toFixed(2)} km.`,
-                driver: driverData,
-                allData: pickup.data,
-              });
-            }
+          if (distance <= 5) {
+            customerSocket.emit("driverNearbyAlert", {
+              driverId,
+              distance: distance.toFixed(2),
+              driver: driverData,
+              loadPost: pickupData
+            });
           }
-        } catch (err) {
-          console.error(`[ERROR] Customer ${customerId}:`, err.message);
         }
       }
     } catch (err) {
-      console.error("🔥 Error in setInterval:", err);
+      console.error("🔥 Interval error:", err.message);
     }
   }, 5000);
 
+  // 🔁 DRIVER LIVE LOCATION BROADCAST
+  setInterval(() => {
+    try {
+      if (connectedCustomers.size === 0) return;
 
-// 🔁 Every 5 sec send nearby drivers to customers
-setInterval(() => {
-  try {
-    if (!connectedCustomers || connectedCustomers.size === 0) return;
+      const allDrivers = getAllDriverLocations();
+      if (!allDrivers || allDrivers.size === 0) return;
 
-    const allDrivers = getAllDriverLocations(); // Map<driverId, location>
+      const driversArray = Array.from(allDrivers.values());
 
-    if (!allDrivers || allDrivers.size === 0) return;
-
-    console.log("🚗 Total Drivers:", allDrivers.size);
-
-    // Convert Map → Array ONCE
-    const driversArray = [];
-
-    for (const driverData of allDrivers.values()) {
-      if (driverData) driversArray.push(driverData);
+      for (const socket of connectedCustomers.values()) {
+        socket.emit("driverLiveLocation", {
+          drivers: driversArray,
+          UpdatedAt: new Date()
+        });
+      }
+    } catch (err) {
+      console.error("🔥 Live location error:", err.message);
     }
+  }, 5000);
+}
 
-    // Emit ONCE per customer
-    for (const [customerId, customerSocket] of connectedCustomers.entries()) {
-      customerSocket.emit("driverLiveLocation", {
-        drivers: driversArray,
-        UpdatedAt: new Date()
+function emitLoadPostToNearby({ loadPost, drivers }) {
+
+  const connectedDrivers = new Map();
+
+  if (!Array.isArray(drivers)) {
+    console.error("❌ drivers is not array:", drivers);
+    return;
+  }
+
+  drivers.forEach(d => {
+    // const driverEntry = connectedDrivers.get(d.DriverID);
+
+    // 3️⃣ Get driver entry
+    const driverEntry = connectedDrivers.get(d.DriverID);
+    if (!driverEntry) return;
+
+    if (driverEntry?.socket) {
+      driverEntry.socket.emit("newCustomerLoadPost", {
+        loadPost,
+        type: "NEARBY"
       });
 
-      console.log(
-        `📍 Sent ${driversArray.length} drivers to Customer ${customerId}`
-      );
+      console.log("📨 Load sent to driver:", d.DriverID);
     }
-
-  } catch (err) {
-    console.error("🔥 Error in driver broadcast interval:", err.message);
-  }
-}, 5000);
-
-// setInterval(async () => {
-//   try {
-//     if (!connectedCustomers || connectedCustomers.size === 0) {
-//       return;
-//     }
-
-//     const allDrivers = getAllDriverLocations(); // Map
-//     console.log("🚗 Total Drivers:", allDrivers.size);
-
-//     if (!allDrivers || allDrivers.size === 0) return;
-
-//     for (const [customerId, customerSocket] of connectedCustomers.entries()) {
-//       try {
-//         const driversArray = [];
-
-//         for (const [driverId, driverData] of allDrivers.entries()) {
-//           if (!driverData) continue;
-//           driversArray.push(driverData);
-//         }
-
-//         // Emit once per customer (BEST PRACTICE)
-//         customerSocket.emit("driverLiveLocation", {
-//           drivers: driversArray,
-//         });
-
-//         console.log(
-//           `📍 Sent ${driversArray.length} drivers to Customer ${customerId}`
-//         );
-//       } catch (err) {
-//         console.error(`❌ Customer ${customerId} Error:`, err.message);
-//       }
-//     }
-//   } catch (err) {
-//     console.error("🔥 Error in setInterval:", err);
-//   }
-// }, 5000);
-
+  });
 }
+
+
+// // 🔔 EMIT LOAD POST
+// function emitLoadPostToNearby({ loadPost, drivers, vendors }) {
+
+// drivers?.forEach(d => {
+//   const driverEntry = connectedDrivers.get(d.DriverID);
+
+//   if (driverEntry?.socket) {
+//     driverEntry.socket.emit("newCustomerLoadPost", {
+//       loadPost,
+//       type: "NEARBY"
+//     });
+
+//     console.log("📨 Load sent to driver:", d.DriverID);
+//   }
+// });
+
+
+//   // vendors?.forEach(v => {
+//   //   const socket = getConnectedVendors(v.VendorID);
+//   //   if (socket) {
+//   //     socket.emit("newCustomerLoadPost", {
+//   //       loadPost,
+//   //       type: "NEARBY"
+//   //     });
+//   //   }
+//   // });
+// }
 
 module.exports = initializeCustomerSocket;
