@@ -187,7 +187,11 @@ function emitLoadPostToNearby({ loadPost, drivers, vendors }) {
           drivers,
           type: "NEARBY"
         });
-        console.log("📨 Load sent to driver:", d.DriverID, loadPost);
+        console.log("📨 Load sent to driver:", {
+          loadPost,
+          drivers,
+          type: "NEARBY"
+        });
       }
     });
   }
@@ -202,7 +206,11 @@ function emitLoadPostToNearby({ loadPost, drivers, vendors }) {
           vendors,
           type: "NEARBY"
         });
-        console.log("📨 Load sent to vendor:", v.VendorID, loadPost);
+        console.log("📨 Load sent to vendor:", {
+          loadPost,
+          vendors,
+          type: "NEARBY"
+        });
       }
     });
   }
