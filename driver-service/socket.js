@@ -69,6 +69,7 @@ function initializeDriverSocket(io, app) {
       try {
         const { DriverID, Latitude, Longitude } = data;
         if (!DriverID) return;
+        console.log(data ,"*****************************driver side");
 
         // Update cache
         updateDriverLocation(DriverID, {
