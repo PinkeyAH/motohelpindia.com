@@ -116,9 +116,23 @@ function initializeDriverSocket(io, app) {
 
         allDrivers.forEach((loc, driverId) => {
           const payload = {
-            DriverID: driverId,
-            Latitude: loc.Latitude,
-            Longitude: loc.Longitude,
+            DriverID: loc.DriverID,
+            VendorID: loc.VendorID,
+            VehicleID: loc.VehicleID,
+            MobileNo: loc.MobileNo,
+            Lat: loc.Latitude,
+            Lng: loc.Longitude,
+            Speed: loc.Speed,
+            Direction: loc.Direction,
+            City: loc.City,
+            District: loc.District,
+            Taluka: loc.Taluka,
+            State: loc.State,
+            Pincode: loc.Pincode,
+            Address: loc.Address,
+            Driver_LPStatus: loc.Driver_LPStatus,
+            Status: loc.Status,
+
             source: "CACHE",
             UpdatedAt: new Date()
           };
