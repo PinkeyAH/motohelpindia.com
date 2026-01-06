@@ -5,6 +5,7 @@ const {
 const {
   getAllDriverLocations,
   getConnectedDrivers,
+  updateAllNearbyCustomerLoadPost,
   getConnectedVendors
 } = require("../api-gateway/shared/driverLiveStore");
 
@@ -65,6 +66,7 @@ function initializeCustomerSocket(io) {
         const { CustomerID, PickupLat, PickupLng, VehicleType } = payload;
         console.log("📦 New Load Post from Customer:", CustomerID,PickupLat, PickupLng, VehicleType, payload);
         // const loadPost = await saveCustomerLoadPostDB(payload);
+        
         const allDrivers = getAllDriverLocations();
         if (!allDrivers || allDrivers.size === 0) return;
         console.log("*********************************************", allDrivers);
@@ -92,7 +94,13 @@ function initializeCustomerSocket(io) {
 
         emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers, vendors: nearVendors });
         // emitLoadPostToNearby({ loadPost: payload, drivers: nearDrivers });
-
+        // Update cache
+        updateAllNearbyCustomerLoadPost(CustomerID, {
+           loadPost: payload, 
+           drivers: nearDrivers, 
+           vendors: nearVendors,
+          UpdatedAt: new Date()
+        });
         socket.emit("loadPostCreated", payload);
 
       } catch (err) {

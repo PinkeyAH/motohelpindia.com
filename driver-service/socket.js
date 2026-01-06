@@ -17,7 +17,8 @@ const {
 const {
   updateDriverLocation,
   getAlldriverLPStatus,
-  getAllDriverLocations
+  getAllDriverLocations,
+  getAllNearbyCustomerLoadPost
 } = require("../api-gateway/shared/driverLiveStore");
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -162,7 +163,7 @@ function initializeDriverSocket(io, app) {
 
     // 🔁 DRIVER STATUS BROADCAST
 
-        setInterval(() => {
+    setInterval(() => {
       try {
         const allNearbyCustomerLoadPost = getAllNearbyCustomerLoadPost();
         if (!allNearbyCustomerLoadPost || allNearbyCustomerLoadPost.size === 0) return;
@@ -180,7 +181,7 @@ function initializeDriverSocket(io, app) {
             vendorSocket.emit("NearbyCustomerLoadPost", payload);
             console.log('**************NearbyCustomerLoadPost******vendorSocket*************', payload);
           });
-          
+
           connectedCustomers.forEach((customerSocket) => {
             customerSocket.emit("NearbyCustomerLoadPost", payload);
             console.log('**************🏢 NearbyCustomerLoadPost nearby load:*************', payload);

@@ -24,6 +24,9 @@ function updateDriverLocation(driverId, data) {
 
 function getAllDriverLocations() { return driverLiveData; }
 
+function updateAllNearbyCustomerLoadPost(CustomerID, loadPost, drivers, vendors) {
+  NearbyCustomerLoadPost.set(CustomerID, { loadPost, drivers, vendors });
+}
 function getAllNearbyCustomerLoadPost() { return NearbyCustomerLoadPost; }
 
 function getAlldriverLPStatus() {
@@ -46,7 +49,8 @@ module.exports = {
   updateDriverLocation,
   getAllDriverLocations,
   getAlldriverLPStatus,
-  getAllNearbyCustomerLoadPost
+  getAllNearbyCustomerLoadPost,
+  updateAllNearbyCustomerLoadPost
 };
 
 
