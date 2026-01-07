@@ -58,17 +58,29 @@ module.exports = (io, socket, redis) => {
       Date.now()
     );
 
-    /* 4️⃣ Optional: broadcast live location */
-    io.emit("driver:live_location", {
-      DriverID,
-      lat,
-      lng,
-      Speed,
-      Direction,
-      Status
-    });
+    // /* 4️⃣ Optional: broadcast live location */
+    // io.emit("driver:live_location", {
+    //   DriverID,
+    //   lat,
+    //   lng,
+    //   Speed,
+    //   Direction,
+    //   Status
+    // });
 
-    console.log("✅ Driver location updated:", DriverID);
+     // 🔹 Broadcast ALL drivers live
+  const driverKeys = await redis.keys("driver:details:*");
+
+  const driverList = [];
+  for (const key of driverKeys) {
+    const data = await redis.hgetall(key);
+    driverList.push(data);
+  }
+
+  io.emit("driver:live_location", driverList); // Array of objects
+
+
+    console.log("✅ Driver location updated:", driverList);
   });
 
   // DRIVER ACCEPT LOAD
