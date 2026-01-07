@@ -9,23 +9,32 @@ const { logger } = require('./log/logger');
 const requestLogger = require('./middleware/loggerMiddleware');
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-// ✅ Correct imports
-const initializeSocket = require('./socket');
-const initializeDriverSocket = require('../driver-service/socket');
-const initializeCustomerSocket = require('../customer-service/socket');
-const initializeVendorSocket = require('../vendor-service/socket');
+const { initSocket } = require("./sockets/socket");
+
 const app = express();
 const server = http.createServer(app);
 
+initSocket(server);
+
+// ✅ Correct imports
+const initializeSocket = require('./sockets/socket');
+// 
+// const initializeSocket = require('./socket');
+// const initializeDriverSocket = require('../driver-service/socket');
+// const initializeCustomerSocket = require('../customer-service/socket');
+// const initializeVendorSocket = require('../vendor-service/socket');
+// const app = express();
+// const server = http.createServer(app);
+
 // ✅ Initialize base Socket.IO
-const io = initializeSocket(server, app);
-console.log("✅ Socket.IO base initialized");
+// const io = initializeSocket(server, app);
+// console.log("✅ Socket.IO base initialized");
 
 // ✅ Pass the SAME `io` instance to both modules
-initializeDriverSocket(io, app);
-initializeCustomerSocket(io, app);
-initializeVendorSocket(io, app);
-console.log("✅ Driver & Customer Sockets initialized");
+// initializeDriverSocket(io, app);
+// initializeCustomerSocket(io, app);
+// initializeVendorSocket(io, app);
+// console.log("✅ Driver & Customer Sockets initialized");
 
 // ✅ Middleware
 app.use(cors);
