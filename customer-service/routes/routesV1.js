@@ -21,6 +21,13 @@ const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
 const { Insertcustomeremployee, updatecustomeremployee, deletecustomeremployee, getcustomeremployee } = require('../controllers/V1/Customer_Employees.js');
 const { customerloadpostmaster, updatecustomerloadpostmaster, getcustomermaster, updatecustomerloadpostinvoice, getcustomerloadpostmaster} = require('../controllers/V1/Customer_LoadPost_Master.js');        
 
+
+
+// vishal changes api 
+const { getCustomerLPLoading, GetCustomerLPProgress, GetCustomerLPReached, GetCustomerLPLoaded, GetCustomerLPHold, GetCustomerLPpending, GetCustomerLPCompleted } = require('../controllers/V1/Customer_LP.js');
+
+
+
 // ---------------------------
 // Customer Logs Routes
 // ---------------------------
@@ -129,6 +136,16 @@ router.post('/get_customer_master', getcustomermaster);
 router.post('/get_customer_loadpost_master', getcustomerloadpostmaster);
 
 
+
+// vishal changes api 
+
+router.post('/customer_LP_Loading', getCustomerLPLoading);
+router.post('/customer_LP_Progress', GetCustomerLPProgress);
+router.post('/customer_LP_Reached', GetCustomerLPReached)
+router.post('/customer_LP_Loaded', GetCustomerLPLoaded)
+router.post('/customer_LP_Hold', GetCustomerLPHold)
+router.post('/customer_LP_Completed', GetCustomerLPCompleted)
+router.post('/customer_LP_pending', GetCustomerLPpending)
 
 
 module.exports = router
