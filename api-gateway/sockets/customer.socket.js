@@ -7,44 +7,81 @@
 // };
 module.exports = (io, socket, redis) => {
 
-    socket.on("customer:new_load", async (load) => {
+//     socket.on("customer:new_load", async (load) => {
+//   /*
+//     load = {
+//       loadId,
+//       customerId,
+//       lat,
+//       lng
+//     }
+//   */
+
+//   // Save load (optional – future use)
+//   await redis.hset(
+//     "active:loads",
+//     load.loadId,
+//     JSON.stringify(load)
+//   );
+
+//   // 🔥 FIND DRIVERS WITHIN 5 KM
+//   const nearbyDrivers = await redis.georadius(
+//     "drivers:geo",
+//     load.lng,
+//     load.lat,
+//     5,
+//     "km"
+//   );
+
+//   console.log(
+//     `Load ${load.loadId} nearby drivers:`,
+//     nearbyDrivers
+//   );
+
+//   // 🔥 SEND LOAD ONLY TO NEARBY DRIVERS
+//   nearbyDrivers.forEach(DriverID => {
+//     io.to(`driver:${DriverID}`).emit(
+//       "driver:available_load",
+//       load
+//     );
+//   });
+// });
+socket.on("customer:new_load", async (load) => {
   /*
-    load = {
-      loadId,
-      customerId,
-      lat,
-      lng
-    }
+    load = { loadId, customerId, lat, lng }
   */
 
-  // Save load (optional – future use)
+  // Save load as OPEN
   await redis.hset(
-    "active:loads",
+    "loads:status",
     load.loadId,
-    JSON.stringify(load)
+    "OPEN"
   );
 
-  // 🔥 FIND DRIVERS WITHIN 5 KM
+  // Find drivers within 5 KM WITH DISTANCE
   const nearbyDrivers = await redis.georadius(
     "drivers:geo",
     load.lng,
     load.lat,
     5,
-    "km"
+    "km",
+    "WITHDIST"
   );
 
-  console.log(
-    `Load ${load.loadId} nearby drivers:`,
-    nearbyDrivers
-  );
+  // Sort by nearest distance
+  nearbyDrivers.sort((a, b) => a[1] - b[1]);
 
-  // 🔥 SEND LOAD ONLY TO NEARBY DRIVERS
-  nearbyDrivers.forEach(driverId => {
-    io.to(`driver:${driverId}`).emit(
+  nearbyDrivers.forEach(([DriverID, distance]) => {
+    io.to(`driver:${DriverID}`).emit(
       "driver:available_load",
-      load
+      {
+        ...load,
+        distance: Number(distance).toFixed(2) // km
+      }
     );
   });
+
+  console.log("Load sent to nearby drivers:", load.loadId);
 });
 
 };
