@@ -1,65 +1,28 @@
-// module.exports = (io, socket) => {
-
-//   socket.on("joinCustomer", (customerId) => {
-//     socket.join(`CUSTOMER_${customerId}`);
-//   });
-
-// };
 module.exports = (io, socket, redis) => {
+    socket.on("customer:new_load", async (load) => {
+  
+        // Save load data
+  await redis.hset(
+    `loads:data:${load.loadId}`,
+    load
+  );
 
-//     socket.on("customer:new_load", async (load) => {
-//   /*
-//     load = {
-//       loadId,
-//       customerId,
-//       lat,
-//       lng
-//     }
-//   */
-
-//   // Save load (optional – future use)
-//   await redis.hset(
-//     "active:loads",
-//     load.loadId,
-//     JSON.stringify(load)
-//   );
-
-//   // 🔥 FIND DRIVERS WITHIN 5 KM
-//   const nearbyDrivers = await redis.georadius(
-//     "drivers:geo",
-//     load.lng,
-//     load.lat,
-//     5,
-//     "km"
-//   );
-
-//   console.log(
-//     `Load ${load.loadId} nearby drivers:`,
-//     nearbyDrivers
-//   );
-
-//   // 🔥 SEND LOAD ONLY TO NEARBY DRIVERS
-//   nearbyDrivers.forEach(DriverID => {
-//     io.to(`driver:${DriverID}`).emit(
-//       "driver:available_load",
-//       load
-//     );
-//   });
-// });
-socket.on("customer:new_load", async (load) => {
-  /*
-    load = { loadId, customerId, lat, lng }
-  */
-
-  // Save load as OPEN
+  // Save status
   await redis.hset(
     "loads:status",
     load.loadId,
     "OPEN"
   );
 
-  // Find drivers within 5 KM WITH DISTANCE
-  const nearbyDrivers = await redis.georadius(
+  // Save load geo
+  await redis.geoadd(
+    "loads:geo",
+    load.lng,
+    load.lat,
+    load.loadId
+  );
+
+  const nearbyDriversRaw = await redis.georadius(
     "drivers:geo",
     load.lng,
     load.lat,
@@ -68,20 +31,45 @@ socket.on("customer:new_load", async (load) => {
     "WITHDIST"
   );
 
-  // Sort by nearest distance
-  nearbyDrivers.sort((a, b) => a[1] - b[1]);
+  // Convert to object array
+  const nearbyDrivers = nearbyDriversRaw
+    .map(([DriverID, distance]) => ({
+      DriverID,
+      distance: Number(distance)
+    }))
+    .sort((a, b) => a.distance - b.distance);
 
-  nearbyDrivers.forEach(([DriverID, distance]) => {
-    io.to(`driver:${DriverID}`).emit(
-      "driver:available_load",
-      {
-        ...load,
-        distance: Number(distance).toFixed(2) // km
-      }
+  for (const driver of nearbyDrivers) {
+
+    const loadObj = {
+      loadId: load.loadId,
+      customerId: load.customerId,
+      lat: load.lat,
+      lng: load.lng,
+      distance: driver.distance
+    };
+
+    // 🔥 PUSH LOAD INTO DRIVER ARRAY
+    await redis.rpush(
+      `driver:loads:${driver.DriverID}`,
+      JSON.stringify(loadObj)
     );
-  });
 
-  console.log("Load sent to nearby drivers:", load.loadId);
+    // 🔥 GET FULL ARRAY FOR DRIVER
+    const allLoads = await redis.lrange(
+      `driver:loads:${driver.DriverID}`,
+      0,
+      -1
+    );
+
+    const loadArray = allLoads.map(l => JSON.parse(l));
+
+    // 🔥 SEND ARRAY TO DRIVER
+    io.to(`driver:${driver.DriverID}`).emit(
+      "driver:available_loads",
+      loadArray
+    );
+  }
 });
-
 };
+

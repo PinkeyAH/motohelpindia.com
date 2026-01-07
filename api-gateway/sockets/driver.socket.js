@@ -83,6 +83,21 @@ module.exports = (io, socket, redis) => {
     console.log("✅ Driver location updated:", driverList);
   });
 
+
+  socket.on("driver:location_update", async (data) => {
+    const { DriverID, lat, lng } = data;
+
+    // 🔥 Save driver live location
+    await redis.geoadd(
+      "drivers:geo",
+      lng,
+      lat,
+      DriverID
+    );
+
+    console.log("📍 Driver location updated:", DriverID);
+  });
+
   // DRIVER ACCEPT LOAD
   socket.on("driver:accept_load", ({ loadId, DriverID }) => {
     io.emit("customer:driver_accepted", { loadId, DriverID });
