@@ -17,7 +17,7 @@ const server = http.createServer(app);
 initSocket(server);
 
 // ✅ Correct imports
-const initializeSocket = require('./sockets/socket');
+// const initializeSocket = require('./sockets/socket');
 // 
 // const initializeSocket = require('./socket');
 // const initializeDriverSocket = require('../driver-service/socket');
