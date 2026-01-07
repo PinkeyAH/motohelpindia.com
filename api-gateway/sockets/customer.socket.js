@@ -43,7 +43,7 @@ module.exports = (io, socket, redis) => {
 
     const loadObj = {
       loadId: load.loadId,
-      customerId: load.customerId,
+      customerId: load.CustomerID,
       lat: load.lat,
       lng: load.lng,
       distance: driver.distance
@@ -70,6 +70,25 @@ module.exports = (io, socket, redis) => {
       loadArray
     );
   }
+
+
+// Set expiry 1 hour
+await redis.expire(`loads:data:${load.loadId}`, 3600);
+
+// Set status also with expiry
+await redis.hset(`loads:status`, load.loadId, "OPEN");
+await redis.expire(`loads:status`, 3600);
+const keys = await redis.keys("driver:loads:*");
+for (const key of keys) {
+  const ttl = await redis.ttl(key);
+  if (ttl === -1) {
+    // key ka TTL set nahi hai, ab set karo 1 hour
+    await redis.expire(key, 3600);
+  }
+}
+    console.log("📢 New load created:", load);
 });
+
+
 };
 

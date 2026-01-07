@@ -81,7 +81,13 @@ module.exports = (io, socket, redis) => {
 
 
     console.log("✅ Driver location updated:", driverList);
-  });
+    
+    // Set expiry 1 hour (3600 seconds)
+// await redis.expire(`driver:loads:${DriverID}`, 3600);
+//   });
+await redis.geoadd("drivers:geo", lng, lat, DriverID);
+await redis.expire("drivers:geo", 3600);
+    });
 
 
   socket.on("driver:location_update", async (data) => {
