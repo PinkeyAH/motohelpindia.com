@@ -1,18 +1,4 @@
-// module.exports = (io, socket) => {
 
-//   socket.on("joinVendor", ({ vendorId }) => {
-//     socket.join(`VENDOR_${vendorId}`);
-//     console.log("Vendor joined:", vendorId);
-//   });
-
-// };
-
-// module.exports = (io, socket) => {
-
-//   socket.on("vendor:track_driver", ({ driverId }) => {
-//     io.to(`vendor:${socket.id}`).emit("vendor:tracking_started", { driverId });
-//   });
-// };
 
 module.exports = (io, socket, redis) => {
 

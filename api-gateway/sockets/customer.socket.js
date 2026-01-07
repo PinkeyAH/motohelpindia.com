@@ -7,27 +7,44 @@
 // };
 module.exports = (io, socket, redis) => {
 
-  // CUSTOMER POSTS LOAD
-  socket.on("customer:new_load", async (data) => {
-    /*
-      data = {
-        loadId,
-        origin,
-        destination,
-        customerId,
-        lat,
-        lng
-      }
-    */
+    socket.on("customer:new_load", async (load) => {
+  /*
+    load = {
+      loadId,
+      customerId,
+      lat,
+      lng
+    }
+  */
 
-    await redis.set(`load:${data.loadId}`, JSON.stringify(data));
+  // Save load (optional – future use)
+  await redis.hset(
+    "active:loads",
+    load.loadId,
+    JSON.stringify(load)
+  );
 
-    // Broadcast to nearby drivers
-    io.emit("driver:available_load", data);
+  // 🔥 FIND DRIVERS WITHIN 5 KM
+  const nearbyDrivers = await redis.georadius(
+    "drivers:geo",
+    load.lng,
+    load.lat,
+    5,
+    "km"
+  );
+
+  console.log(
+    `Load ${load.loadId} nearby drivers:`,
+    nearbyDrivers
+  );
+
+  // 🔥 SEND LOAD ONLY TO NEARBY DRIVERS
+  nearbyDrivers.forEach(driverId => {
+    io.to(`driver:${driverId}`).emit(
+      "driver:available_load",
+      load
+    );
   });
+});
 
-  // CUSTOMER SELECTS DRIVER
-  socket.on("customer:select_driver", ({ loadId, driverId }) => {
-    io.to(`driver:${driverId}`).emit("driver:load_assigned", { loadId });
-  });
 };
