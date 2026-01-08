@@ -178,4 +178,19 @@ module.exports = (io, socket, redis) => {
     //     io.emit("customer:driver_accepted", { loadId, DriverID });
     //   });
 
+//     socket.on("driver:accept_load", async ({ loadId }) => {
+
+//     // 1️⃣ Remove from open loads
+//     await redis.lrem("loads:open", 0, loadId);
+
+//     // 2️⃣ Update status
+//     await redis.hset(`load:details:${loadId}`, {
+//         status: "ASSIGNED"
+//     });
+
+//     // 3️⃣ Inform others
+//     io.emit("driver:remove_load", { loadId });
+// });
+
+
 };
