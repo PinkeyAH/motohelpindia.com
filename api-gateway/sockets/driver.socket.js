@@ -102,29 +102,24 @@ module.exports = (io, socket, redis) => {
         await redis.expire("drivers:geo", 300);
     });
 
-    socket.on("driver:join", async ({ DriverID, lat, lng }) => {
+ socket.on("driver:join", async ({ DriverID }) => {
 
-        // Driver ki location save
-        await redis.geoadd("drivers:geo", lng, lat, DriverID);
+  const openLoadIds = await redis.lrange("loads:open", 0, -1);
 
-        // 🔥 ALL OPEN LOADS nikalo
-        const openLoadIds = await redis.lrange("loads:open", 0, -1);
+  const loads = [];
+  for (const loadId of openLoadIds) {
+    const status = await redis.hget("loads:status", loadId);
+    if (status !== "OPEN") continue;
 
-        const loads = [];
+    const data = await redis.hgetall(`loads:data:${loadId}`);
+    loads.push(data);
+  }
 
-        for (const loadId of openLoadIds) {
-            const status = await redis.hget("loads:status", loadId);
-            if (status !== "OPEN") continue;
+  socket.emit("driver:available_loads", loads);
 
-            const data = await redis.hgetall(`loads:data:${loadId}`);
-            loads.push(data);
-        }
+  console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
+});
 
-        // ✅ DRIVER KO OLD LOADS BHEJO
-        socket.emit("driver:available_loads", loads);
-
-        console.log(`🚚 Driver ${DriverID} ko ${loads.length} purane loads mile`);
-    });
 
     // DRIVER LOCATION UPDATE
     socket.on("driver:location_update", async (data) => {
