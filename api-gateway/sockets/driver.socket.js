@@ -102,7 +102,38 @@ module.exports = (io, socket, redis) => {
         await redis.expire("drivers:geo", 300);
     });
 
+socket.on("driver:join", async ({ DriverID, lat, lng }) => {
 
+  // Driver ki geo location save
+  await redis.geoadd("drivers:geo", lng, lat, DriverID);
+
+  // 🔍 Nearby OPEN loads
+  const nearbyLoadIds = await redis.georadius(
+    "loads:geo",
+    lng,
+    lat,
+    50,
+    "km"
+  );
+
+  const loads = [];
+
+  for (const loadId of nearbyLoadIds) {
+    const status = await redis.hget("loads:status", loadId);
+    if (status !== "OPEN") continue;
+
+    const data = await redis.hgetall(`loads:data:${loadId}`);
+    loads.push(data);
+  }
+
+  // ✅ SEND OLD LOADS
+  socket.emit("driver:available_loads", loads);
+
+  console.log(
+    `🚚 Driver ${DriverID} ko ${loads.length} purane loads mile`
+  );
+});
+        // DRIVER LOCATION UPDATE
     socket.on("driver:location_update", async (data) => {
         const { DriverID, lat, lng } = data;
 
@@ -149,28 +180,36 @@ module.exports = (io, socket, redis) => {
             CustomerID
         });
 
+          // ❌ Remove from open list
+  await redis.lrem("loads:open", 0, loadId);
+
+  // ❌ Remove geo
+  await redis.zrem("loads:geo", loadId);
+
+  io.emit("driver:remove_load", { loadId });
         console.log(`✅ Load ${loadId} assigned to Driver ${DriverID}`);
     });
 
-    // DRIVER LOCATION BROADCAST (already implemented)
-    socket.on("driver:location", async (data) => {
-        const { DriverID, lat, lng, Status } = data;
 
-        // Save/update driver geo location
-        await redis.geoadd("drivers:geo", lng, lat, DriverID);
+    // // DRIVER LOCATION BROADCAST (already implemented)
+    // socket.on("driver:location", async (data) => {
+    //     const { DriverID, lat, lng, Status } = data;
 
-        // Optional: save full driver info if needed
-        await redis.hset(`driver:details:${DriverID}`, {
-            lat,
-            lng,
-            Status,
-            updatedAt: Date.now()
-        });
+    //     // Save/update driver geo location
+    //     await redis.geoadd("drivers:geo", lng, lat, DriverID);
 
-        // Broadcast live location to customer & vendor
-        io.to(`customer:${data.CustomerID}`).emit("driver:live_location", data);
-        io.to(`vendor:${data.VendorID}`).emit("driver:live_location", data);
-    });
+    //     // Optional: save full driver info if needed
+    //     await redis.hset(`driver:details:${DriverID}`, {
+    //         lat,
+    //         lng,
+    //         Status,
+    //         updatedAt: Date.now()
+    //     });
+
+    //     // Broadcast live location to customer & vendor
+    //     io.to(`customer:${data.CustomerID}`).emit("driver:live_location", data);
+    //     io.to(`vendor:${data.VendorID}`).emit("driver:live_location", data);
+    // });
 
 
     //   // DRIVER ACCEPT LOAD
