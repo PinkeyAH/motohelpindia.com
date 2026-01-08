@@ -19,6 +19,15 @@ module.exports = (io, socket, redis) => {
         Status
     }) => {
 
+ console.log("driver:location", {
+        DriverID,
+        MobileNo,
+        lat,
+        lng,
+        Driver_LPStatus,
+        Status
+    });
+ 
         /* 1️⃣ GEOADD → ONLY lng, lat, DriverID */
         await redis.geoadd(
             "drivers:geo",
@@ -51,8 +60,8 @@ module.exports = (io, socket, redis) => {
             }
         );
 
-        // Set expiry 1 hour (3600 seconds)
-        await redis.expire(`driver:details:${DriverID}`, 3600);
+        // Set expiry 1 hour (36 seconds)
+        await redis.expire(`driver:details:${DriverID}`, 36);
 
         /* 3️⃣ Heartbeat */
         await redis.hset(
@@ -83,13 +92,13 @@ module.exports = (io, socket, redis) => {
         io.emit("driver:live_location", driverList); // Array of objects
 
 
-        console.log("✅ Driver location updated:", driverList);
+        // console.log("✅ Driver location updated:", driverList);
 
-        // Set expiry 1 hour (3600 seconds)
-        // await redis.expire(`driver:loads:${DriverID}`, 3600);
+        // Set expiry 1 hour (36 seconds)
+        // await redis.expire(`driver:loads:${DriverID}`, 36);
         //   });
         await redis.geoadd("drivers:geo", lng, lat, DriverID);
-        await redis.expire("drivers:geo", 3600);
+        await redis.expire("drivers:geo", 36);
     });
 
 
