@@ -1,5 +1,6 @@
 module.exports = (io, socket, redis) => {
 
+    
     socket.on("driver:location", async ({
         DriverID,
         VendorID,

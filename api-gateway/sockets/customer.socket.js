@@ -23,7 +23,7 @@ module.exports = (io, socket, redis) => {
             load.loadId
         );
 
-        // TTL 1 hour
+        // TTL 1 hour 3600 seconds
         await redis.expire(`loads:data:${load.loadId}`, 36);
 
         const nearbyDriversRaw = await redis.georadius(
@@ -78,6 +78,7 @@ module.exports = (io, socket, redis) => {
         }
 
         console.log("📦 Load broadcast done:", load.loadId);
+        console.log("📦 Load broadcast done:", load);
 
 
         // Set status also with expiry
@@ -94,6 +95,12 @@ module.exports = (io, socket, redis) => {
         console.log("📢 New load created:", load);
     });
 
+socket.on("driver:location", async (data) => {
+  io.to(`customer:${data.customerId}`).emit(
+    "driver:live_location",
+    data
+  );
+});
 
 };
 
