@@ -23,8 +23,8 @@ module.exports = (io, socket, redis) => {
             load.loadId
         );
 
-        // TTL 1 hour 3600 seconds
-        await redis.expire(`loads:data:${load.loadId}`, 36);
+        // TTL 1 hour 30000 seconds
+        await redis.expire(`loads:data:${load.loadId}`, 300);
 
         const nearbyDriversRaw = await redis.georadius(
             "drivers:geo",
@@ -59,7 +59,7 @@ module.exports = (io, socket, redis) => {
                 JSON.stringify(loadObj)
             );
 
-            await redis.expire(`driver:loads:${driver.DriverID}`, 36);
+            await redis.expire(`driver:loads:${driver.DriverID}`, 300);
 
             // 🔥 GET FULL ARRAY FOR DRIVER
             const allLoads = await redis.lrange(
@@ -93,13 +93,13 @@ module.exports = (io, socket, redis) => {
 
         // Set status also with expiry
         await redis.hset(`loads:status`, load.loadId, "OPEN");
-        await redis.expire(`loads:status`, 36);
+        await redis.expire(`loads:status`, 300);
         const keys = await redis.keys("driver:loads:*");
         for (const key of keys) {
             const ttl = await redis.ttl(key);
             if (ttl === -1) {
                 // key ka TTL set nahi hai, ab set karo 1 hour
-                await redis.expire(key, 36);
+                await redis.expire(key, 300);
             }
         }
         console.log("📢 New load created:", load);

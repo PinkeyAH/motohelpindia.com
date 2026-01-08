@@ -61,8 +61,8 @@ module.exports = (io, socket, redis) => {
             }
         );
 
-        // Set expiry 1 hour (36 seconds)
-        await redis.expire(`driver:details:${DriverID}`, 36);
+        // Set expiry 1 hour (300 seconds)
+        await redis.expire(`driver:details:${DriverID}`, 300);
 
         /* 3️⃣ Heartbeat */
         await redis.hset(
@@ -95,11 +95,11 @@ module.exports = (io, socket, redis) => {
 
         // console.log("✅ Driver location updated:", driverList);
 
-        // Set expiry 1 hour (36 seconds)
-        // await redis.expire(`driver:loads:${DriverID}`, 36);
+        // Set expiry 1 hour (300 seconds)
+        // await redis.expire(`driver:loads:${DriverID}`, 300);
         //   });
         await redis.geoadd("drivers:geo", lng, lat, DriverID);
-        await redis.expire("drivers:geo", 36);
+        await redis.expire("drivers:geo", 300);
     });
 
 
