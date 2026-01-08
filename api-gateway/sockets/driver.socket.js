@@ -102,23 +102,23 @@ module.exports = (io, socket, redis) => {
         await redis.expire("drivers:geo", 300);
     });
 
- socket.on("driver:join", async ({ DriverID }) => {
+//  socket.on("driver:join", async ({ DriverID }) => {
 
-  const openLoadIds = await redis.lrange("loads:open", 0, -1);
+//   const openLoadIds = await redis.lrange("loads:open", 0, -1);
 
-  const loads = [];
-  for (const loadId of openLoadIds) {
-    const status = await redis.hget("loads:status", loadId);
-    if (status !== "OPEN") continue;
+//   const loads = [];
+//   for (const loadId of openLoadIds) {
+//     const status = await redis.hget("loads:status", loadId);
+//     if (status !== "OPEN") continue;
 
-    const data = await redis.hgetall(`loads:data:${loadId}`);
-    loads.push(data);
-  }
+//     const data = await redis.hgetall(`loads:data:${loadId}`);
+//     loads.push(data);
+//   }
 
-  socket.emit("driver:available_loads", loads);
+//   socket.emit("driver:available_loads", loads);
 
-  console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
-});
+//   console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
+// });
 
 
     // DRIVER LOCATION UPDATE
