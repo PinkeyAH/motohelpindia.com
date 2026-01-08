@@ -70,13 +70,23 @@ module.exports = (io, socket, redis) => {
 
             const loadArray = allLoads.map(l => JSON.parse(l));
 
-            // 🔥 SEND ARRAY TO DRIVER
+            // // 🔥 SEND ARRAY TO DRIVER
+            // io.to(`driver:${driver.DriverID}`).emit(
+            //     "driver:available_loads",
+            //     loadArray
+            // );
+
+                // 🔥 SEND ARRAY TO DRIVER
             io.to(`driver:${driver.DriverID}`).emit(
-                "driver:available_loads",
+                "driver:new_load",
                 loadArray
             );
+                // 3️⃣ Broadcast to online drivers
+    // io.emit("driver:new_load", load);
+
         }
 
+        
         console.log("📦 Load broadcast done:", load.loadId);
         console.log("📦 Load broadcast done:", load);
 
