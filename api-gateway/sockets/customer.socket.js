@@ -1,12 +1,7 @@
 module.exports = (io, socket, redis) => {
     socket.on("customer:new_load", async (load) => {
         console.log("customer:new_load", load);
-
-   await redis.hset(`loads:data:${load.loadId}`, load);
-  await redis.hset("loads:status", load.loadId, "OPEN");
-
-  // ✅ VERY IMPORTANT
-  await redis.rpush("loads:open", load.loadId);
+ 
         // Save load data
         await redis.hset(
             `loads:data:${load.loadId}`,
@@ -20,6 +15,13 @@ module.exports = (io, socket, redis) => {
             "OPEN"
         );
 
+  // ✅ VERY IMPORTANT
+const type = await redis.type("loads:open");
+if (type !== "list") {
+    console.log("❌ 'loads:open' wrong type. Deleting...");
+    await redis.del("loads:open");
+}
+await redis.rpush("loads:open", load.loadId);  
         // Save load geo
         await redis.geoadd(
             "loads:geo",
@@ -28,7 +30,7 @@ module.exports = (io, socket, redis) => {
             load.loadId
         );
 
-        // TTL 1 hour 3600 seconds
+        // TTL 1 hour 30000 seconds
         await redis.expire(`loads:data:${load.loadId}`, 300);
 
         const nearbyDriversRaw = await redis.georadius(

@@ -1,6 +1,6 @@
 module.exports = (io, socket, redis) => {
 
-    
+
     socket.on("driver:location", async ({
         DriverID,
         VendorID,
@@ -20,15 +20,15 @@ module.exports = (io, socket, redis) => {
         Status
     }) => {
 
- console.log("driver:location", {
-        DriverID,
-        MobileNo,
-        lat,
-        lng,
-        Driver_LPStatus,
-        Status
-    });
- 
+        console.log("driver:location", {
+            DriverID,
+            MobileNo,
+            lat,
+            lng,
+            Driver_LPStatus,
+            Status
+        });
+
         /* 1️⃣ GEOADD → ONLY lng, lat, DriverID */
         await redis.geoadd(
             "drivers:geo",
@@ -102,38 +102,31 @@ module.exports = (io, socket, redis) => {
         await redis.expire("drivers:geo", 300);
     });
 
-socket.on("driver:join", async ({ DriverID, lat, lng }) => {
+    socket.on("driver:join", async ({ DriverID, lat, lng }) => {
 
-  // Driver ki geo location save
-  await redis.geoadd("drivers:geo", lng, lat, DriverID);
+        // Driver ki location save
+        await redis.geoadd("drivers:geo", lng, lat, DriverID);
 
-  // 🔍 Nearby OPEN loads
-  const nearbyLoadIds = await redis.georadius(
-    "loads:geo",
-    lng,
-    lat,
-    50,
-    "km"
-  );
+        // 🔥 ALL OPEN LOADS nikalo
+        const openLoadIds = await redis.lrange("loads:open", 0, -1);
 
-  const loads = [];
+        const loads = [];
 
-  for (const loadId of nearbyLoadIds) {
-    const status = await redis.hget("loads:status", loadId);
-    if (status !== "OPEN") continue;
+        for (const loadId of openLoadIds) {
+            const status = await redis.hget("loads:status", loadId);
+            if (status !== "OPEN") continue;
 
-    const data = await redis.hgetall(`loads:data:${loadId}`);
-    loads.push(data);
-  }
+            const data = await redis.hgetall(`loads:data:${loadId}`);
+            loads.push(data);
+        }
 
-  // ✅ SEND OLD LOADS
-  socket.emit("driver:available_loads", loads);
+        // ✅ DRIVER KO OLD LOADS BHEJO
+        socket.emit("driver:available_loads", loads);
 
-  console.log(
-    `🚚 Driver ${DriverID} ko ${loads.length} purane loads mile`
-  );
-});
-        // DRIVER LOCATION UPDATE
+        console.log(`🚚 Driver ${DriverID} ko ${loads.length} purane loads mile`);
+    });
+
+    // DRIVER LOCATION UPDATE
     socket.on("driver:location_update", async (data) => {
         const { DriverID, lat, lng } = data;
 
@@ -180,13 +173,13 @@ socket.on("driver:join", async ({ DriverID, lat, lng }) => {
             CustomerID
         });
 
-          // ❌ Remove from open list
-  await redis.lrem("loads:open", 0, loadId);
+        // ❌ Remove from open list
+        await redis.lrem("loads:open", 0, loadId);
 
-  // ❌ Remove geo
-  await redis.zrem("loads:geo", loadId);
+        // ❌ Remove geo
+        await redis.zrem("loads:geo", loadId);
 
-  io.emit("driver:remove_load", { loadId });
+        io.emit("driver:remove_load", { loadId });
         console.log(`✅ Load ${loadId} assigned to Driver ${DriverID}`);
     });
 
@@ -217,19 +210,19 @@ socket.on("driver:join", async ({ DriverID, lat, lng }) => {
     //     io.emit("customer:driver_accepted", { loadId, DriverID });
     //   });
 
-//     socket.on("driver:accept_load", async ({ loadId }) => {
+    //     socket.on("driver:accept_load", async ({ loadId }) => {
 
-//     // 1️⃣ Remove from open loads
-//     await redis.lrem("loads:open", 0, loadId);
+    //     // 1️⃣ Remove from open loads
+    //     await redis.lrem("loads:open", 0, loadId);
 
-//     // 2️⃣ Update status
-//     await redis.hset(`load:details:${loadId}`, {
-//         status: "ASSIGNED"
-//     });
+    //     // 2️⃣ Update status
+    //     await redis.hset(`load:details:${loadId}`, {
+    //         status: "ASSIGNED"
+    //     });
 
-//     // 3️⃣ Inform others
-//     io.emit("driver:remove_load", { loadId });
-// });
+    //     // 3️⃣ Inform others
+    //     io.emit("driver:remove_load", { loadId });
+    // });
 
 
 };
