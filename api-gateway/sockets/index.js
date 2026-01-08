@@ -70,7 +70,7 @@ module.exports = (io, redis) => {
         const loads = await getAllOpenLoads(redis);
         console.log("📦 Redis Loads:", loads);
 
-        socket.emit("driver:available_loads", loads);
+        socket.emit("driver:available_loads_old", loads);
 
         // ✅ PASS redis here
         require("./driver.socket")(io, socket, redis);
