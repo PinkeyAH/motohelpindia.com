@@ -315,12 +315,15 @@ socket.on("join_post_room", ({ postId }) => {
 
 
   // 🔹 DRIVER LIVE LOCATION
+
   socket.on("customer:drivers_update", updates => {
+  console.log("🚗 Drivers Update:", updates);
 
-  if (!Array.isArray(updates)) return;
+  // ✅ Always convert to array
+  const dataArray = Array.isArray(updates) ? updates : [updates];
 
-  updates.forEach(data => {
-    const { action, DriverID } = data;
+  dataArray.forEach(data => {
+    const { action, DriverID, lat, lng } = data;
 
     // 🆕 JOIN
     if (action === "JOIN") {
@@ -330,10 +333,14 @@ socket.on("join_post_room", ({ postId }) => {
 
     // 🔁 MOVE
     if (action === "MOVE") {
-      if (!driverMap[DriverID]) return;
-      driverMap[DriverID].lat = data.lat;
-      driverMap[DriverID].lng = data.lng;
-      moveDriverMarker(data);
+      if (!driverMap[DriverID]) {
+        driverMap[DriverID] = data; // safety
+        addDriverToUI(data);
+      } else {
+        driverMap[DriverID].lat = lat;
+        driverMap[DriverID].lng = lng;
+        moveDriverMarker(data);
+      }
     }
 
     // ❌ LEAVE
@@ -343,6 +350,7 @@ socket.on("join_post_room", ({ postId }) => {
     }
   });
 });
+
 
   socket.on("driver:location", async (data) => {
 
