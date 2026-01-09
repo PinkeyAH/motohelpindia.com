@@ -64,6 +64,177 @@ module.exports = (io, socket, redis) => {
         // Set expiry 1 hour (300 seconds)
         await redis.expire(`driver:details:${DriverID}`, 300);
 
+        const isDriverAlreadySent = async (redis, postId, DriverID) => {
+  return await redis.sismember(`post:sent_drivers:${postId}`, DriverID);
+};
+
+     /* 3️⃣ Loop subscribed posts */
+    const postKeys = await redis.keys("post:subscribers:*");
+
+//     for (const key of postKeys) {
+//         const postId = key.split(":")[2];
+
+//         /* 4️⃣ Get post location */
+//         const load = await redis.hgetall(`loads:data:${postId}`);
+//         if (!load?.lat || !load?.lng) continue;
+
+//         /* 5️⃣ Distance check (5 KM) */
+//         const nearbyDrivers = await redis.georadius(
+//             "drivers:geo",
+//             load.lng,
+//             load.lat,
+//             50,
+//             "km"
+//         );
+
+//         if (!nearbyDrivers.includes(DriverID)) continue;
+
+//         if (!nearbyDrivers.includes(DriverID)) {
+//   io.to(`post:${postId}`).emit(
+//     "customer:driver_left",
+//     { postId, DriverID }
+//   );
+
+//   await redis.srem(`post:sent_drivers:${postId}`, DriverID);
+// }
+
+//         /* 6️⃣ Prevent duplicate driver */
+//         const alreadySent = await redis.sismember(
+//             `post:sent_drivers:${postId}`,
+//             DriverID
+//         );
+
+//         if (alreadySent) continue;
+
+//         /* 7️⃣ Mark driver as sent */
+//         await redis.sadd(
+//             `post:sent_drivers:${postId}`,
+//             DriverID
+//         );
+// // old and new and movement
+//         /* 8️⃣ Notify customers */
+//         io.to(`post:${postId}`).emit(
+//             "customer:nearby_driver",
+//             {
+
+//          postId,
+//     DriverID,
+//     lat,
+//     lng,
+//     Speed,
+//     Direction,
+//     Status
+//             }
+//         );
+// //             /* 8️⃣ Notify customers */
+// //         io.to(`post:${postId}`).emit(
+// //             "customer:new_nearby_driver",
+// //             {
+// //                     postId,
+// //     DriverID,
+// //     lat,
+// //     lng,
+// //     Status
+// //             }
+// //         );
+    
+// //         // 🔁 Driver is moving inside 5 KM
+// // io.to(`post:${postId}`).emit(
+// //   "customer:driver_moving",
+// //   {
+// //     postId,
+// //     DriverID,
+// //     lat,
+// //     lng,
+// //     Speed,
+// //     Direction,
+// //     Status
+// //   }
+// // );
+
+
+//         // /* 8️⃣ Notify customers */
+//         // const customers = await redis.smembers(
+//         //     `post:subscribers:${postId}`
+//         // );
+
+//         // for (const customerId of customers) {
+//         //     io.to(`customer:${customerId}`).emit(
+           
+//         //         "customer:new_nearby_driver",
+//         //         {
+//         //             postId,
+//         //             DriverID,
+//         //             lat,
+//         //             lng
+//         //         }
+//         //     );
+//         // }
+//     }
+for (const key of postKeys) {
+  const postId = key.split(":")[2];
+
+  const load = await redis.hgetall(`loads:data:${postId}`);
+  if (!load?.lat || !load?.lng) continue;
+
+  const nearbyDrivers = await redis.georadius(
+    "drivers:geo",
+    load.lng,
+    load.lat,
+    50,
+    "km"
+  );
+
+  const alreadySent = await isDriverAlreadySent(redis, postId, DriverID);
+
+  // ❌ DRIVER LEFT
+  if (!nearbyDrivers.includes(DriverID) && alreadySent) {
+    await redis.srem(`post:sent_drivers:${postId}`, DriverID);
+
+    io.to(`post:${postId}`).emit("customer:drivers_update", {
+      action: "LEAVE",
+      postId,
+      DriverID
+    });
+
+    continue;
+  }
+
+  // 🚫 Not nearby and not sent
+  if (!nearbyDrivers.includes(DriverID)) continue;
+
+  // 🆕 NEW DRIVER JOIN
+  if (!alreadySent) {
+    await redis.sadd(`post:sent_drivers:${postId}`, DriverID);
+
+    io.to(`post:${postId}`).emit("customer:drivers_update", {
+      action: "JOIN",
+      postId,
+      DriverID,
+      lat,
+      lng,
+      Speed,
+      Direction,
+      Status
+    });
+
+    continue;
+  }
+
+  // 🔁 DRIVER MOVING
+  io.to(`post:${postId}`).emit("customer:drivers_update", {
+    action: "MOVE",
+    postId,
+    DriverID,
+    lat,
+    lng,
+    Speed,
+    Direction,
+    Status
+  });
+}
+
+
         /* 3️⃣ Heartbeat */
         await redis.hset(
             "driver:last_seen",

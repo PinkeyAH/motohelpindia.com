@@ -177,6 +177,10 @@
 // };
 
 module.exports = (io, socket, redis) => {
+socket.on("join_post_room", ({ postId }) => {
+  socket.join(`post:${postId}`);
+  console.log("👤 Socket joined room:", `post:${postId}`);
+});
 
   // 🔹 CUSTOMER POST LOAD
   socket.on("customer:new_load", async (load) => {
@@ -238,11 +242,24 @@ module.exports = (io, socket, redis) => {
     pickupLng
   }) => {
 
+      // ✅ ADD LINE 1: customer ko post room me add karo
+  socket.join(`post:${postId}`);
+
+  // 🔥 RESET sent drivers (VERY IMPORTANT)
+  await redis.del(`post:sent_drivers:${postId}`);
+
+  // 🔹 Save subscriber
+  await redis.sadd(`post:subscribers:${postId}`, customerId);
+
+//       // 🔹 Add customer to post subscribers
+//   await redis.sadd(`post:subscribers:${postId}`, customerId);
+
+  // 🔹 Find existing nearby drivers (5 KM)
     const driversRaw = await redis.georadius(
       "drivers:geo",
       pickupLng,
       pickupLat,
-      5,
+      50,
       "km",
       "WITHDIST"
     );
@@ -271,6 +288,31 @@ module.exports = (io, socket, redis) => {
       { postId, drivers }
     );
   });
+
+  const driverMap = {};
+
+socket.on("customer:drivers_update", data => {
+
+  const { action, DriverID } = data;
+
+  if (action === "JOIN") {
+    driverMap[DriverID] = data;
+    addDriverToUI(data);
+  }
+
+  if (action === "MOVE") {
+    if (!driverMap[DriverID]) return;
+    driverMap[DriverID].lat = data.lat;
+    driverMap[DriverID].lng = data.lng;
+    moveDriverMarker(data);
+  }
+
+  if (action === "LEAVE") {
+    delete driverMap[DriverID];
+    removeDriverFromUI(DriverID);
+  }
+});
+
 
   // 🔹 DRIVER LIVE LOCATION
   socket.on("driver:location", async (data) => {
