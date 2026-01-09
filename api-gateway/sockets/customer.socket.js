@@ -195,7 +195,7 @@ socket.on("join_post_room", ({ postId }) => {
       load.loadId
     );
 
-    await redis.expire(`loads:data:${load.loadId}`, 300);
+    await redis.expire(`loads:data:${load.loadId}`, 3600);
 
     const nearbyDrivers = await redis.georadius(
       "drivers:geo",
@@ -221,7 +221,7 @@ socket.on("join_post_room", ({ postId }) => {
         JSON.stringify(loadObj)
       );
 
-      await redis.expire(`driver:loads:${DriverID}`, 300);
+      await redis.expire(`driver:loads:${DriverID}`, 3600);
 
       const loads = await redis.lrange(
         `driver:loads:${DriverID}`, 0, -1
