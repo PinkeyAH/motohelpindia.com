@@ -291,30 +291,59 @@ socket.on("join_post_room", ({ postId }) => {
 
   const driverMap = {};
 
-socket.on("customer:drivers_update", data => {
+// socket.on("customer:drivers_update", data => {
 
-  const { action, DriverID } = data;
+//   const { action, DriverID } = data;
 
-  if (action === "JOIN") {
-    driverMap[DriverID] = data;
-    addDriverToUI(data);
-  }
+//   if (action === "JOIN") {
+//     driverMap[DriverID] = data;
+//     addDriverToUI(data);
+//   }
 
-  if (action === "MOVE") {
-    if (!driverMap[DriverID]) return;
-    driverMap[DriverID].lat = data.lat;
-    driverMap[DriverID].lng = data.lng;
-    moveDriverMarker(data);
-  }
+//   if (action === "MOVE") {
+//     if (!driverMap[DriverID]) return;
+//     driverMap[DriverID].lat = data.lat;
+//     driverMap[DriverID].lng = data.lng;
+//     moveDriverMarker(data);
+//   }
 
-  if (action === "LEAVE") {
-    delete driverMap[DriverID];
-    removeDriverFromUI(DriverID);
-  }
-});
+//   if (action === "LEAVE") {
+//     delete driverMap[DriverID];
+//     removeDriverFromUI(DriverID);
+//   }
+// });
 
 
   // 🔹 DRIVER LIVE LOCATION
+  socket.on("customer:drivers_update", updates => {
+
+  if (!Array.isArray(updates)) return;
+
+  updates.forEach(data => {
+    const { action, DriverID } = data;
+
+    // 🆕 JOIN
+    if (action === "JOIN") {
+      driverMap[DriverID] = data;
+      addDriverToUI(data);
+    }
+
+    // 🔁 MOVE
+    if (action === "MOVE") {
+      if (!driverMap[DriverID]) return;
+      driverMap[DriverID].lat = data.lat;
+      driverMap[DriverID].lng = data.lng;
+      moveDriverMarker(data);
+    }
+
+    // ❌ LEAVE
+    if (action === "LEAVE") {
+      delete driverMap[DriverID];
+      removeDriverFromUI(DriverID);
+    }
+  });
+});
+
   socket.on("driver:location", async (data) => {
 
     await redis.geoadd(
