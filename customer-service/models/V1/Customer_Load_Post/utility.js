@@ -584,7 +584,7 @@ SELECT TOP 50
     -- 📌 STATUS
     cps.LP_Status,
     cps.CustomerStatus,
-    dlp.DriverStatus,
+ --   dlp.DriverStatus,
     dlp.VehicleStatus AS DriverVehicleStatus,
 
     -- ⏱ TIME
