@@ -172,7 +172,9 @@ module.exports = (io, socket, redis) => {
         lat: details.lat,
         lng: details.lng,
         Speed: details.Speed,
-        Status: details.Status
+        Status: details.Status,
+        distance: details.distance
+
       });
     }
 
