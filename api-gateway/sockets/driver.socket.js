@@ -20,16 +20,9 @@ module.exports = (io, socket, redis) => {
         Status
     }) => {
 
-        console.log("driver:location", {
-            DriverID,
-            MobileNo,
-            lat,
-            lng,
-            Driver_LPStatus,
-            Status
-        });
+        console.log("driver:location", { DriverID, MobileNo, lat,lng,Driver_LPStatus,Status});
 
-        /* 1️⃣ GEOADD → ONLY lng, lat, DriverID */
+        // /* 1️⃣ GEOADD → ONLY lng, lat, DriverID */Save driver location
         await redis.geoadd(
             "drivers:geo",
             lng,
@@ -64,12 +57,78 @@ module.exports = (io, socket, redis) => {
         // Set expiry 1 hour (300 seconds)
         await redis.expire(`driver:details:${DriverID}`, 300);
 
-        const isDriverAlreadySent = async (redis, postId, DriverID) => {
-  return await redis.sismember(`post:sent_drivers:${postId}`, DriverID);
-};
+         // 2️⃣ Check all active posts
+  const postKeys = await redis.keys("post:subscribers:*");
+
+  for (const key of postKeys) {
+    const postId = key.split(":")[2];
+
+    const post = await redis.hgetall(`loads:data:${postId}`);
+    if (!post?.lat || !post?.lng) continue;
+
+    const nearby = await redis.georadius(
+      "drivers:geo",
+      post.lng,
+      post.lat,
+      5,
+      "km"
+    );
+
+    const postDriverKey = `post:drivers:${postId}`;
+
+    // ❌ Driver left
+    if (!nearby.includes(DriverID)) {
+      await redis.hdel(postDriverKey, DriverID);
+    }
+
+    // ✅ Driver inside
+    if (nearby.includes(DriverID)) {
+      await redis.hset(
+        postDriverKey,
+        DriverID,
+        JSON.stringify({ DriverID, lat, lng, Speed, Status })
+      );
+    }
+
+    // 🔥 Send FULL UPDATED ARRAY
+    const all = await redis.hgetall(postDriverKey);
+    const drivers = Object.values(all).map(d => JSON.parse(d));
+
+    io.to(`post:${postId}`).emit("customer:drivers_update", {
+      postId,
+      drivers
+    });
+  }
+});
+
+
+ socket.on("driver:join", async ({ DriverID }) => {
+
+  const openLoadIds = await redis.lrange("loads:open", 0, -1);
+
+  const loads = [];
+  for (const loadId of openLoadIds) {
+    const status = await redis.hget("loads:status", loadId);
+    if (status !== "OPEN") continue;
+
+    const data = await redis.hgetall(`loads:data:${loadId}`);
+    loads.push(data);
+  }
+
+  socket.emit("driver:available_loads", loads);
+
+  console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
+});
+
+}
+
+
+//         const isDriverAlreadySent = async (redis, postId, DriverID) => {
+//   return await redis.sismember(`post:sent_drivers:${postId}`, DriverID);
+// };
 
      /* 3️⃣ Loop subscribed posts */
-    const postKeys = await redis.keys("post:subscribers:*");
+    // const postKeys = await redis.keys("post:subscribers:*");
 
 //     for (const key of postKeys) {
 //         const postId = key.split(":")[2];
@@ -171,107 +230,100 @@ module.exports = (io, socket, redis) => {
 //         //     );
 //         // }
 //     }
-for (const key of postKeys) {
-  const postId = key.split(":")[2];
+// for (const key of postKeys) {
+//   const postId = key.split(":")[2];
 
-  const load = await redis.hgetall(`loads:data:${postId}`);
-  if (!load?.lat || !load?.lng) continue;
+//   const load = await redis.hgetall(`loads:data:${postId}`);
+//   if (!load?.lat || !load?.lng) continue;
 
-  const nearbyDrivers = await redis.georadius(
-    "drivers:geo",
-    load.lng,
-    load.lat,
-    50,
-    "km"
-  );
+//   const nearbyDrivers = await redis.georadius(
+//     "drivers:geo",
+//     load.lng,
+//     load.lat,
+//     50,
+//     "km"
+//   );
 
-  const alreadySent = await isDriverAlreadySent(redis, postId, DriverID);
+//   const alreadySent = await isDriverAlreadySent(redis, postId, DriverID);
 
-  // ❌ DRIVER LEFT
-  if (!nearbyDrivers.includes(DriverID) && alreadySent) {
-    await redis.srem(`post:sent_drivers:${postId}`, DriverID);
+//   // ❌ DRIVER LEFT
+//   if (!nearbyDrivers.includes(DriverID) && alreadySent) {
+//     await redis.srem(`post:sent_drivers:${postId}`, DriverID);
 
-    io.to(`post:${postId}`).emit("customer:drivers_update", {
-      action: "LEAVE",
-      postId,
-      DriverID
-    });
+//     io.to(`post:${postId}`).emit("customer:drivers_update", {
+//       action: "LEAVE",
+//       postId,
+//       DriverID
+//     });
 
-    continue;
-  }
+//     continue;
+//   }
 
-  // 🚫 Not nearby and not sent
-  if (!nearbyDrivers.includes(DriverID)) continue;
+//   // 🚫 Not nearby and not sent
+//   if (!nearbyDrivers.includes(DriverID)) continue;
 
-  // 🆕 NEW DRIVER JOIN
-  if (!alreadySent) {
-    await redis.sadd(`post:sent_drivers:${postId}`, DriverID);
+//   // 🆕 NEW DRIVER JOIN
+//   if (!alreadySent) {
+//     await redis.sadd(`post:sent_drivers:${postId}`, DriverID);
 
-    io.to(`post:${postId}`).emit("customer:drivers_update", {
-      action: "JOIN",
-      postId,
-      DriverID,
-      lat,
-      lng,
-      Speed,
-      Direction,
-      Status
-    });
+//     io.to(`post:${postId}`).emit("customer:drivers_update", {
+//       action: "JOIN",
+//       postId,
+//       DriverID,
+//       lat,
+//       lng,
+//       Speed,
+//       Direction,
+//       Status
+//     });
 
-    continue;
-  }
+//     continue;
+//   }
 
-  // 🔁 DRIVER MOVING
-  io.to(`post:${postId}`).emit("customer:drivers_update", {
-    action: "MOVE",
-    postId,
-    DriverID,
-    lat,
-    lng,
-    Speed,
-    Direction,
-    Status
-  });
-}
+//   // 🔁 DRIVER MOVING
+//   io.to(`post:${postId}`).emit("customer:drivers_update", {
+//     action: "MOVE",
+//     postId,
+//     DriverID,
+//     lat,
+//     lng,
+//     Speed,
+//     Direction,
+//     Status
+//   });
+// }
 
 
-        /* 3️⃣ Heartbeat */
-        await redis.hset(
-            "driver:last_seen",
-            DriverID,
-            Date.now()
-        );
+//         /* 3️⃣ Heartbeat */
+//         await redis.hset(
+//             "driver:last_seen",
+//             DriverID,
+//             Date.now()
+//         );
 
-        // /* 4️⃣ Optional: broadcast live location */
-        // io.emit("driver:live_location", {
-        //   DriverID,
-        //   lat,
-        //   lng,
-        //   Speed,
-        //   Direction,
-        //   Status
-        // });
 
         // 🔹 Broadcast ALL drivers live
-        const driverKeys = await redis.keys("driver:details:*");
+    //     const driverKeys = await redis.keys("driver:details:*");
 
-        const driverList = [];
-        for (const key of driverKeys) {
-            const data = await redis.hgetall(key);
-            driverList.push(data);
-        }
+    //     const driverList = [];
+    //     for (const key of driverKeys) {
+    //         const data = await redis.hgetall(key);
+    //         driverList.push(data);
+    //     }
 
-        io.emit("driver:live_location", driverList); // Array of objects
+    //     io.emit("driver:live_location", driverList); // Array of objects
 
 
-        // console.log("✅ Driver location updated:", driverList);
+    //     // console.log("✅ Driver location updated:", driverList);
 
-        // Set expiry 1 hour (300 seconds)
-        // await redis.expire(`driver:loads:${DriverID}`, 300);
-        //   });
-        await redis.geoadd("drivers:geo", lng, lat, DriverID);
-        await redis.expire("drivers:geo", 300);
-    });
+    //     // Set expiry 1 hour (300 seconds)
+    //     // await redis.expire(`driver:loads:${DriverID}`, 300);
+    //     //   });
+    //     await redis.geoadd("drivers:geo", lng, lat, DriverID);
+    //     await redis.expire("drivers:geo", 300);
+    // 
+    // });
+
 
 //  socket.on("driver:join", async ({ DriverID }) => {
 
@@ -293,61 +345,61 @@ for (const key of postKeys) {
 
 
     // DRIVER LOCATION UPDATE
-    socket.on("driver:location_update", async (data) => {
-        const { DriverID, lat, lng } = data;
+    // socket.on("driver:location_update", async (data) => {
+    //     const { DriverID, lat, lng } = data;
 
-        // 🔥 Save driver live location
-        await redis.geoadd(
-            "drivers:geo",
-            lng,
-            lat,
-            DriverID
-        );
+    //     // 🔥 Save driver live location
+    //     await redis.geoadd(
+    //         "drivers:geo",
+    //         lng,
+    //         lat,
+    //         DriverID
+    //     );
 
-        console.log("📍 Driver location updated:", DriverID);
-    });
+    //     console.log("📍 Driver location updated:", DriverID);
+    // });
 
-    // DRIVER ACCEPT LOAD
-    socket.on("driver:accept_load", async ({ loadId, DriverID, CustomerID }) => {
+    // // DRIVER ACCEPT LOAD
+    // socket.on("driver:accept_load", async ({ loadId, DriverID, CustomerID }) => {
 
-        console.log(`Driver ${DriverID} accepted load ${loadId}`);
+    //     console.log(`Driver ${DriverID} accepted load ${loadId}`);
 
-        // 1️⃣ Remove this load from driver available loads in Redis
-        const driverLoadKey = `driver:loads:${DriverID}`;
-        const loads = await redis.lrange(driverLoadKey, 0, -1);
+    //     // 1️⃣ Remove this load from driver available loads in Redis
+    //     const driverLoadKey = `driver:loads:${DriverID}`;
+    //     const loads = await redis.lrange(driverLoadKey, 0, -1);
 
-        for (const l of loads) {
-            const load = JSON.parse(l);
-            if (load.loadId == loadId) {
-                await redis.lrem(driverLoadKey, 0, l); // remove accepted load
-                break;
-            }
-        }
+    //     for (const l of loads) {
+    //         const load = JSON.parse(l);
+    //         if (load.loadId == loadId) {
+    //             await redis.lrem(driverLoadKey, 0, l); // remove accepted load
+    //             break;
+    //         }
+    //     }
 
-        // 2️⃣ Update load status in Redis
-        await redis.hset("loads:status", loadId, "ASSIGNED");
+    //     // 2️⃣ Update load status in Redis
+    //     await redis.hset("loads:status", loadId, "ASSIGNED");
 
-        // 3️⃣ Notify customer that driver accepted
-        io.to(`customer:${CustomerID}`).emit("customer:driver_accepted", {
-            loadId,
-            DriverID
-        });
+    //     // 3️⃣ Notify customer that driver accepted
+    //     io.to(`customer:${CustomerID}`).emit("customer:driver_accepted", {
+    //         loadId,
+    //         DriverID
+    //     });
 
-        // 4️⃣ Notify driver – now live location tracking can start
-        socket.emit("driver:start_tracking", {
-            loadId,
-            CustomerID
-        });
+    //     // 4️⃣ Notify driver – now live location tracking can start
+    //     socket.emit("driver:start_tracking", {
+    //         loadId,
+    //         CustomerID
+    //     });
 
-        // ❌ Remove from open list
-        await redis.lrem("loads:open", 0, loadId);
+    //     // ❌ Remove from open list
+    //     await redis.lrem("loads:open", 0, loadId);
 
-        // ❌ Remove geo
-        await redis.zrem("loads:geo", loadId);
+    //     // ❌ Remove geo
+    //     await redis.zrem("loads:geo", loadId);
 
-        io.emit("driver:remove_load", { loadId });
-        console.log(`✅ Load ${loadId} assigned to Driver ${DriverID}`);
-    });
+    //     io.emit("driver:remove_load", { loadId });
+    //     console.log(`✅ Load ${loadId} assigned to Driver ${DriverID}`);
+    // });
 
 
     // // DRIVER LOCATION BROADCAST (already implemented)
@@ -391,4 +443,4 @@ for (const key of postKeys) {
     // });
 
 
-};
+// };
