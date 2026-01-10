@@ -1,129 +1,129 @@
 module.exports = (io, socket, redis) => {
 
+//10/1/2026
+//     socket.on("driver:location", async ({
+//         DriverID,
+//         VendorID,
+//         VehicleID,
+//         MobileNo,
+//         lat,
+//         lng,
+//         Speed,
+//         Direction,
+//         City,
+//         District,
+//         Taluka,
+//         State,
+//         Pincode,
+//         Address,
+//         Driver_LPStatus,
+//         Status
+//     }) => {
 
-    socket.on("driver:location", async ({
-        DriverID,
-        VendorID,
-        VehicleID,
-        MobileNo,
-        lat,
-        lng,
-        Speed,
-        Direction,
-        City,
-        District,
-        Taluka,
-        State,
-        Pincode,
-        Address,
-        Driver_LPStatus,
-        Status
-    }) => {
+//         console.log("driver:location", { DriverID, MobileNo, lat,lng,Driver_LPStatus,Status});
 
-        console.log("driver:location", { DriverID, MobileNo, lat,lng,Driver_LPStatus,Status});
+//         // /* 1️⃣ GEOADD → ONLY lng, lat, DriverID */Save driver location
+//         await redis.geoadd(
+//             "drivers:geo",
+//             lng,
+//             lat,
+//             DriverID
+//         );
 
-        // /* 1️⃣ GEOADD → ONLY lng, lat, DriverID */Save driver location
-        await redis.geoadd(
-            "drivers:geo",
-            lng,
-            lat,
-            DriverID
-        );
+//         /* 2️⃣ Save full driver details in HASH */
+//         await redis.hset(
+//             `driver:details:${DriverID}`,
+//             {
+//                 DriverID,
+//                 VendorID,
+//                 VehicleID,
+//                 MobileNo,
+//                 lat,
+//                 lng,
+//                 Speed,
+//                 Direction,
+//                 City,
+//                 District,
+//                 Taluka,
+//                 State,
+//                 Pincode,
+//                 Address,
+//                 Driver_LPStatus,
+//                 Status,
+//                 updatedAt: Date.now()
+//             }
+//         );
 
-        /* 2️⃣ Save full driver details in HASH */
-        await redis.hset(
-            `driver:details:${DriverID}`,
-            {
-                DriverID,
-                VendorID,
-                VehicleID,
-                MobileNo,
-                lat,
-                lng,
-                Speed,
-                Direction,
-                City,
-                District,
-                Taluka,
-                State,
-                Pincode,
-                Address,
-                Driver_LPStatus,
-                Status,
-                updatedAt: Date.now()
-            }
-        );
+//         // Set expiry 1 hour (300 seconds)
+//         await redis.expire(`driver:details:${DriverID}`, 300);
 
-        // Set expiry 1 hour (300 seconds)
-        await redis.expire(`driver:details:${DriverID}`, 300);
+//          // 2️⃣ Check all active posts
+//   const postKeys = await redis.keys("post:subscribers:*");
 
-         // 2️⃣ Check all active posts
-  const postKeys = await redis.keys("post:subscribers:*");
+//   for (const key of postKeys) {
+//     const postId = key.split(":")[2];
 
-  for (const key of postKeys) {
-    const postId = key.split(":")[2];
+//     const post = await redis.hgetall(`loads:data:${postId}`);
+//     if (!post?.lat || !post?.lng) continue;
 
-    const post = await redis.hgetall(`loads:data:${postId}`);
-    if (!post?.lat || !post?.lng) continue;
+//     const nearby = await redis.georadius(
+//       "drivers:geo",
+//       post.lng,
+//       post.lat,
+//       5,
+//       "km"
+//     );
 
-    const nearby = await redis.georadius(
-      "drivers:geo",
-      post.lng,
-      post.lat,
-      5,
-      "km"
-    );
+//     const postDriverKey = `post:drivers:${postId}`;
 
-    const postDriverKey = `post:drivers:${postId}`;
+//     // ❌ Driver left
+//     if (!nearby.includes(DriverID)) {
+//       await redis.hdel(postDriverKey, DriverID);
+//     }
 
-    // ❌ Driver left
-    if (!nearby.includes(DriverID)) {
-      await redis.hdel(postDriverKey, DriverID);
-    }
+//     // ✅ Driver inside
+//     if (nearby.includes(DriverID)) {
+//       await redis.hset(
+//         postDriverKey,
+//         DriverID,
+//         JSON.stringify({ DriverID, lat, lng, Speed, Status })
+//       );
+//     }
 
-    // ✅ Driver inside
-    if (nearby.includes(DriverID)) {
-      await redis.hset(
-        postDriverKey,
-        DriverID,
-        JSON.stringify({ DriverID, lat, lng, Speed, Status })
-      );
-    }
+//     // 🔥 Send FULL UPDATED ARRAY
+//     const all = await redis.hgetall(postDriverKey);
+//     const drivers = Object.values(all).map(d => JSON.parse(d));
 
-    // 🔥 Send FULL UPDATED ARRAY
-    const all = await redis.hgetall(postDriverKey);
-    const drivers = Object.values(all).map(d => JSON.parse(d));
+//     io.to(`post:${postId}`).emit("customer:drivers_update", {
+//       postId,
+//       drivers
+//     });
+//   }
+// });
 
-    io.to(`post:${postId}`).emit("customer:drivers_update", {
-      postId,
-      drivers
-    });
-  }
-});
+//     socket.on("driver:join", async ({ DriverID, lat, lng }) => {
 
-    socket.on("driver:join", async ({ DriverID, lat, lng }) => {
+//         socket.join(`driver:${DriverID}`);
 
-        socket.join(`driver:${DriverID}`);
+//         const loadIds = await redis.georadius(
+//             "loads:geo",
+//             lng,
+//             lat,
+//             50,
+//             "km"
+//         );
 
-        const loadIds = await redis.georadius(
-            "loads:geo",
-            lng,
-            lat,
-            50,
-            "km"
-        );
+//         const loads = [];
+//         for (const id of loadIds) {
+//             const status = await redis.hget("loads:status", id);
+//             if (status === "OPEN") {
+//                 const data = await redis.hgetall(`loads:data:${id}`);
+//                 if (data?.loadId) loads.push(data);
+//             }
+//         }
 
-        const loads = [];
-        for (const id of loadIds) {
-            const status = await redis.hget("loads:status", id);
-            if (status === "OPEN") {
-                const data = await redis.hgetall(`loads:data:${id}`);
-                if (data?.loadId) loads.push(data);
-            }
-        }
-
-        socket.emit("driver:available_loads", loads);
-    });
+//         socket.emit("driver:available_loads", loads);
+//     });
 
 
 //  socket.on("driver:join", async ({ DriverID }) => {
@@ -143,6 +143,109 @@ module.exports = (io, socket, redis) => {
 
 //   console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
 // });
+
+    socket.on("customer:new_load", async (load) => {
+        console.log("customer:new_load", load);
+
+        // Save load data
+        await redis.hset(
+            `loads:data:${load.loadId}`,
+            load
+        );
+
+        // Save status
+        await redis.hset(
+            "loads:status",
+            load.loadId,
+            "OPEN"
+        );
+
+        // Save load geo
+        await redis.geoadd(
+            "loads:geo",
+            load.lng,
+            load.lat,
+            load.loadId
+        );
+
+        // TTL 1 hour 3600 seconds
+        await redis.expire(`loads:data:${load.loadId}`, 36);
+
+        const nearbyDriversRaw = await redis.georadius(
+            "drivers:geo",
+            load.lng,
+            load.lat,
+            50,
+            "km",
+            "WITHDIST"
+        );
+
+        // Convert to object array
+        const nearbyDrivers = nearbyDriversRaw
+            .map(([DriverID, distance]) => ({
+                DriverID,
+                distance: Number(distance)
+            }))
+            .sort((a, b) => a.distance - b.distance);
+
+        for (const driver of nearbyDrivers) {
+
+            const loadObj = {
+                loadId: load.loadId,
+                customerId: load.CustomerID,
+                lat: load.lat,
+                lng: load.lng,
+                distance: driver.distance
+            };
+
+            // 🔥 PUSH LOAD INTO DRIVER ARRAY
+            await redis.rpush(
+                `driver:loads:${driver.DriverID}`,
+                JSON.stringify(loadObj)
+            );
+
+            await redis.expire(`driver:loads:${driver.DriverID}`, 36);
+
+            // 🔥 GET FULL ARRAY FOR DRIVER
+            const allLoads = await redis.lrange(
+                `driver:loads:${driver.DriverID}`,
+                0,
+                -1
+            );
+
+            const loadArray = allLoads.map(l => JSON.parse(l));
+
+            // 🔥 SEND ARRAY TO DRIVER
+            io.to(`driver:${driver.DriverID}`).emit(
+                "driver:available_loads",
+                loadArray
+            );
+        }
+
+        console.log("📦 Load broadcast done:", load.loadId);
+        console.log("📦 Load broadcast done:", load);
+
+
+        // Set status also with expiry
+        await redis.hset(`loads:status`, load.loadId, "OPEN");
+        await redis.expire(`loads:status`, 36);
+        const keys = await redis.keys("driver:loads:*");
+        for (const key of keys) {
+            const ttl = await redis.ttl(key);
+            if (ttl === -1) {
+                // key ka TTL set nahi hai, ab set karo 1 hour
+                await redis.expire(key, 36);
+            }
+        }
+        console.log("📢 New load created:", load);
+    });
+
+socket.on("driver:location", async (data) => {
+  io.to(`customer:${data.customerId}`).emit(
+    "driver:live_location",
+    data
+  );
+});
 
 }
 

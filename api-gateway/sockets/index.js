@@ -84,40 +84,30 @@
 //     });
 
 // };
+async function getAllLiveDrivers(redis) {
+}
+
+async function getAllOpenLoads(redis) {
+}
 
 module.exports = (io, redis) => {
 
-    io.on("connection", (socket) => {
+    io.on("connection", async (socket) => {
         console.log("🟢 Socket connected:", socket.id);
 
-        socket.on("join", async ({ userId, role }) => {
+        // 🔥 SEND EXISTING DRIVERS
+        const drivers = await getAllLiveDrivers(redis);
+        console.log(" Redis Drivers:", drivers);
 
-            socket.join(`${role}`);
-            socket.join(`${role}:${userId}`);
+        socket.emit("driver:live_location", drivers);
 
-            console.log(`✅ ${role} joined → ${userId}`);
+        // 🔥 NEW DRIVER → old loads
+        const loads = await getAllOpenLoads(redis);
+        console.log("📦 Redis Loads:", loads);
 
-            // =============================
-            // SEND OLD LOADS TO DRIVER
-            // =============================
-            if (role === "driver") {
+        socket.emit("driver:available_loads", loads);
 
-                const loads = await getAllOpenLoads(redis);
-                console.log("📦 Old loads sent to driver:", loads.length);
-
-                socket.emit("driver:available_loads_old", loads);
-            }
-
-            // =============================
-            // SEND LIVE DRIVERS (optional)
-            // =============================
-            if (role === "customer" || role === "vendor") {
-                const drivers = await getAllLiveDrivers(redis);
-                socket.emit("driver:live_location", drivers);
-            }
-        });
-
-        // LOAD & DRIVER SOCKETS
+        // ✅ PASS redis here
         require("./driver.socket")(io, socket, redis);
         require("./customer.socket")(io, socket, redis);
         require("./vendor.socket")(io, socket, redis);
@@ -126,5 +116,49 @@ module.exports = (io, redis) => {
             console.log("🔴 Socket disconnected:", socket.id);
         });
     });
+
 };
+// module.exports = (io, redis) => {
+
+//     io.on("connection", (socket) => {
+//         console.log("🟢 Socket connected:", socket.id);
+
+//         socket.on("join", async ({ userId, role }) => {
+
+//             socket.join(`${role}`);
+//             socket.join(`${role}:${userId}`);
+
+//             console.log(`✅ ${role} joined → ${userId}`);
+
+//             // =============================
+//             // SEND OLD LOADS TO DRIVER
+//             // =============================
+//             if (role === "driver") {
+
+//                 const loads = await getAllOpenLoads(redis);
+//                 console.log("📦 Old loads sent to driver:", loads.length);
+
+//                 socket.emit("driver:available_loads_old", loads);
+//             }
+
+//             // =============================
+//             // SEND LIVE DRIVERS (optional)
+//             // =============================
+//             if (role === "customer" || role === "vendor") {
+//                 const drivers = await getAllLiveDrivers(redis);
+//                 socket.emit("driver:live_location", drivers);
+//             }
+//         });
+
+//         // LOAD & DRIVER SOCKETS
+//         require("./driver.socket")(io, socket, redis);
+//         require("./customer.socket")(io, socket, redis);
+//         require("./vendor.socket")(io, socket, redis);
+
+//         socket.on("disconnect", () => {
+//             console.log("🔴 Socket disconnected:", socket.id);
+//         });
+//     });
+// };
+
 
