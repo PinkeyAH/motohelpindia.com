@@ -554,7 +554,6 @@ SELECT TOP 50
     cla.DeliveryContactNumber,
     cla.DeliveryPlotBuilding,
     cla.DeliveryStreetArea,
-    cla.DeliveryAddress,
     cla.DeliveryCity,
     cla.DeliveryDistrict,
     cla.DeliveryTaluka,
