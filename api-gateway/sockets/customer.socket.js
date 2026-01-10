@@ -5,53 +5,36 @@ module.exports = (io, socket, redis) => {
     console.log("👤 Socket joined room:", `post:${postId}`);
   });
 
-  // 🔹 CUSTOMER POST LOAD
+// Customer creates new load
   socket.on("customer:new_load", async (load) => {
 
-    await redis.hset(`loads:data:${load.loadId}`, load);
-    await redis.geoadd("loads:geo", load.lng, load.lat, load.loadId);
-    await redis.hset("loads:status", load.loadId, "OPEN");
-    await redis.expire(`loads:data:${load.loadId}`, 3600);
-  
-    // 🔥 FIND NEARBY DRIVERS (5 KM)
-    const nearbyDrivers = await redis.georadius(
-      "drivers:geo",
-      load.lng,
-      load.lat,
-      50,
-      "km",
-      "WITHDIST"
-    );
+        await redis.hset(`loads:data:${load.loadId}`, load);
+        await redis.sadd("loads:open", load.loadId);
+        await redis.hset("loads:status", load.loadId, "OPEN");
 
-      console.log("🚗 Nearby Drivers:", nearbyDrivers);
-    for (const [DriverID, distance] of nearbyDrivers) {
+        await redis.geoadd(
+            "loads:geo",
+            load.lng,
+            load.lat,
+            load.loadId
+        );
 
-      const loadObj = {
-        loadId: load.loadId,
-        customerId: load.customerId,
-        lat: load.lat,
-        lng: load.lng,
-        distance: Number(distance)
-      };
+        await redis.expire(`loads:data:${load.loadId}`, 300);
 
-      await redis.rpush(
-        `driver:loads:${DriverID}`,
-        JSON.stringify(loadObj)
-      );
+        const drivers = await redis.georadius(
+            "drivers:geo",
+            load.lng,
+            load.lat,
+            50,
+            "km"
+        );
 
-      await redis.expire(`driver:loads:${DriverID}`, 3600);
+        for (const DriverID of drivers) {
+            io.to(`driver:${DriverID}`).emit("driver:new_load", load);
+        }
+    });
 
-      const loads = await redis.lrange(
-        `driver:loads:${DriverID}`, 0, -1
-      );
 
-      io.to(`driver:${DriverID}`).emit(
-        "driver:available_loads",
-        loads.map(JSON.parse)
-      );
-          console.log(`📤 Sent loads to driver ${DriverID}`);
-    }
-  });
 
   socket.on("customer:select_post", async ({ customerId, postId }) => {
 
@@ -70,7 +53,7 @@ module.exports = (io, socket, redis) => {
       "drivers:geo",
       post.lng,
       post.lat,
-      5,
+      50,
       "km"
     );
 

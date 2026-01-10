@@ -101,24 +101,48 @@ module.exports = (io, socket, redis) => {
   }
 });
 
+    socket.on("driver:join", async ({ DriverID, lat, lng }) => {
 
- socket.on("driver:join", async ({ DriverID }) => {
+        socket.join(`driver:${DriverID}`);
 
-  const openLoadIds = await redis.lrange("loads:open", 0, -1);
+        const loadIds = await redis.georadius(
+            "loads:geo",
+            lng,
+            lat,
+            50,
+            "km"
+        );
 
-  const loads = [];
-  for (const loadId of openLoadIds) {
-    const status = await redis.hget("loads:status", loadId);
-    if (status !== "OPEN") continue;
+        const loads = [];
+        for (const id of loadIds) {
+            const status = await redis.hget("loads:status", id);
+            if (status === "OPEN") {
+                const data = await redis.hgetall(`loads:data:${id}`);
+                if (data?.loadId) loads.push(data);
+            }
+        }
 
-    const data = await redis.hgetall(`loads:data:${loadId}`);
-    loads.push(data);
-  }
+        socket.emit("driver:available_loads", loads);
+    });
 
-  socket.emit("driver:available_loads", loads);
 
-  console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
-});
+//  socket.on("driver:join", async ({ DriverID }) => {
+
+//   const openLoadIds = await redis.lrange("loads:open", 0, -1);
+
+//   const loads = [];
+//   for (const loadId of openLoadIds) {
+//     const status = await redis.hget("loads:status", loadId);
+//     if (status !== "OPEN") continue;
+
+//     const data = await redis.hgetall(`loads:data:${loadId}`);
+//     loads.push(data);
+//   }
+
+//   socket.emit("driver:available_loads", loads);
+
+//   console.log(`🚚 Driver ${DriverID} ko ${loads.length} OLD loads mile`);
+// });
 
 }
 
