@@ -26,7 +26,7 @@ module.exports = (io, socket, redis) => {
 
   /* 1️⃣ GEOADD (ONLY ONCE) */
   await redis.geoadd("drivers:geo", lng, lat, DriverID);
-  await redis.expire("drivers:geo", 36);
+  await redis.expire("drivers:geo", 3600);
 
   /* 2️⃣ Save driver details */
   await redis.hset(`driver:details:${DriverID}`, {
@@ -48,7 +48,7 @@ module.exports = (io, socket, redis) => {
     Status,
     updatedAt: Date.now()
   });
-  await redis.expire(`driver:details:${DriverID}`, 36);
+  await redis.expire(`driver:details:${DriverID}`, 3600);
 
   /* 3️⃣ HEARTBEAT */
   await redis.hset("driver:last_seen", DriverID, Date.now());
