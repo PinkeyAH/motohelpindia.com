@@ -53,50 +53,50 @@ module.exports = (io, socket, redis) => {
     console.log("📦 Load broadcast done:", load.loadId);
   });
 
-// socket.on("customer:new_load", async (load) => {
-//   console.log("customer:new_load", load);
+  // socket.on("customer:new_load", async (load) => {
+  //   console.log("customer:new_load", load);
 
-//   const loadKey = `loads:data:${load.loadId}`;
+  //   const loadKey = `loads:data:${load.loadId}`;
 
-//   await redis
-//     .multi()
-//     .hset(loadKey, load)
-//     .expire(loadKey, 3600)
-//     .hset("loads:status", load.loadId, "OPEN")
-//     .geoadd("loads:geo", load.lng, load.lat, load.loadId)
-//     .set(`loads:expiry:${load.loadId}`, 1, "EX", 3600)
-//     .exec();
+  //   await redis
+  //     .multi()
+  //     .hset(loadKey, load)
+  //     .expire(loadKey, 3600)
+  //     .hset("loads:status", load.loadId, "OPEN")
+  //     .geoadd("loads:geo", load.lng, load.lat, load.loadId)
+  //     .set(`loads:expiry:${load.loadId}`, 1, "EX", 3600)
+  //     .exec();
 
-//   const nearbyDriversRaw = await redis.georadius(
-//     "drivers:geo",
-//     load.lng,
-//     load.lat,
-//     50,
-//     "km",
-//     "WITHDIST"
-//   );
+  //   const nearbyDriversRaw = await redis.georadius(
+  //     "drivers:geo",
+  //     load.lng,
+  //     load.lat,
+  //     50,
+  //     "km",
+  //     "WITHDIST"
+  //   );
 
-//   for (const [DriverID, distance] of nearbyDriversRaw) {
-//     const loadObj = {
-//       loadId: load.loadId,
-//       customerId: load.CustomerID,
-//       lat: load.lat,
-//       lng: load.lng,
-//       distance: Number(distance)
-//     };
+  //   for (const [DriverID, distance] of nearbyDriversRaw) {
+  //     const loadObj = {
+  //       loadId: load.loadId,
+  //       customerId: load.CustomerID,
+  //       lat: load.lat,
+  //       lng: load.lng,
+  //       distance: Number(distance)
+  //     };
 
-//     await redis.rpush(`driver:loads:${DriverID}`, JSON.stringify(loadObj));
-//     await redis.expire(`driver:loads:${DriverID}`, 3600);
+  //     await redis.rpush(`driver:loads:${DriverID}`, JSON.stringify(loadObj));
+  //     await redis.expire(`driver:loads:${DriverID}`, 3600);
 
-//     const allLoads = await redis.lrange(`driver:loads:${DriverID}`, 0, -1);
-//     io.to(`driver:${DriverID}`).emit(
-//       "driver:available_loads",
-//       allLoads.map(l => JSON.parse(l))
-//     );
-//   }
+  //     const allLoads = await redis.lrange(`driver:loads:${DriverID}`, 0, -1);
+  //     io.to(`driver:${DriverID}`).emit(
+  //       "driver:available_loads",
+  //       allLoads.map(l => JSON.parse(l))
+  //     );
+  //   }
 
-//   console.log("📦 Load broadcast done:", load.loadId);
-// });
+  //   console.log("📦 Load broadcast done:", load.loadId);
+  // });
 
 
   // ===== DRIVER LIVE LOCATION FOR CUSTOMER =====
@@ -154,37 +154,37 @@ module.exports = (io, socket, redis) => {
     console.log(`✅ Load ${loadId} accepted by Driver ${DriverID}`);
   });
 
-socket.on("customer:process_load", async ({ loadId }) => {
-  console.log(`🚛 Customer processing load: ${loadId}`);
+  socket.on("customer:process_load", async ({ loadId }) => {
+    console.log(`🚛 Customer processing load: ${loadId}`);
 
-  socket.join(`post:${loadId}`);
-  await redis.hset("loads:status", loadId, "IN_PROGRESS");
+    socket.join(`post:${loadId}`);
+    await redis.hset("loads:status", loadId, "IN_PROGRESS");
 
-  // ✅ CORRECT KEY
-  const DriverID = await redis.get(`load:active_driver:${loadId}`);
+    // ✅ CORRECT KEY
+    const DriverID = await redis.get(`load:active_driver:${loadId}`);
 
-  console.log("DriverID:", DriverID);
+    console.log("DriverID:", DriverID);
 
-  if (!DriverID) {
-    console.log("❌ No driver assigned yet");
-    return;
-  }
+    if (!DriverID) {
+      console.log("❌ No driver assigned yet");
+      return;
+    }
 
-  // const lastLocation = await redis.hgetall(`driver:location:${DriverID}`);
+    // const lastLocation = await redis.hgetall(`driver:location:${DriverID}`);
     const lastLocation = await redis.hgetall(`driver:details:${DriverID}`);
 
-console.log("Last Location:", lastLocation);
+    console.log("Last Location:", lastLocation);
 
-  if (lastLocation?.lat) {
-    socket.emit("customer:driver_location", {
-      DriverID,
-      loadId,
-      lat: lastLocation.lat,
-      lng: lastLocation.lng,
-      instant: true
-    });
-  }
-});
+    if (lastLocation?.lat) {
+      socket.emit("customer:driver_location", {
+        DriverID,
+        loadId,
+        lat: lastLocation.lat,
+        lng: lastLocation.lng,
+        instant: true
+      });
+    }
+  });
 
 
   socket.on("customer:driver_nearby", ({ DriverID, distance }) => {
