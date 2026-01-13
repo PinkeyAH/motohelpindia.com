@@ -202,7 +202,33 @@ module.exports = (io, socket, redis) => {
     socket.emit("driver:available_loads", loads);
   });
 
+  // socket.on("driver:accept_load", async ({ DriverID, loadId }) => {
+  //   try {
+  //     console.log("Driver accepted load:", { DriverID, loadId });
 
+  //     // Map driver → active load
+  //     await redis.set(`driver:active_load:${DriverID}`, loadId, "EX", 3600);
+
+  //     // Remove load from available loads
+  //     await redis.hdel("available_loads", loadId);
+
+  //     // Notify all drivers
+  //     io.emit("driver:remove_load", { loadId });
+
+  //     // Notify customer
+  //     io.to(`post:${loadId}`).emit("customer:load_accepted", { loadId, DriverID });
+  //     console.log(`✅ customer:load_accepted sent`, { loadId, DriverID });
+
+  //     // Start tracking for driver
+  //     socket.emit("driver:start_tracking", { loadId });
+
+  //     // Update load status
+  //     await redis.hset("loads:status", loadId, "ACCEPTED");
+
+  //   } catch (err) {
+  //     console.error("Error in driver:accept_load:", err);
+  //   }
+  // });
   socket.on("driver:accept_load", async ({ DriverID, loadId }) => {
     console.log("Driver accepted load:", { DriverID, loadId });
 

@@ -136,4 +136,7 @@ app.get("/", (req, res) => res.send("🌐 API Gateway running"));
 
 // ✅ Start server
 const PORT = process.env.APIPORT || 9000;
-server.listen(PORT, () => console.log(`🌐 Gateway on http://localhost:${PORT}`));
+// server.listen(PORT, () => console.log(`🌐 Gateway on http://localhost:${PORT}`));
+server.listen(PORT, "0.0.0.0", () =>
+  console.log(`🌐 Gateway running on port ${PORT}`)
+);
