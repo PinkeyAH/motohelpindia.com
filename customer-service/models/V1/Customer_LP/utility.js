@@ -267,3 +267,116 @@ exports.GetCustomerLPCompletedDB = async (data) => {
         return { status: 0, message: err.message };
     }
 };
+exports.GetCustomerLPChargesDB = async () => {
+    try {
+        logger.info('[INFO]: Fetching Charges Data');
+
+        const pool = await sql.connect(dbconfig.config);
+        const request = pool.request();
+
+        request.output('ResultStatus', sql.Int);
+        request.output('ResultMessage', sql.NVarChar(200));
+
+        const result = await request.execute('dbo.CustomerLPMCharge');
+
+        const records = result.recordset || [];
+
+        if (!records.length) {
+            return {
+                status: 0,
+                message: 'Data not found',
+                count: 0,
+                data: []
+            };
+        }
+
+        return {
+            status: result.output.ResultStatus,
+            message: result.output.ResultMessage,
+            count: records.length,
+            data: records
+        };
+
+    } catch (err) {
+        logger.error('[DB ERROR]', err);
+        return {
+            status: 0,
+            message: err.message
+        };
+    }
+};
+exports.GetCustomerLoadPostLRDB = async (data) => {
+    try {
+        logger.info('[INFO]: Fetching Customer LoadPost LR Details');
+
+        const pool = await sql.connect(dbconfig.config);
+        const request = pool.request();
+
+        request.input('CustomerID', sql.Int, data.CustomerID);
+        
+        const result = await request.execute('dbo.CustomerLoadPostLR');
+
+        const records = result.recordset || [];
+
+        if (!records.length) {
+            return {
+                status: 0,
+                message: 'Data not found',
+                count: 0,
+                data: []
+            };
+        }
+
+        return {
+            status: 1,
+            message: 'Data fetched successfully',
+            count: records.length,
+            data: records
+        };
+
+    } catch (err) {
+        logger.error('[DB ERROR]', err);
+        return {
+            status: 0,
+            message: err.message
+        };
+    }
+};
+exports.GetCustomerAddressDB = async (data) => {
+    try {
+        logger.info('[INFO]: Fetching Customer Address Details');
+
+        const pool = await sql.connect(dbconfig.config);
+        const request = pool.request();
+
+        request.input('CustomerID', sql.NVarChar(100), data.CustomerID);
+        request.input('CompanyType', sql.NVarChar(100), data.CompanyType);
+        
+        const result = await request.execute('dbo.CustomerAddress');
+
+        const records = result.recordset || [];
+
+        if (!records.length) {
+            return {
+                status: 0,
+                message: 'Data not found',
+                count: 0,
+                data: []
+            };
+        }
+
+        return {
+            status: 1,
+            message: 'Data fetched successfully',
+            count: records.length,
+            data: records
+        };
+
+    } catch (err) {
+        logger.error('[DB ERROR]', err);
+        return {
+            status: 0,
+            message: err.message
+        };
+    }
+};

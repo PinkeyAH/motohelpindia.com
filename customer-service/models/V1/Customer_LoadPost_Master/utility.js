@@ -133,6 +133,52 @@ exports.customerloadpostmasterDB = (data) => {
 
             request.input('challanDetails', sql.TVP, CHD);
 
+            // ================= TVP : FREIGHT =================
+                const FRT = new sql.Table('freight_Details');
+                FRT.columns.add('charge_type', sql.NVarChar(100));
+                FRT.columns.add('amount', sql.NVarChar(100));
+                FRT.columns.add('remarks', sql.NVarChar(255));
+
+                (data.freightDetails || []).forEach(item => {
+                FRT.rows.add(
+                item.charge_type,
+                item.amount,
+                item.remarks
+                );
+                });
+
+                request.input('freightDetails', sql.TVP, FRT);
+
+                // ================= TVP : BILL =================
+                const BLD = new sql.Table('Bill_Details');
+                BLD.columns.add('Bill_Entry_number', sql.NVarChar(100));
+                BLD.columns.add('Bill_Entry_date', sql.NVarChar(100));
+                BLD.columns.add('Shipper_name', sql.NVarChar(150));
+                BLD.columns.add('Country', sql.NVarChar(100));
+                BLD.columns.add('Currency', sql.NVarChar(50));
+                BLD.columns.add('Value', sql.NVarChar(100));
+                BLD.columns.add('Material_type', sql.NVarChar(100));
+                BLD.columns.add('Package_type', sql.NVarChar(100));
+                BLD.columns.add('Bill_img', sql.NVarChar(sql.MAX));
+                BLD.columns.add('remarks', sql.NVarChar(255));
+
+                (data.BillDetails || []).forEach(item => {
+                BLD.rows.add(
+                item.Bill_Entry_number,
+                item.Bill_Entry_date,
+                item.Shipper_name,
+                item.Country,
+                item.Currency,
+                item.Value,
+                item.Material_type,
+                item.Package_type,
+                item.Bill_img,
+                item.remarks
+                );
+                });
+
+                request.input('BillDetails', sql.TVP, BLD);
+
 
 
             // ================= OUTPUT =================

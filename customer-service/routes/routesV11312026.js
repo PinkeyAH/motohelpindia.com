@@ -3,7 +3,6 @@ const router = express.Router();
 
 const {customerLogs, getCustomerLogs/*, exportCustomerLogsExcel, exportCustomerLogsPDF*/} = require('../log/apiLogger.js');
 
-const { getCustomerLPLoading, GetCustomerLPProgress, GetCustomerLPReached, GetCustomerLPLoaded, GetCustomerLPHold, GetCustomerLPpending, GetCustomerLPCompleted,GetCustomerLPCharges, GetCustomerLoadPostLR,GetCustomerAddress } = require('../controllers/V1/Customer_LP.js');
 
 const { getDestination, getPincode, get_state_region_district ,get_state_district_block} = require("../controllers/V1/Master.js");
 const { InsertCustomerDetails, updateCustomerDetails, deleteCustomerDetails, getCustomerDetails } = require("../controllers/V1/Customer_Onboarding.js");
@@ -21,6 +20,13 @@ const { getActiveLoadPostWebAPI } = require('../controllers/V1/Customer_Load_Pos
 const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
 const { Insertcustomeremployee, updatecustomeremployee, deletecustomeremployee, getcustomeremployee } = require('../controllers/V1/Customer_Employees.js');
 const { customerloadpostmaster, updatecustomerloadpostmaster, getcustomermaster, updatecustomerloadpostinvoice, getcustomerloadpostmaster} = require('../controllers/V1/Customer_LoadPost_Master.js');        
+
+
+
+// vishal changes api 
+const { getCustomerLPLoading, GetCustomerLPProgress, GetCustomerLPReached, GetCustomerLPLoaded, GetCustomerLPHold, GetCustomerLPpending, GetCustomerLPCompleted } = require('../controllers/V1/Customer_LP.js');
+
+
 
 // ---------------------------
 // Customer Logs Routes
@@ -130,6 +136,7 @@ router.post('/get_customer_master', getcustomermaster);
 router.post('/get_customer_loadpost_master', getcustomerloadpostmaster);
 
 
+
 // vishal changes api 
 
 router.post('/customer_LP_Loading', getCustomerLPLoading);
@@ -141,18 +148,4 @@ router.post('/customer_LP_Completed', GetCustomerLPCompleted)
 router.post('/customer_LP_pending', GetCustomerLPpending)
 
 
-router.post('/Customer_LP_Charges', GetCustomerLPCharges)
-router.post('/Customer_LP_LR', GetCustomerLoadPostLR)
-router.post('/Customer_Address', GetCustomerAddress)
-
-
-
-// router.post('/customer_LP_Reached', );
-// router.post('/customer_LP_Loading', );
-// router.post('/customer_LP_Loaded', );
-// router.post('/customer_LP_Hold', );
-// router.post('/customer_LP_Completed', );
-// router.post('/customer_LP_pending', );
 module.exports = router
-
-

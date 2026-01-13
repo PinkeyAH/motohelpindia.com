@@ -6,7 +6,9 @@ const logger = require('../../log/logger');
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const { customer_lp_loading_schema } = require('../../models/V1/Customer_LP/schema.js');
-const{ getCustomerLPLoadingDB, GetCustomerLPProgressDB, GetCustomerLPReachedDB, GetCustomerLPLoadedDB, GetCustomerLPHoldDB, GetCustomerLPpendingDB, GetCustomerLPCompletedDB} = require('../../models/V1/Customer_LP/utility.js');
+const { customer_lp_loading_schemaLR } = require('../../models/V1/Customer_LP/schema.js');
+
+const{ getCustomerLPLoadingDB, GetCustomerLPProgressDB, GetCustomerLPReachedDB, GetCustomerLPLoadedDB, GetCustomerLPHoldDB, GetCustomerLPpendingDB, GetCustomerLPCompletedDB, GetCustomerLPChargesDB, GetCustomerLoadPostLRDB, GetCustomerAddressDB} = require('../../models/V1/Customer_LP/utility.js');
 
 
 exports.getCustomerLPLoading = async (req, res) => {
@@ -119,3 +121,66 @@ exports.GetCustomerLPCompleted = async (req, res) => {
         return res.status(500).json({status: 0,message: error.message});
     }
 };
+exports.GetCustomerLPCharges = async (req, res) => {
+    try {
+        const result = await GetCustomerLPChargesDB();
+        return res.status(200).json(result);
+    } catch (error) {
+        logger.error('API ERROR:', error);
+        return res.status(500).json({
+            status: 0,
+            message: error.message
+        });
+    }
+};
+
+exports.GetCustomerLoadPostLR = async (req, res) => {
+    try {
+        // const validate = ajv.compile(customerLoadPostFullSchema);
+        const validate = ajv.compile(customer_lp_loading_schemaLR);
+
+        if (!validate(req.query)) {
+            return res.status(400).json({
+                status: 0,
+                errors: validate.errors
+            });
+        }
+
+        const result = await GetCustomerLoadPostLRDB(req.query);
+
+        return res.status(200).json(result);
+
+    } catch (error) {
+        logger.error('[API ERROR]', error);
+        return res.status(500).json({
+            status: 0,
+            message: error.message
+        });
+    }
+};
+exports.GetCustomerAddress = async (req, res) => {
+    try {
+        // const validate = ajv.compile(customerLoadPostFullSchema);
+        const validate = ajv.compile(customer_lp_loading_schema);
+
+        if (!validate(req.query)) {
+            return res.status(400).json({
+                status: 0,
+                errors: validate.errors
+            });
+        }
+
+        const result = await GetCustomerAddressDB(req.query);
+
+        return res.status(200).json(result);
+
+    } catch (error) {
+        logger.error('[API ERROR]', error);
+        return res.status(500).json({
+            status: 0,
+            message: error.message
+        });
+    }
+};
+
+
