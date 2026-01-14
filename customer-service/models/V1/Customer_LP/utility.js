@@ -319,26 +319,14 @@ exports.GetCustomerLoadPostLRDB = async (data) => {
         const records = result.recordset || [];
 
         if (!records.length) {
-            return {
-                status: 0,
-                message: 'Data not found',
-                count: 0,
-                data: []
-            };
+            return {status: 0, message: 'Data not found', count: 0,data: []};
         }
 
-        return {
-            status: 1,
-            message: 'Data fetched successfully',
-            count: records.length,
-            data: records
-        };
+        return {status: 1, message: 'Data fetched successfully', count: records.length, data: records};
 
     } catch (err) {
         logger.error('[DB ERROR]', err);
-        return {
-            status: 0,
-            message: err.message
+        return {status: 0,message: err.message
         };
     }
 };
@@ -357,26 +345,14 @@ exports.GetCustomerAddressDB = async (data) => {
         const records = result.recordset || [];
 
         if (!records.length) {
-            return {
-                status: 0,
-                message: 'Data not found',
-                count: 0,
-                data: []
-            };
+            return {status: 0, message: 'Data not found', count: 0, data: []};
         }
 
-        return {
-            status: 1,
-            message: 'Data fetched successfully',
-            count: records.length,
-            data: records
-        };
+        return {status: 1, message: 'Data fetched successfully', count: records.length, data: records};
 
     } catch (err) {
         logger.error('[DB ERROR]', err);
-        return {
-            status: 0,
-            message: err.message
+        return {status: 0, message: err.message
         };
     }
 };

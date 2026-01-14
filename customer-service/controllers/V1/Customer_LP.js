@@ -5,22 +5,18 @@ const dbconfig = require('../../db/db.js');
 const logger = require('../../log/logger');
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
-const { customer_lp_loading_schema } = require('../../models/V1/Customer_LP/schema.js');
-const { customer_lp_loading_schemaLR } = require('../../models/V1/Customer_LP/schema.js');
-
+const { customer_lp_loading_schema, customer_lp_loading_schemaLR, customer_lp_loading_schemaCompanyType } = require('../../models/V1/Customer_LP/schema.js');
 const{ getCustomerLPLoadingDB, GetCustomerLPProgressDB, GetCustomerLPReachedDB, GetCustomerLPLoadedDB, GetCustomerLPHoldDB, GetCustomerLPpendingDB, GetCustomerLPCompletedDB, GetCustomerLPChargesDB, GetCustomerLoadPostLRDB, GetCustomerAddressDB} = require('../../models/V1/Customer_LP/utility.js');
 
 
 exports.getCustomerLPLoading = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
-
-        if (!validate(req.query)) {
+        if (!validate(req.body)) {
             return res.status(400).json({status: 0, errors: validate.errors});
         }
-        const result = await getCustomerLPLoadingDB(req.query);
+        const result = await getCustomerLPLoadingDB(req.body);
         return res.status(200).json(result);
-
     } catch (error) {
         logger.error('API ERROR:', error);
         return res.status(500).json({status: 0, message: error.message
@@ -31,10 +27,9 @@ exports.getCustomerLPLoading = async (req, res) => {
 exports.GetCustomerLPpending = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
-        if (!validate(req.query)) {return res.status(400).json({status: 0,errors: validate.errors});
+        if (!validate(req.body)) {return res.status(400).json({status: 0,errors: validate.errors});
         }
-
-        const result = await GetCustomerLPpendingDB(req.query);
+        const result = await GetCustomerLPpendingDB(req.body);
         return res.status(200).json(result);
     } catch (error) {
         logger.error('API ERROR:', error);
@@ -47,10 +42,10 @@ exports.GetCustomerLPProgress = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
 
-        if (!validate(req.query)) {
+        if (!validate(req.body)) {
             return res.status(400).json({status: 0,errors: validate.errors});
         }
-        const result = await GetCustomerLPProgressDB(req.query);
+        const result = await GetCustomerLPProgressDB(req.body);
         return res.status(200).json(result);
 
     } catch (error) {
@@ -62,13 +57,11 @@ exports.GetCustomerLPProgress = async (req, res) => {
 exports.GetCustomerLPReached = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
-
-        if (!validate(req.query)) {
+        if (!validate(req.body)) {
             return res.status(400).json({status: 0,errors: validate.errors});
         }
-        const result = await GetCustomerLPReachedDB(req.query);
+        const result = await GetCustomerLPReachedDB(req.body);
         return res.status(200).json(result);
-
     } catch (error) {
         logger.error('API ERROR:', error);
         return res.status(500).json({status: 0,message: error.message});
@@ -79,10 +72,10 @@ exports.GetCustomerLPLoaded = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
 
-        if (!validate(req.query)) {
+        if (!validate(req.body)) {
             return res.status(400).json({status: 0,errors: validate.errors});
         }
-        const result = await GetCustomerLPLoadedDB(req.query);
+        const result = await GetCustomerLPLoadedDB(req.body);
         return res.status(200).json(result);
 
     } catch (error) {
@@ -95,10 +88,10 @@ exports.GetCustomerLPHold = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
 
-        if (!validate(req.query)) {
+        if (!validate(req.body)) {
             return res.status(400).json({status: 0,errors: validate.errors});
         }
-        const result = await GetCustomerLPHoldDB(req.query);
+        const result = await GetCustomerLPHoldDB(req.body);
         return res.status(200).json(result);
     } catch (error) {
         logger.error('API ERROR:', error);
@@ -110,10 +103,10 @@ exports.GetCustomerLPCompleted = async (req, res) => {
     try {
         const validate = ajv.compile(customer_lp_loading_schema);
 
-        if (!validate(req.query)) {
+        if (!validate(req.body)) {
             return res.status(400).json({status: 0,errors: validate.errors});
         }
-        const result = await GetCustomerLPCompletedDB(req.query);
+        const result = await GetCustomerLPCompletedDB(req.body);
         return res.status(200).json(result);
 
     } catch (error) {
@@ -136,50 +129,29 @@ exports.GetCustomerLPCharges = async (req, res) => {
 
 exports.GetCustomerLoadPostLR = async (req, res) => {
     try {
-        // const validate = ajv.compile(customerLoadPostFullSchema);
         const validate = ajv.compile(customer_lp_loading_schemaLR);
-
-        if (!validate(req.query)) {
-            return res.status(400).json({
-                status: 0,
-                errors: validate.errors
-            });
+        if (!validate(req.body)) {
+            return res.status(400).json({status: 0,errors: validate.errors});
         }
-
-        const result = await GetCustomerLoadPostLRDB(req.query);
-
+        const result = await GetCustomerLoadPostLRDB(req.body);
         return res.status(200).json(result);
 
     } catch (error) {
         logger.error('[API ERROR]', error);
-        return res.status(500).json({
-            status: 0,
-            message: error.message
-        });
+        return res.status(500).json({status: 0,message: error.message});
     }
 };
 exports.GetCustomerAddress = async (req, res) => {
     try {
-        // const validate = ajv.compile(customerLoadPostFullSchema);
-        const validate = ajv.compile(customer_lp_loading_schema);
-
-        if (!validate(req.query)) {
-            return res.status(400).json({
-                status: 0,
-                errors: validate.errors
-            });
+        const validate = ajv.compile(customer_lp_loading_schemaCompanyType);
+        if (!validate(req.body)) {
+            return res.status(400).json({status: 0,errors: validate.errors});
         }
-
-        const result = await GetCustomerAddressDB(req.query);
-
+        const result = await GetCustomerAddressDB(req.body);
         return res.status(200).json(result);
-
     } catch (error) {
         logger.error('[API ERROR]', error);
-        return res.status(500).json({
-            status: 0,
-            message: error.message
-        });
+        return res.status(500).json({status: 0,message: error.message});
     }
 };
 
