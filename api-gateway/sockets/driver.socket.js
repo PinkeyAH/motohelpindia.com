@@ -117,6 +117,10 @@ function getDistance(lat1, lon1, lat2, lon2) {
     }
 
       }
+    io.to(`vendor:${VendorID}`).emit("vendor:driver_location", { DriverID,
+      lat,        // 🔴 DRIVER CURRENT LOCATION
+      lng
+    });
 
     } catch (err) {
       console.error("Error in driver:location:", err);
@@ -124,12 +128,16 @@ function getDistance(lat1, lon1, lat2, lon2) {
   });
 
   // ===== DRIVER JOIN =====
-  socket.on("join", async ({ userId, role }) => {
+  socket.on("join", async ({ userId, role,VendorID }) => {
     if (role !== "driver") return;
 
     socket.join(`driver:${userId}`);
     console.log("🚚 Driver joined:", userId);
+    
+    // 🔥 ADD THIS
+  await redis.sadd(`vendor:drivers:${VendorID}`, userId);
 
+  console.log(`🚚 Driver ${userId} linked to Vendor ${VendorID}`);
     // Send old loads
     const keys = await redis.keys("loads:data:*");
     const loads = [];

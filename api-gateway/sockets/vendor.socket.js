@@ -1,74 +1,176 @@
-
-
-// module.exports = (io, socket, redis) => {
-
-//   socket.on("vendor:get_drivers", async () => {
-//     const drivers = await redis.hgetall("driver:locations");
-
-//     const driverList = Object.values(drivers).map(d =>
-//       JSON.parse(d)
-//     );
-
-//     socket.emit("vendor:drivers", driverList);
-//   });
-
-// };
 module.exports = (io, socket, redis) => {
 
-    socket.on("vendor:select_driver", async ({ vendorId, DriverID }) => {
+  // ===============================
+  // 🔑 VENDOR JOIN
+  // ===============================
+socket.on("vendor:join", async ({ VendorID }) => {
+    socket.join(`vendor:${VendorID}`);
+    console.log("🏢 Vendor joined:", VendorID);
 
-        // 1️⃣ Driver ki location nikalo
-        const driverPos = await redis.geopos(
-            "drivers:geo",
-            DriverID
-        );
+    const drivers = await redis.smembers(`vendor:drivers:${VendorID}`);
+    console.log("👀 Vendor drivers:", drivers);
 
-        if (!driverPos || !driverPos[0]) {
-            console.log("❌ Driver location not found");
-            return;
-        }
+    const list = [];
+    for (const DriverID of drivers) {
+      const d = await redis.hgetall(`driver:details:${DriverID}`);
+      if (d?.lat) list.push(d);
+    }
 
-        const [lng, lat] = driverPos[0];
+    socket.emit("vendor:drivers_list", list);
 
-        // 2️⃣ 5 KM ke andar ke loads
-        const nearbyLoads = await redis.georadius(
-            "loads:geo",
-            lng,
-            lat,
-            50,
-            "km"
-        );
 
-        const loads = [];
+    // vendor:drivers_list
 
-        for (const loadId of nearbyLoads) {
+      // Send old loads
+    const keys = await redis.keys("loads:data:*");
+    const loads = [];
+    for (const key of keys) {
+      const load = await redis.hgetall(key);
+      if (load?.loadId) loads.push(load);
+    }
+    socket.emit("vendor:available_loads", loads);
+    console.log("📦 Sent old loads to driver:", loads.length);
 
-            const status = await redis.hget(
-                "loads:status",
-                loadId
-            );
+  });
 
-            if (status !== "OPEN") continue;
+  // ===============================
+  // ✅ LP STATUS UPDATE
+  // ===============================
+socket.on("vendor:update_lp_status", async ({ VendorID, DriverID, Driver_LPStatus }) => {
 
-            const loadData = await redis.hgetall(
-                `loads:data:${loadId}`
-            );
+  // Save in Redis
+  await redis.hset(`driver:details:${DriverID}`, {
+    LPStatus:Driver_LPStatus,
+    updatedAt: Date.now()
+  });
 
-            loads.push(loadData);
-        }
+  // Notify DRIVER
+  io.to(`driver:${DriverID}`).emit("driver:lp_status_updated", {
+    DriverID,
+    LPStatus: Driver_LPStatus
+  });
 
-        // 3️⃣ Vendor ko bhejo
-        io.to(`vendor:${vendorId}`).emit(
-            "vendor:nearby_loads_for_driver",
-            {
-                DriverID,
-                loads
-            }
-        );
-
-        console.log(
-            `📦 Vendor ${vendorId} ko ${loads.length} loads mile`
-        );
+  // Notify CUSTOMER (if on trip)
+  const loadId = await redis.get(`driver:active_load:${DriverID}`);
+  if (loadId) {
+    io.to(`post:${loadId}`).emit("customer:lp_status_updated", {
+      DriverID,
+      LPStatus: Driver_LPStatus
     });
+  }
+
+  // Notify VENDOR UI
+  io.to(`vendor:${VendorID}`).emit("vendor:driver_update", {
+    DriverID,
+    Driver_LPStatus
+  });
+
+  console.log("✅ LP Status updated:", DriverID, Driver_LPStatus);
+});
+
+
+  // ===============================
+  // 📦 NEARBY LOADS FOR VENDOR DRIVERS
+  // ===============================
+socket.on("vendor:select_driver", async ({ DriverID }) => {
+  console.log("Vendor selected driver:", DriverID);
+
+  // 1️⃣ Driver current location
+  const driver = await redis.hgetall(`driver:details:${DriverID}`);
+  if (!driver?.lat || !driver?.lng) {
+    console.log("❌ Driver location not found");
+    return;
+  }
+
+  // 2️⃣ Get nearby load IDs within 50km
+  const loadsRaw = await redis.georadius(
+    "loads:geo",
+    Number(driver.lng),
+    Number(driver.lat),
+    50,
+    "km",
+    "WITHDIST"
+  );
+
+  if (!loadsRaw.length) {
+    console.log("❌ No nearby loads found");
+  }
+
+  // 3️⃣ Fetch load data
+  const loads = [];
+  for (const [loadId, distance] of loadsRaw) {
+    const load = await redis.hgetall(`loads:data:${loadId}`);
+    if (load?.loadId) {
+      loads.push({
+        ...load,
+        distance: Number(distance) // km
+      });
+    }
+  }
+
+  // 4️⃣ Send loads to driver
+  io.to(`driver:${DriverID}`).emit("driver:available_loads", loads);
+
+  // 5️⃣ (Optional) Send to vendor for UI
+  socket.emit("vendor:selected_driver_loads", {
+    DriverID,
+    loads
+  });
+  console.log(`📦 Sent ${loads.length} nearby loads to driver`);
+  
+    // 6️⃣ Send last known location instantly
+      // const lastLocation = await redis.hgetall(`driver:location:${DriverID}`);
+    const lastLocation = await redis.hgetall(`driver:details:${DriverID}`);
+
+    console.log("Last Location:", lastLocation);
+console.log("vendor:driver_location", {
+        DriverID,
+        // loadId,
+        lat: lastLocation.lat,
+        lng: lastLocation.lng,
+        instant: true
+      });
+
+    if (lastLocation?.lat) {
+      socket.emit("vendor:driver_location", {
+        DriverID,
+        // loadId,
+        lat: lastLocation.lat,
+        lng: lastLocation.lng,
+        instant: true
+      });
+    }
+  });
+
+  // ===============================
+  // 📍 LIVE DRIVER LOCATION (TRIP)
+  // ===============================
+  socket.on("vendor:track_driver", async ({ DriverID }) => {
+
+    const loadId = await redis.get(`driver:active_load:${DriverID}`);
+    if (!loadId) {
+      socket.emit("vendor:driver_idle", { DriverID });
+      return;
+    }
+
+    socket.join(`track:driver:${DriverID}`);
+
+    console.log("📡 Vendor tracking driver:", DriverID);
+  });
+
+
+  // ===============================
+  // 🔁 DRIVER LOCATION FORWARD
+  // (call this from driver socket)
+  // ===============================
+  socket.on("driver:location", async ({ DriverID, lat, lng }) => {
+
+    io.to(`track:driver:${DriverID}`).emit("vendor:driver_location", {
+      DriverID,
+      lat,
+      lng,
+      time: Date.now()
+    });
+  });
 
 };
