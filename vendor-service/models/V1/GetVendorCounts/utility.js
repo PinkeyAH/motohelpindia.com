@@ -68,23 +68,23 @@ exports.getvendorCountsDB = (data) => {
 //                             vdn.vehicleType,
 //                             cps.LP_Status,
 //                             clp.LoadPostID,
-//                             cla.Origin_Lat AS pickup_Latitude,
-//                             cla.Origin_Lng AS pickup_Longitude,
-//                             cla.Destination_Lat AS dropoff_Latitude,
-//                             cla.Destination_Lng AS dropoff_Longitude,
+//                             cla.PickupLat AS pickup_Latitude,
+//                             cla.PickupLng AS pickup_Longitude,
+//                             cla.DeliveryLat AS dropoff_Latitude,
+//                             cla.DeliveryLng AS dropoff_Longitude,
 //                             6371 * ACOS(
 //                                 COS(RADIANS(dll.Lat)) 
-//                                 * COS(RADIANS(cla.Origin_Lat)) 
-//                                 * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                 * COS(RADIANS(cla.PickupLat)) 
+//                                 * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                 + SIN(RADIANS(dll.Lat)) 
-//                                 * SIN(RADIANS(cla.Origin_Lat))
+//                                 * SIN(RADIANS(cla.PickupLat))
 //                             ) AS DriverToOriginKm,
 //                             6371 * ACOS(
-//                                 COS(RADIANS(cla.Origin_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
-//                                 + SIN(RADIANS(cla.Origin_Lat)) 
-//                                 * SIN(RADIANS(cla.Destination_Lat))
+//                                 COS(RADIANS(cla.PickupLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) 
+//                                 + SIN(RADIANS(cla.PickupLat)) 
+//                                 * SIN(RADIANS(cla.DeliveryLat))
 //                             ) AS OriginToDestinationKm
 //                         FROM 
 //                             Driver_Details d
@@ -108,10 +108,10 @@ exports.getvendorCountsDB = (data) => {
 //                             AND (
 //                                 6371 * ACOS(
 //                                     COS(RADIANS(dll.Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                     * COS(RADIANS(cla.PickupLat)) 
+//                                     * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                     + SIN(RADIANS(dll.Lat)) 
-//                                     * SIN(RADIANS(cla.Origin_Lat))
+//                                     * SIN(RADIANS(cla.PickupLat))
 //                                 )
 //                             ) <= @radiusKm
 //                         ORDER BY DriverToOriginKm ASC;
@@ -165,23 +165,23 @@ exports.getvendorCountsDB = (data) => {
 //                             vdn.vehicleType,
 //                             cps.LP_Status,
 //                             clp.LoadPostID,
-//                             cla.Origin_Lat AS pickup_Latitude,
-//                             cla.Origin_Lng AS pickup_Longitude,
-//                             cla.Destination_Lat AS dropoff_Latitude,
-//                             cla.Destination_Lng AS dropoff_Longitude,
+//                             cla.PickupLat AS pickup_Latitude,
+//                             cla.PickupLng AS pickup_Longitude,
+//                             cla.DeliveryLat AS dropoff_Latitude,
+//                             cla.DeliveryLng AS dropoff_Longitude,
 //                             6371 * ACOS(
 //                                 COS(RADIANS(dll.Lat)) 
-//                                 * COS(RADIANS(cla.Origin_Lat)) 
-//                                 * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                 * COS(RADIANS(cla.PickupLat)) 
+//                                 * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                 + SIN(RADIANS(dll.Lat)) 
-//                                 * SIN(RADIANS(cla.Origin_Lat))
+//                                 * SIN(RADIANS(cla.PickupLat))
 //                             ) AS DriverToOriginKm,
 //                             6371 * ACOS(
-//                                 COS(RADIANS(cla.Origin_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
-//                                 + SIN(RADIANS(cla.Origin_Lat)) 
-//                                 * SIN(RADIANS(cla.Destination_Lat))
+//                                 COS(RADIANS(cla.PickupLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) 
+//                                 + SIN(RADIANS(cla.PickupLat)) 
+//                                 * SIN(RADIANS(cla.DeliveryLat))
 //                             ) AS OriginToDestinationKm
 //                         FROM 
 //                             Driver_Details d
@@ -206,10 +206,10 @@ exports.getvendorCountsDB = (data) => {
 //                             AND (
 //                                 6371 * ACOS(
 //                                     COS(RADIANS(dll.Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                     * COS(RADIANS(cla.PickupLat)) 
+//                                     * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                     + SIN(RADIANS(dll.Lat)) 
-//                                     * SIN(RADIANS(cla.Origin_Lat))
+//                                     * SIN(RADIANS(cla.PickupLat))
 //                                 )
 //                             ) <= @radiusKm
 //                         ORDER BY DriverToOriginKm ASC;
@@ -323,11 +323,11 @@ exports.getvendorCountsDB = (data) => {
 //                                 * SIN(RADIANS(cla.PickupLat))
 //                             ) AS DriverToPickupKm,
 //                             6371 * ACOS(
-//                                 COS(RADIANS(cla.Origin_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
-//                                 + SIN(RADIANS(cla.Origin_Lat)) 
-//                                 * SIN(RADIANS(cla.Destination_Lat))
+//                                 COS(RADIANS(cla.PickupLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) 
+//                                 + SIN(RADIANS(cla.PickupLat)) 
+//                                 * SIN(RADIANS(cla.DeliveryLat))
 //                             ) AS OriginToDestinationKm
 //                         FROM 
 //                             Driver_Details d
@@ -351,10 +351,10 @@ exports.getvendorCountsDB = (data) => {
 //                             AND (
 //                                 6371 * ACOS(
 //                                     COS(RADIANS(dll.Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                     * COS(RADIANS(cla.PickupLat)) 
+//                                     * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                     + SIN(RADIANS(dll.Lat)) 
-//                                     * SIN(RADIANS(cla.Origin_Lat))
+//                                     * SIN(RADIANS(cla.PickupLat))
 //                                 )
 //                             ) <= @radiusKm
 //                         ORDER BY DriverToOriginKm ASC;
@@ -419,16 +419,16 @@ exports.getvendorCountsDB = (data) => {
 //                                 + SIN(RADIANS(dll.Lat)) 
 //                                 * SIN(RADIANS(cla.PickupLat))
 //                             ) AS DriverToPickupKm,  
-//                                 * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                 * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                 + SIN(RADIANS(dll.Lat)) 
-//                                 * SIN(RADIANS(cla.Origin_Lat))
+//                                 * SIN(RADIANS(cla.PickupLat))
 //                             ) AS DriverToOriginKm,
 //                             6371 * ACOS(
-//                                 COS(RADIANS(cla.Origin_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lat)) 
-//                                 * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
-//                                 + SIN(RADIANS(cla.Origin_Lat)) 
-//                                 * SIN(RADIANS(cla.Destination_Lat))
+//                                 COS(RADIANS(cla.PickupLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLat)) 
+//                                 * COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) 
+//                                 + SIN(RADIANS(cla.PickupLat)) 
+//                                 * SIN(RADIANS(cla.DeliveryLat))
 //                             ) AS OriginToDestinationKm
 //                         FROM 
 //                             Driver_Details d
@@ -453,10 +453,10 @@ exports.getvendorCountsDB = (data) => {
 //                             AND (
 //                                 6371 * ACOS(
 //                                     COS(RADIANS(dll.Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lat)) 
-//                                     * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+//                                     * COS(RADIANS(cla.PickupLat)) 
+//                                     * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
 //                                     + SIN(RADIANS(dll.Lat)) 
-//                                     * SIN(RADIANS(cla.Origin_Lat))
+//                                     * SIN(RADIANS(cla.PickupLat))
 //                                 )
 //                             ) <= @radiusKm
 //                         ORDER BY DriverToOriginKm ASC;
@@ -539,27 +539,27 @@ exports.getvehicleavailableDB = (data) => {
                         cps.LP_Status,
                         clp.LoadPostID,
 
-                        cla.Origin_Lat AS Pickup_Latitude,
-                        cla.Origin_Lng AS Pickup_Longitude,
-                        cla.Destination_Lat AS Drop_Latitude,
-                        cla.Destination_Lng AS Drop_Longitude,
+                            cla.PickupLat AS pickup_Latitude,
+                            cla.PickupLng AS pickup_Longitude,
+                            cla.DeliveryLat AS dropoff_Latitude,
+                            cla.DeliveryLng AS dropoff_Longitude,
 
                         -- Driver → Pickup
                         6371 * ACOS(
                             COS(RADIANS(dll.Lat)) *
-                            COS(RADIANS(cla.Origin_Lat)) *
-                            COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) +
+                            COS(RADIANS(cla.PickupLat)) *
+                            COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) +
                             SIN(RADIANS(dll.Lat)) *
-                            SIN(RADIANS(cla.Origin_Lat))
+                            SIN(RADIANS(cla.PickupLat))
                         ) AS DriverToPickupKm,
 
                         -- Pickup → Destination
                         6371 * ACOS(
-                            COS(RADIANS(cla.Origin_Lat)) *
-                            COS(RADIANS(cla.Destination_Lat)) *
-                            COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) +
-                            SIN(RADIANS(cla.Origin_Lat)) *
-                            SIN(RADIANS(cla.Destination_Lat))
+                            COS(RADIANS(cla.PickupLat)) *
+                            COS(RADIANS(cla.DeliveryLat)) *
+                            COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) +
+                            SIN(RADIANS(cla.PickupLat)) *
+                            SIN(RADIANS(cla.DeliveryLat))
                         ) AS PickupToDropKm
 
                     FROM Driver_Details d
@@ -577,10 +577,10 @@ exports.getvehicleavailableDB = (data) => {
                         AND (
                             6371 * ACOS(
                                 COS(RADIANS(dll.Lat)) *
-                                COS(RADIANS(cla.Origin_Lat)) *
-                                COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) +
+                                COS(RADIANS(cla.PickupLat)) *
+                                COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) +
                                 SIN(RADIANS(dll.Lat)) *
-                                SIN(RADIANS(cla.Origin_Lat))
+                                SIN(RADIANS(cla.PickupLat))
                             )
                         ) <= @radiusKm
 
@@ -605,17 +605,17 @@ exports.getvehicleavailableDB = (data) => {
                         cps.LP_Status,
                         clp.LoadPostID,
 
-                        cla.Origin_Lat AS Pickup_Latitude,
-                        cla.Origin_Lng AS Pickup_Longitude,
-                        cla.Destination_Lat AS Drop_Latitude,
-                        cla.Destination_Lng AS Drop_Longitude,
+                            cla.PickupLat AS pickup_Latitude,
+                            cla.PickupLng AS pickup_Longitude,
+                            cla.DeliveryLat AS dropoff_Latitude,
+                            cla.DeliveryLng AS dropoff_Longitude,
 
                         6371 * ACOS(
                             COS(RADIANS(dll.Lat)) *
-                            COS(RADIANS(cla.Origin_Lat)) *
-                            COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) +
+                            COS(RADIANS(cla.PickupLat)) *
+                            COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) +
                             SIN(RADIANS(dll.Lat)) *
-                            SIN(RADIANS(cla.Origin_Lat))
+                            SIN(RADIANS(cla.PickupLat))
                         ) AS DriverToPickupKm
 
                     FROM Driver_Details d
@@ -634,10 +634,10 @@ exports.getvehicleavailableDB = (data) => {
                         AND (
                             6371 * ACOS(
                                 COS(RADIANS(dll.Lat)) *
-                                COS(RADIANS(cla.Origin_Lat)) *
-                                COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) +
+                                COS(RADIANS(cla.PickupLat)) *
+                                COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) +
                                 SIN(RADIANS(dll.Lat)) *
-                                SIN(RADIANS(cla.Origin_Lat))
+                                SIN(RADIANS(cla.PickupLat))
                             )
                         ) <= @radiusKm;
                     `;
@@ -1017,10 +1017,10 @@ exports.getvehicleclosedDB = (data) => {
 											 cla.Destination_District
                                              
                                           --   clp.LoadPostID,
-                                          --   cla.Origin_Lat AS pickup_Latitude,
-                                          --   cla.Origin_Lng AS pickup_Longitude,
-                                          --   cla.Destination_Lat AS dropoff_Latitude,
-                                          --   cla.Destination_Lng AS dropoff_Longitude,
+                                          --   cla.PickupLat AS pickup_Latitude,
+                                          --   cla.PickupLng AS pickup_Longitude,
+                                          --   cla.DeliveryLat AS dropoff_Latitude,
+                                          --   cla.DeliveryLng AS dropoff_Longitude,
                                          --
                                           --   -- Distance between driver and load origin
                                           --   6371 * ACOS(
@@ -1034,10 +1034,10 @@ exports.getvehicleclosedDB = (data) => {
                                           --   -- Distance between load origin and destination
                                           --   6371 * ACOS(
                                           --       COS(RADIANS(cla.PickupLat)) 
-                                          --       * COS(RADIANS(cla.Destination_Lat)) 
-                                          --       * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.PickupLng)) 
+                                          --       * COS(RADIANS(cla.DeliveryLat)) 
+                                          --       * COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) 
                                           --       + SIN(RADIANS(cla.PickupLat)) 
-                                          --       * SIN(RADIANS(cla.Destination_Lat))
+                                          --       * SIN(RADIANS(cla.DeliveryLat))
                                           --   ) AS OriginToDestinationKm
                                          
                                          FROM 
@@ -1092,27 +1092,27 @@ exports.getvehicleclosedDB = (data) => {
 											 cla.Destination_District
                                              
                                           --   clp.LoadPostID,
-                                          --   cla.Origin_Lat AS pickup_Latitude,
-                                          --   cla.Origin_Lng AS pickup_Longitude,
-                                          --   cla.Destination_Lat AS dropoff_Latitude,
-                                          --   cla.Destination_Lng AS dropoff_Longitude,
+                                          --   cla.PickupLat AS pickup_Latitude,
+                                          --   cla.PickupLng AS pickup_Longitude,
+                                          --   cla.DeliveryLat AS dropoff_Latitude,
+                                          --   cla.DeliveryLng AS dropoff_Longitude,
                                          --
                                           --   -- Distance between driver and load origin
                                           --   6371 * ACOS(
                                           --       COS(RADIANS(dll.Lat)) 
-                                          --       * COS(RADIANS(cla.Origin_Lat)) 
-                                          --       * COS(RADIANS(cla.Origin_Lng) - RADIANS(dll.Lng)) 
+                                          --       * COS(RADIANS(cla.PickupLat)) 
+                                          --       * COS(RADIANS(cla.PickupLng) - RADIANS(dll.Lng)) 
                                           --       + SIN(RADIANS(dll.Lat)) 
-                                          --       * SIN(RADIANS(cla.Origin_Lat))
+                                          --       * SIN(RADIANS(cla.PickupLat))
                                           --   ) AS DriverToOriginKm,
                                          --
                                           --   -- Distance between load origin and destination
                                           --   6371 * ACOS(
-                                          --       COS(RADIANS(cla.Origin_Lat)) 
-                                          --       * COS(RADIANS(cla.Destination_Lat)) 
-                                          --       * COS(RADIANS(cla.Destination_Lng) - RADIANS(cla.Origin_Lng)) 
-                                          --       + SIN(RADIANS(cla.Origin_Lat)) 
-                                          --       * SIN(RADIANS(cla.Destination_Lat))
+                                          --       COS(RADIANS(cla.PickupLat)) 
+                                          --       * COS(RADIANS(cla.DeliveryLat)) 
+                                          --       * COS(RADIANS(cla.DeliveryLng) - RADIANS(cla.PickupLng)) 
+                                          --       + SIN(RADIANS(cla.PickupLat)) 
+                                          --       * SIN(RADIANS(cla.DeliveryLat))
                                           --   ) AS OriginToDestinationKm
                                          
                                          FROM 
