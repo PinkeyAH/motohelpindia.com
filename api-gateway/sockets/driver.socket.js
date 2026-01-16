@@ -1,3 +1,5 @@
+const { insertOrUpdate_DriverLiveLocationDB } = require('../../driver-service/models/V1/DriverLiveLocation/utility.js');
+
 module.exports = (io, socket, redis) => {
 
   // ===== HELPER: Calculate distance between two coordinates =====
@@ -37,7 +39,19 @@ function getDistance(lat1, lon1, lat2, lon2) {
   }) => {
     try {
       console.log("📍 driver:location", { DriverID, lat, lng, Status });
+      await insertOrUpdate_DriverLiveLocationDB({
+        DriverID, VendorID, VehicleID, MobileNo,
+        Lat: lat, Lng: lng, Speed, Direction, City, District,
+        Taluka, State, Pincode, Address,
+        Driver_LPStatus, Status
+      });
 
+      console.log("✅ DB updated for driver location", {
+        DriverID, VendorID, VehicleID, MobileNo,
+        Lat: lat, Lng: lng, Speed, Direction, City, District,
+        Taluka, State, Pincode, Address,
+        Driver_LPStatus, Status
+      });
       // 1️⃣ Add/update driver geo in Redis
       await redis.geoadd("drivers:geo", lng, lat, DriverID);
       await redis.set(`driver:expiry:${DriverID}`, 1, "EX", 3600);
