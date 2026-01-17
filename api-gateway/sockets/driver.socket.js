@@ -131,10 +131,10 @@ module.exports = (io, socket, redis) => {
         }
       }
 
-      //  io.to(`vendor:${VendorID}`).emit("vendor:driver_location", { DriverID,
-      //     lat,        // 🔴 DRIVER CURRENT LOCATION
-      //     lng
-      //   });
+       io.to(`vendor:${VendorID}`).emit("vendor:driver_location", { DriverID,
+          lat,        // 🔴 DRIVER CURRENT LOCATION
+          lng
+        });
       // 2️⃣ 🔥 SEND LIVE LOCATION TO VENDOR
       io.to(`vendor:${VendorID}`).emit("vendor:driver_live_location", {
         DriverID,
