@@ -147,7 +147,7 @@ exports.VendorOnboarding = async (req, res) => {
 //                 VendorID: Vendorid,
 //                 photo_id: photo_id,
 //                 photo_type: key,
-//                 photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vendor/${path.basename(fullPath)}`,
+//                 photo_url: `https://motohelpindia.com/uploads/Vendor/${path.basename(fullPath)}`,
 //                 name: path.basename(fullPath)
 //             };
 //         });
@@ -195,7 +195,7 @@ const InsertVendorPhoto = async (Vendorid, req, res) => {
                 VendorID: Vendorid,
                 photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
-                photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vendor/${path.basename(fullPath)}`,
+                photo_url: `https://motohelpindia.com/uploads/Vendor/${path.basename(fullPath)}`,
                 name: path.basename(fullPath),
                 doc_number: docNumber
             };
@@ -422,7 +422,7 @@ exports.updateVendorKYC = async (req, res) => {
                 VendorID: vendorId,
                 photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
-                photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vendor/${path.basename(fullPath)}`,
+                photo_url: `https://motohelpindia.com/uploads/Vendor/${path.basename(fullPath)}`,
                 name: path.basename(fullPath),
                 doc_number: docNumber
             };
@@ -484,7 +484,7 @@ exports.updateVendorKYC = async (req, res) => {
 //                 VendorID: vendorId,
 //                 photo_id,
 //                 photo_type: key,
-//                 photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vendor/${path.basename(fullPath)}`,
+//                 photo_url: `https://motohelpindia.com/uploads/Vendor/${path.basename(fullPath)}`,
 //                 name: path.basename(fullPath)
 //             };
 //         });

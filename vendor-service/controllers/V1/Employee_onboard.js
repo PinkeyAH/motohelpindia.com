@@ -66,7 +66,7 @@ const InsertemployeePhoto = async (employee_id, req, res) => {
             employeesID: employee_id,  // or generate dynamically
             photo_id: '123',                    // or generate dynamically
             photo_type: key,                      // e.g. “CancelledCheque”
-            photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/employees/${path.basename(fullPath)}`,
+            photo_url: `https://motohelpindia.com/uploads/employees/${path.basename(fullPath)}`,
             name: path.basename(fullPath),
         }));
 
@@ -174,7 +174,7 @@ const UpdateImageUpload = async (employee_id, req, res) => {
             employee_id: employee_id,  // or generate dynamically
             photo_id: '123',                    // or generate dynamically
             photo_type: key,                      // e.g. “CancelledCheque”
-            photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/employees/${path.basename(fullPath)}`,
+            photo_url: `https://motohelpindia.com/uploads/employees/${path.basename(fullPath)}`,
             name: path.basename(fullPath),
         }));
 

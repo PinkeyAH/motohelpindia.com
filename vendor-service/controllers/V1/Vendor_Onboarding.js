@@ -21,7 +21,7 @@ exports.VendorOnboarding = async (req, res) => {
         // const isValid = validate(req.body);
         // if (!isValid) {
         //     logger.log("error", `Validation errors: ${JSON.stringify(validate.errors)}`);
-        //     return res.status(400).json({ status: "01", message: "Invalid input data", errors: validate.errors });
+        //     return res.status(200).json({ status: "01", message: "Invalid input data", errors: validate.errors });
 
         // }
         logger.log("info", "Vendor Onboarding data is valid!");
@@ -34,7 +34,7 @@ exports.VendorOnboarding = async (req, res) => {
         // --------------------------------------------
         const vendorCheck = await checkMobileNoDB(vendorMobile);
         if (vendorCheck.exists) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: "02",
                 message: `Vendor mobile number ${vendorMobile} already exists in system`
             });
@@ -51,7 +51,7 @@ exports.VendorOnboarding = async (req, res) => {
         // 3. Check if vendor mobile matches any employee mobile
         // --------------------------------------------------------
         if (employeeMobiles.includes(vendorMobile)) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: "02",
                 message: `Vendor mobile number and employee contact number cannot be same`
             });
@@ -65,7 +65,7 @@ exports.VendorOnboarding = async (req, res) => {
         );
 
         if (duplicates.length > 0) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: "02",
                 message: `Duplicate employee contact numbers not allowed: ${duplicates.join(", ")}`
             });
@@ -77,7 +77,7 @@ exports.VendorOnboarding = async (req, res) => {
         for (let mobile of employeeMobiles) {
             const check = await checkMobileNoDB(mobile);
             if (check.exists) {
-                return res.status(400).json({
+                return res.status(200).json({
                     status: "02",
                     message: `Employee mobile number ${mobile} already exists in system`
                 });
@@ -132,7 +132,7 @@ const InsertVendorPhoto = async (Vendorid, req, res) => {
                 VendorID: Vendorid,
                 photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
-                photo_url: `https://neotechnet.com/Moto_Help_Microservices/vendor-service/uploads/Vendor/${path.basename(fullPath)}`,
+                photo_url: `https://motohelpindia.com/vendor-service/uploads/Vendor/${path.basename(fullPath)}`,
                 name: path.basename(fullPath),
                 doc_number: docNumber
             };
@@ -308,13 +308,13 @@ exports.updateVendoremployee = async (req, res) => {
     try {
         // const validate = ajv.compile(VendoremployeeSchema());
         // if (!validate(req.body)) {
-        //     return res.status(400).json({ message: "Invalid input data", errors: validate.errors });
+        //     return res.status(200).json({ message: "Invalid input data", errors: validate.errors });
         // }
 
         const result = await updateVendoremployeeDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc });
@@ -333,13 +333,13 @@ exports.updateVendorDetails = async (req, res) => {
     try {
         // const validate = ajv.compile(VendorDetailsSchema());
         // if (!validate(req.body)) {
-        //     return res.status(400).json({ message: "Invalid input data", errors: validate.errors });
+        //     return res.status(200).json({ message: "Invalid input data", errors: validate.errors });
         // }
 
         const result = await updateVendorDetailsDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.bstatus_code, message: result.bmessage_desc, userDetails: JSON.parse(result.userDetails) });
@@ -382,7 +382,7 @@ exports.updateVehicle = async (req, res) => {
     try {
         // const validate = ajv.compile(VehicleSchema());
         // if (!validate(req.body)) {
-        //     return res.status(400).json({ message: "Invalid input data", errors: validate.errors });
+        //     return res.status(200).json({ message: "Invalid input data", errors: validate.errors });
         // }
 
         const result = await updateVehicleDB(req.body);
@@ -408,7 +408,7 @@ exports.deleteVendoremployee = async (req, res) => {
         const result = await deleteVendoremployeeDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.status, message: result.message });
@@ -430,7 +430,7 @@ exports.deleteVendorDetails = async (req, res) => {
         const result = await deleteVendorDetailsDB(vendorid);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.status, message: result.message });
@@ -453,7 +453,7 @@ exports.deleteVendorKYC = async (req, res) => {
         const result = await deleteVendorKYCDB(vendorid);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.status, message: result.message });
@@ -475,7 +475,7 @@ exports.deleteVehicle = async (req, res) => {
         const result = await deleteVehicleDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.status, message: result.message });
@@ -496,7 +496,7 @@ exports.deleteDriver = async (req, res) => {
         const result = await deleteDriverDB(req.body);
 
         if (result.errorCode) {
-            return res.status(400).json({ status: result.bstatus_code, message: result.bmessage_desc });
+            return res.status(500).json({ status: result.bstatus_code, message: result.bmessage_desc });
         }
 
         return res.status(200).json({ status: result.status, message: result.message });
@@ -533,7 +533,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
         // --------------------------------------------
         // const vendorCheck = await checkMobileNoDB(vendorMobile);
         // if (vendorCheck.exists) {
-        //     return res.status(400).json({
+        //     return res.status(200).json({
         //         status: "02",
         //         message: `Vendor mobile number ${vendorMobile} already exists in system`
         //     });
@@ -550,7 +550,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
         // 3. Check if vendor mobile matches any employee mobile
         // --------------------------------------------------------
         if (employeeMobiles.includes(vendorMobile)) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: "02",
                 message: `Vendor mobile number and employee contact number cannot be same`
             });
@@ -564,7 +564,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
         );
 
         if (duplicates.length > 0) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: "02",
                 message: `Duplicate employee contact numbers not allowed: ${duplicates.join(", ")}`
             });
@@ -576,7 +576,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
         for (let mobile of employeeMobiles) {
             const check = await checkMobileNoDB(mobile);
             if (check.exists) {
-                return res.status(400).json({
+                return res.status(200).json({
                     status: "02",
                     message: `Employee mobile number ${mobile} already exists in system`
                 });
@@ -639,7 +639,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
 //                 VendorID: vendorId,
 //                 photo_id: docNumber || key.toUpperCase(),
 //                 photo_type: key,
-//                 photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vendor/${path.basename(fullPath)}`,
+//                 photo_url: `https://motohelpindia.com/uploads/Vendor/${path.basename(fullPath)}`,
 //                 name: path.basename(fullPath),
 //                 doc_number: docNumber
 //             };
@@ -700,7 +700,7 @@ exports.VendorOnboardingUpdate = async (req, res) => {
 //                 VendorID: vendorId,
 //                 photo_id,
 //                 photo_type: key,
-//                 photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vendor/${path.basename(fullPath)}`,
+//                 photo_url: `https://motohelpindia.com/uploads/Vendor/${path.basename(fullPath)}`,
 //                 name: path.basename(fullPath)
 //             };
 //         });

@@ -75,7 +75,7 @@ const InsertVehiclePhoto = async (Vehicleid, req, res) => {
                 VehicleID: Vehicleid,  
                 photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
-                photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vehicle/${path.basename(fullPath)}`,
+                photo_url: `https://motohelpindia.com/uploads/Vehicle/${path.basename(fullPath)}`,
                 name: path.basename(fullPath),
                 doc_number: docNumber
             };
@@ -148,7 +148,7 @@ const updateVehiclePhoto = async (Vehicleid, req, res) => {
                 vehicle_id: Vehicleid,  
                 photo_id: docNumber || key.toUpperCase(),
                 photo_type: key,
-                photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Vehicle/${path.basename(fullPath)}`,
+                photo_url: `https://motohelpindia.com/uploads/Vehicle/${path.basename(fullPath)}`,
                 name: path.basename(fullPath),
                 doc_number: docNumber
             };

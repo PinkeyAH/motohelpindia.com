@@ -60,7 +60,7 @@ const InsertCustomerPhoto = async (Customer_ID, req, res) => {
       CustomerID: Customer_ID,  // or generate dynamically
       photo_id: '123',                    // or generate dynamically
       photo_type: key,                      // e.g. “CancelledCheque”
-      photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Customer/${path.basename(fullPath)}`,
+      photo_url: `https://motohelpindia.com/uploads/Customer/${path.basename(fullPath)}`,
       name: path.basename(fullPath),
     }));
 
@@ -181,7 +181,7 @@ const updateCustomerPhoto = async (CustomerID, req, res) => {
       CustomerID: CustomerID,  // or generate dynamically
       photo_id: '123',                    // or generate dynamically
       photo_type: key,                      // e.g. “CancelledCheque”
-      photo_url: `https://neotechnet.com/Moto_Help_Microservices/uploads/Customer/${path.basename(fullPath)}`,
+      photo_url: `https://motohelpindia.com/uploads/Customer/${path.basename(fullPath)}`,
       name: path.basename(fullPath),  
     }));
     // 5. Insert each record
