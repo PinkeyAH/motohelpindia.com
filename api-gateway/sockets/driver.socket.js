@@ -136,7 +136,7 @@ module.exports = (io, socket, redis) => {
       //     lng
       //   });
       // 2️⃣ 🔥 SEND LIVE LOCATION TO VENDOR
-      io.to(`vendor:${VendorID}`).emit("vendor:driver_location", {
+      io.to(`vendor:${VendorID}`).emit("vendor:driver_live_location", {
         DriverID,
         lat,
         lng,
