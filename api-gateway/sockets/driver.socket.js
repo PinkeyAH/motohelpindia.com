@@ -38,6 +38,8 @@ module.exports = (io, socket, redis) => {
     Driver_LPStatus, Status
   }) => {
     try {
+      VendorID = String(VendorID);
+
       console.log("📍 driver:location", { DriverID, lat, lng, Status });
       await insertOrUpdate_DriverLiveLocationDB({
         DriverID, VendorID, VehicleID, MobileNo,
@@ -131,11 +133,16 @@ module.exports = (io, socket, redis) => {
         }
       }
 
-       io.to(`vendor:${VendorID}`).emit("vendor:driver_location", { DriverID,
-          lat,        // 🔴 DRIVER CURRENT LOCATION
-          lng
-        });
-      // 2️⃣ 🔥 SEND LIVE LOCATION TO VENDOR
+      // 🔍 STEP 1: CHECK VENDOR ROOM SOCKETS
+      const sockets = await io.in(`vendor:${VendorID}`).fetchSockets();
+      console.log("👥 VENDOR SOCKET COUNT:", sockets.length);
+
+      io.to(`vendor:${VendorID}`).emit("vendor:driver_location", {
+        DriverID,
+        lat,        // 🔴 DRIVER CURRENT LOCATION
+        lng
+      });
+      // 🔥 STEP 2.3 Emit to Vendor
       io.to(`vendor:${VendorID}`).emit("vendor:driver_live_location", {
         DriverID,
         lat,
@@ -143,6 +150,8 @@ module.exports = (io, socket, redis) => {
         Driver_LPStatus,
         updatedAt: Date.now()
       });
+
+      console.log("📡 SENT TO VENDOR ROOM", `vendor:${VendorID}`);
 
       // 3️⃣ If driver has active load → send to customer
       const loadId = await redis.get(`driver:active_load:${DriverID}`);

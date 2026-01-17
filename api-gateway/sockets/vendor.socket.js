@@ -4,6 +4,8 @@ module.exports = (io, socket, redis) => {
   // 🔑 VENDOR JOIN
   // ===============================
   socket.on("vendor:join", async ({ VendorID }) => {
+    VendorID = String(VendorID);
+
     socket.join(`vendor:${VendorID}`);
     console.log("🏢 Vendor joined:", VendorID);
 
@@ -74,6 +76,7 @@ module.exports = (io, socket, redis) => {
   // ===============================
   socket.on("vendor:select_driver", async ({ DriverID }) => {
     console.log("Vendor selected driver:", DriverID);
+    await redis.set(`driver:vendor:${DriverID}`, VendorID);
 
     // 1️⃣ Driver current location
     const driver = await redis.hgetall(`driver:details:${DriverID}`);
@@ -142,45 +145,56 @@ module.exports = (io, socket, redis) => {
     }
   });
 
-  // ===============================
-  // 📍 LIVE DRIVER LOCATION (TRIP)
-  // ===============================
-  socket.on("vendor:track_driver", async ({ DriverID }) => {
 
-    const loadId = await redis.get(`driver:active_load:${DriverID}`);
-    if (!loadId) {
-      socket.emit("vendor:driver_idle", { DriverID });
-      return;
-    }
+  socket.on("vendor:driver_location", (data) => {
+    console.log("🚚 DRIVER LIVE:", data);
+  });
 
-    socket.join(`track:driver:${DriverID}`);
-
-    console.log("📡 Vendor tracking driver:", DriverID);
+  socket.on("vendor:driver_live_location", (data) => {
+    console.log("🚚 vendor:driver_live_location LIVE:", data);
   });
 
 
-  // ===============================
-  // 🔁 DRIVER LOCATION FORWARD
-  // (call this from driver socket)
-  // ===============================
-  socket.on("driver:driver_location", async ({ DriverID, lat, lng }) => {
 
-    // inside driver:location (master handler)
-    io.to(`vendor:${VendorID}`).emit("vendor:driver_location", {
-      DriverID,
-      lat,
-      lng,
-      time: Date.now()
-    });
+  // // ===============================
+  // // 📍 LIVE DRIVER LOCATION (TRIP)
+  // // ===============================
+  // socket.on("vendor:track_driver", async ({ DriverID }) => {
 
-    // If vendor is actively tracking
-    io.to(`track:driver:${DriverID}`).emit("vendor:driver_location", {
-      DriverID,
-      lat,
-      lng,
-      time: Date.now()
-    });
+  //   const loadId = await redis.get(`driver:active_load:${DriverID}`);
+  //   if (!loadId) {
+  //     socket.emit("vendor:driver_idle", { DriverID });
+  //     return;
+  //   }
 
-  });
+  //   socket.join(`track:driver:${DriverID}`);
+
+  //   console.log("📡 Vendor tracking driver:", DriverID);
+  // });
+
+
+  // // ===============================
+  // // 🔁 DRIVER LOCATION FORWARD
+  // // (call this from driver socket)
+  // // ===============================
+  // socket.on("driver:driver_location", async ({ DriverID, lat, lng }) => {
+
+  //   // inside driver:location (master handler)
+  //   io.to(`vendor:${VendorID}`).emit("vendor:driver_location", {
+  //     DriverID,
+  //     lat,
+  //     lng,
+  //     time: Date.now()
+  //   });
+
+  //   // If vendor is actively tracking
+  //   io.to(`track:driver:${DriverID}`).emit("vendor:driver_location", {
+  //     DriverID,
+  //     lat,
+  //     lng,
+  //     time: Date.now()
+  //   });
+
+  // });
 
 };
