@@ -84,6 +84,7 @@ module.exports = (io, socket, redis) => {
       console.log("❌ Driver location not found");
       return;
     }
+    await redis.set(`driver:vendor:${DriverID}`, driver.VendorID);
 
     // 2️⃣ Get nearby load IDs within 50km
     const loadsRaw = await redis.georadius(
