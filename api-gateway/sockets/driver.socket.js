@@ -215,14 +215,14 @@ module.exports = (io, socket, redis) => {
       await redis.zrem("loads:geo", loadId);
       await redis.hdel("available_loads", loadId);
 
-      // Notify all drivers
-      io.emit("driver:remove_load", { loadId });
+
 
       // Notify customer
       io.to(`post:${loadId}`).emit("customer:load_accepted", {
         loadId,
         DriverID
       });
+      console.log(`✅ Load ${loadId} accepted by Driver ${DriverID}`);
 
       // Start tracking
       socket.emit("driver:tracking_live_location", { loadId });
@@ -231,6 +231,9 @@ module.exports = (io, socket, redis) => {
       await redis.hset("loads:status", loadId, "ACCEPTED");
 
       console.log("✅ Load assigned successfully");
+
+            // Notify all drivers
+      io.emit("driver:remove_load", { loadId });
 
     } catch (err) {
       console.error("Error in driver:accept_load:", err);
