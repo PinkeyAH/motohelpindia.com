@@ -52,53 +52,7 @@ module.exports = (io, socket, redis) => {
 
     console.log("📦 Load broadcast done:", load.loadId);
   });
-
-  // socket.on("customer:new_load", async (load) => {
-  //   console.log("customer:new_load", load);
-
-  //   const loadKey = `loads:data:${load.loadId}`;
-
-  //   await redis
-  //     .multi()
-  //     .hset(loadKey, load)
-  //     .expire(loadKey, 3600)
-  //     .hset("loads:status", load.loadId, "OPEN")
-  //     .geoadd("loads:geo", load.lng, load.lat, load.loadId)
-  //     .set(`loads:expiry:${load.loadId}`, 1, "EX", 3600)
-  //     .exec();
-
-  //   const nearbyDriversRaw = await redis.georadius(
-  //     "drivers:geo",
-  //     load.lng,
-  //     load.lat,
-  //     50,
-  //     "km",
-  //     "WITHDIST"
-  //   );
-
-  //   for (const [DriverID, distance] of nearbyDriversRaw) {
-  //     const loadObj = {
-  //       loadId: load.loadId,
-  //       customerId: load.CustomerID,
-  //       lat: load.lat,
-  //       lng: load.lng,
-  //       distance: Number(distance)
-  //     };
-
-  //     await redis.rpush(`driver:loads:${DriverID}`, JSON.stringify(loadObj));
-  //     await redis.expire(`driver:loads:${DriverID}`, 3600);
-
-  //     const allLoads = await redis.lrange(`driver:loads:${DriverID}`, 0, -1);
-  //     io.to(`driver:${DriverID}`).emit(
-  //       "driver:available_loads",
-  //       allLoads.map(l => JSON.parse(l))
-  //     );
-  //   }
-
-  //   console.log("📦 Load broadcast done:", load.loadId);
-  // });
-
-
+  
   // ===== DRIVER LIVE LOCATION FOR CUSTOMER =====
   socket.on("driver:location", async (data) => {
     // Emit live location to specific customer
