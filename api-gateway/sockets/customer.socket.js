@@ -1,4 +1,3 @@
-const { log } = require("async");
 
 module.exports = (io, socket, redis) => {
 
@@ -52,7 +51,7 @@ module.exports = (io, socket, redis) => {
 
     console.log("📦 Load broadcast done:", load.loadId);
   });
-  
+
   // ===== DRIVER LIVE LOCATION FOR CUSTOMER =====
   socket.on("driver:location", async (data) => {
     // Emit live location to specific customer

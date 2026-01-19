@@ -61,7 +61,9 @@ exports.getvehicleavailable = async (req, res) => {
                          
                          console.log(JSON.stringify(finalResponse, null, 2));
 
-        return res.status(200).json({ status: result.status, message: result.message, data : finalResponse.data});
+        // return res.status(200).json({ status: result.status, message: result.message, data : finalResponse.data});
+                return res.status(200).json({ status: result.status, message: result.message, data : result.data});
+
     } catch (error) {
         logger.log("error", `Get vehicle available Error: ${error}`);
         return res.status(500).json({ status: "03", message: "Internal server error" });
