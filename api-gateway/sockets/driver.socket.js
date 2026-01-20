@@ -178,18 +178,49 @@ module.exports = (io, socket, redis) => {
 
     // 🔥 ADD THIS
     await redis.sadd(`vendor:drivers:${VendorID}`, userId);
-
     console.log(`🚚 Driver ${userId} linked to Vendor ${VendorID}`);
-    // Send old loads
-    const keys = await redis.keys("loads:data:*");
-    const loads = [];
-    for (const key of keys) {
-      const load = await redis.hgetall(key);
-      if (load?.loadId) loads.push(load);
+
+    /* =====================================
+       STEP 2: CHECK DRIVER STATUS
+    ===================================== */
+    const d = await redis.hgetall(`driver:details:${userId}`);
+
+    if (!d || d.Driver_LPStatus !== "Pending") {
+      console.log(
+        `⛔ Driver ${userId} not eligible, LPStatus=${d?.Driver_LPStatus}`
+      );
+      socket.emit("driver:available_loads", []);
+      return;
     }
+
+    /* =====================================
+           STEP 3: SEND ONLY DRIVER-SPECIFIC LOADS
+        ===================================== */
+    const rawLoads = await redis.lrange(
+      `driver:loads:${userId}`,
+      0,
+      -1
+    );
+
+    const loads = rawLoads.map(JSON.parse);
+
     socket.emit("driver:available_loads", loads);
-    console.log("📦 Sent old loads to driver:", loads.length);
+
+    console.log(
+      `📦 Sent ${loads.length} loads to Driver ${userId}`
+    );
   });
+
+  //   // Send old loads
+  //   const keys = await redis.keys("loads:data:*");
+  //   const loads = [];
+  //   for (const key of keys) {
+  //     const load = await redis.hgetall(key);
+  //     if (load?.loadId) loads.push(load);
+  //   }
+  //   socket.emit("driver:available_loads", loads);
+  //   console.log("📦 Sent old loads to driver:", loads.length);
+  // });
 
   // ===== DRIVER ACCEPT LOAD =====
   socket.on("driver:accept_load", async ({ DriverID, loadId }) => {
@@ -228,11 +259,12 @@ module.exports = (io, socket, redis) => {
       socket.emit("driver:tracking_live_location", { loadId });
 
       // Status
-      await redis.hset("loads:status", loadId, "ACCEPTED");
-
+      // await redis.hset("loads:status", loadId, "ACCEPTED");
+      await redis.hset("loads:status", loadId, "Progress");
+      await redis.expire("loads:status", 3600);
       console.log("✅ Load assigned successfully");
 
-            // Notify all drivers
+      // Notify all drivers
       io.emit("driver:remove_load", { loadId });
 
     } catch (err) {

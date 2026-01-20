@@ -16,22 +16,68 @@ module.exports = (io, socket, redis) => {
     for (const DriverID of drivers) {
       const d = await redis.hgetall(`driver:details:${DriverID}`);
       if (d?.lat) list.push(d);
+
+      // 🔥 ONLY PENDING DRIVERS
+      if (!d || d.Driver_LPStatus !== "Pending") continue;
+
+      if (d.lat && d.lng) {
+        list.push({
+          DriverID,
+          lat: Number(d.lat),
+          lng: Number(d.lng),
+          Driver_LPStatus: d.Driver_LPStatus
+        });
+      }
     }
 
     socket.emit("vendor:drivers_list", list);
+    console.log(
+      `🚚 Sent ${list.length} drivers to Vendor ${VendorID}`
+    );
+
+    /* =====================================
+      STEP 2: SEND ONLY VENDOR LOADS
+   ===================================== */
+    const raw = await redis.hgetall(
+      `vendor:loads:${VendorID}`
+    );
+
+    const loads = [];
+
+    for (const loadStr of Object.values(raw)) {
+      const load = JSON.parse(loadStr);
+
+      // double safety: verify driver still pending
+      const d = await redis.hgetall(
+        `driver:details:${load.DriverID}`
+      );
+
+      if (!d || d.Driver_LPStatus !== "Pending") continue;
+
+      loads.push(load);
+    }
+
+    socket.emit("vendor:available_loads", loads);
+
+    console.log(
+      `📦 Sent ${loads.length} pending loads to Vendor ${VendorID}`
+    );
+
+
+    // socket.emit("vendor:drivers_list", list);
 
 
     // vendor:drivers_list
 
     // Send old loads
-    const keys = await redis.keys("loads:data:*");
-    const loads = [];
-    for (const key of keys) {
-      const load = await redis.hgetall(key);
-      if (load?.loadId) loads.push(load);
-    }
-    socket.emit("vendor:available_loads", loads);
-    console.log("📦 Sent old loads to driver:", loads.length);
+    //   const keys = await redis.keys("loads:data:*");
+    //   const loads = [];
+    //   for (const key of keys) {
+    //     const load = await redis.hgetall(key);
+    //     if (load?.loadId) loads.push(load);
+    //   }
+    //   socket.emit("vendor:available_loads", loads);
+    //   console.log("📦 Sent old loads to driver:", loads.length);
 
   });
 
@@ -100,14 +146,13 @@ module.exports = (io, socket, redis) => {
     }
 
     await redis.set(`driver:vendor:${DriverID}`, driver.VendorID);
-    await redis.set(`driver:vendor:${DriverID}`, driver.VendorID);
 
     // 2️⃣ Get nearby load IDs within 50km
     const loadsRaw = await redis.georadius(
       "loads:geo",
       Number(driver.lng),
       Number(driver.lat),
-      50,
+      5000,
       "km",
       "WITHDIST"
     );
