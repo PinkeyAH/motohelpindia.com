@@ -1579,7 +1579,8 @@ exports.VendorNearestCustomerPostDB = async (data) => {
         const result = await request.query(`SELECT TOP 50
                                     clp.LoadPostID AS Customer_LoadPostID,
                                     cps.CustomerID,
-                                
+                                    cla.PickupLat,
+                                    cla.PickupLng,
                                     -- ✅ Distance (Vendor → Customer Pickup)
                                     CAST(
                                         6371 * ACOS(
