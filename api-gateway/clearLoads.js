@@ -6,6 +6,27 @@ const redis = new Redis({ host: "127.0.0.1", port: 6379 });
 async function clearLoads() {
   try {
 
+    
+                // geo
+    const geo = await redis.keys("drivers:geo:*");
+    if (geo.length > 0) {
+      await redis.del(geo);
+      console.log("Deleted geo keys:", geo);
+    } else {
+      console.log("No geo keys found.");
+    }
+
+
+                // loads
+    const loadsKeys = await redis.keys("driver:loads:*");
+    if (loadsKeys.length > 0) {
+      await redis.del(loadsKeys);
+      console.log("Deleted loads keys:", loadsKeys);
+    } else {
+      console.log("No loads keys found.");
+    }
+
+
             // vendor
     const vendorKeys = await redis.keys("vendor:drivers:*");
     if (vendorKeys.length > 0) {

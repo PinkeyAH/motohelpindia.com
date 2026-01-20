@@ -38,18 +38,27 @@ module.exports = (io, socket, redis) => {
   // ===============================
   // ✅ LP STATUS UPDATE
   // ===============================
-  socket.on("vendor:update_lp_status", async ({ VendorID, DriverID, Driver_LPStatus }) => {
+  socket.on("vendor:update_lp_status", async ({ VendorID, DriverID, Driver_LPStatus, lat, lng }) => {
 
     // Save in Redis
     await redis.hset(`driver:details:${DriverID}`, {
       LPStatus: Driver_LPStatus,
+      DriverID,
+      VendorID,
+      lat,
+      lng,
       updatedAt: Date.now()
     });
+
 
     // Notify DRIVER
     io.to(`driver:${DriverID}`).emit("driver:lp_status_updated", {
       DriverID,
       LPStatus: Driver_LPStatus
+      // ,
+      // VendorID,
+      // lat,
+      // lng,
     });
 
     // Notify CUSTOMER (if on trip)
@@ -57,6 +66,9 @@ module.exports = (io, socket, redis) => {
     if (loadId) {
       io.to(`post:${loadId}`).emit("customer:lp_status_updated", {
         DriverID,
+        VendorID,
+        lat,
+        lng,
         LPStatus: Driver_LPStatus
       });
     }
@@ -64,6 +76,9 @@ module.exports = (io, socket, redis) => {
     // Notify VENDOR UI
     io.to(`vendor:${VendorID}`).emit("vendor:driver_update", {
       DriverID,
+      VendorID,
+      lat,
+      lng,
       Driver_LPStatus
     });
 
@@ -76,7 +91,6 @@ module.exports = (io, socket, redis) => {
   // ===============================
   socket.on("vendor:select_driver", async ({ DriverID }) => {
     console.log("Vendor selected driver:", DriverID);
-    await redis.set(`driver:vendor:${DriverID}`, VendorID);
 
     // 1️⃣ Driver current location
     const driver = await redis.hgetall(`driver:details:${DriverID}`);
@@ -84,6 +98,8 @@ module.exports = (io, socket, redis) => {
       console.log("❌ Driver location not found");
       return;
     }
+
+    await redis.set(`driver:vendor:${DriverID}`, driver.VendorID);
     await redis.set(`driver:vendor:${DriverID}`, driver.VendorID);
 
     // 2️⃣ Get nearby load IDs within 50km
