@@ -242,9 +242,34 @@ module.exports = (io, socket, redis) => {
       // ✅ Load → Driver  ⭐⭐⭐ THIS WAS MISSING
       await redis.set(`load:active_driver:${loadId}`, DriverID, "EX", 3600);
 
+      // 2️⃣ LOAD IS NO MORE PENDING ❌
+      await redis.hset("loads:status", loadId, "Progress");
+      await redis.expire("loads:status", 3600);
+      // 3️⃣ REMOVE LOAD FROM ALL DRIVERS 🔥
+      const driverKeys = await redis.keys("driver:loads:*");
+      for (const key of driverKeys) {
+        const loads = await redis.lrange(key, 0, -1);
+        for (const l of loads) {
+          const obj = JSON.parse(l);
+          if (obj.loadId === loadId) {
+            await redis.lrem(key, 0, l);
+          }
+        }
+      }
+
+      // 4️⃣ REMOVE LOAD FROM ALL VENDORS 🔥
+      const vendorKeys = await redis.keys("vendor:loads:*");
+      for (const key of vendorKeys) {
+        await redis.hdel(key, loadId);
+      }
+
       // Cleanup
       await redis.zrem("loads:geo", loadId);
       await redis.hdel("available_loads", loadId);
+
+      // 6️⃣ NOTIFY UI
+      io.emit("driver:remove_load", { loadId });
+      io.emit("vendor:remove_load", { loadId });
 
 
 
@@ -257,15 +282,7 @@ module.exports = (io, socket, redis) => {
 
       // Start tracking
       socket.emit("driver:tracking_live_location", { loadId });
-
-      // Status
-      // await redis.hset("loads:status", loadId, "ACCEPTED");
-      await redis.hset("loads:status", loadId, "Progress");
-      await redis.expire("loads:status", 3600);
       console.log("✅ Load assigned successfully");
-
-      // Notify all drivers
-      io.emit("driver:remove_load", { loadId });
 
     } catch (err) {
       console.error("Error in driver:accept_load:", err);

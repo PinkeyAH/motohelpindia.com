@@ -96,7 +96,26 @@ module.exports = (io, socket, redis) => {
       updatedAt: Date.now()
     });
 
+ // ❌ IF NOT PENDING → REMOVE DRIVER EVERYWHERE
+  if (Driver_LPStatus !== "Pending") {
 
+    // 1️⃣ Remove from GEO
+    await redis.zrem("drivers:geo", DriverID);
+
+    // 2️⃣ Remove from all posts
+    const postKeys = await redis.keys("post:drivers:*");
+    for (const key of postKeys) {
+      await redis.hdel(key, DriverID);
+    }
+
+    // 3️⃣ Remove loads assigned to this driver
+    await redis.del(`driver:loads:${DriverID}`);
+
+    // 4️⃣ Notify UI
+    io.emit("vendor:remove_driver", { DriverID });
+    console.log(`❌ Driver ${DriverID} removed from system due to LPStatus=${Driver_LPStatus}`);
+    return;
+  }
     // Notify DRIVER
     io.to(`driver:${DriverID}`).emit("driver:lp_status_updated", {
       DriverID,
@@ -120,7 +139,7 @@ module.exports = (io, socket, redis) => {
     }
 
     // Notify VENDOR UI
-    io.to(`vendor:${VendorID}`).emit("vendor:driver_update", {
+    io.to(`vendor:${VendorID}`).emit("vendor:lp_status_updated", {
       DriverID,
       VendorID,
       lat,
