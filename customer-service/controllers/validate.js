@@ -31,8 +31,8 @@ exports.send_OTP = async (req, res) => {
         logger.log("info", "sendOTP data is valid!");
 
         // Generate OTP
-        // const otp = generateOTP(); 
-        const otp = await JSON.stringify(generateOTP());
+        // let otp = generateOTP(); 
+        let otp = await JSON.stringify(generateOTP());
         logger.log("info", `Generated OTP: ${otp}`);
           otp = "1111"
 
@@ -169,8 +169,8 @@ exports.customer_send_OTP = async (req, res) => {
         logger.log("info", "customer_send_OTP data is valid!");
 
         // Generate OTP
-        // const otp = generateOTP(); 
-        const otp = await JSON.stringify(generateOTP());
+        // let otp = generateOTP(); 
+        let otp = await JSON.stringify(generateOTP());
         logger.log("info", `Generated OTP: ${otp}`);
           otp = "1111"
 
@@ -271,8 +271,8 @@ exports.Driver_send_OTP = async (req, res) => {
         logger.log("info", "Driver_send_OTP data is valid!");
 
         // Generate OTP
-        // const otp = generateOTP(); 
-        const otp = await JSON.stringify(generateOTP());
+        // let otp = generateOTP(); 
+        let otp = await JSON.stringify(generateOTP());
         logger.log("info", `Generated OTP: ${otp}`);
           otp = "1111"
 
