@@ -29,6 +29,7 @@ const { createRouteMaster, getRouteMaster, updateRouteMaster, deleteRouteMaster,
 const { Insertemployee, updateEmployeeDetails, deleteEmployeeDetails, getEmployeeDetails } = require("../controllers/V1/Employee_onboard")
 const { getvendorCounts ,getvehicleavailable, getvehicleprocess, getvehicleactive, getvehicleclosed} = require("../controllers/V1/GetVendorCounts.js");
 const { Vendor_KYC_Check } =require('../../KYC_Verification/controllers/V1/Check_KYC.js');
+const { GetCustomerLPpending} = require('../controllers/V1/Vendor_services_status.js');
 
 // const { checkExpiryAlerts } = require("../schedulers/expiryChecker");
 
@@ -177,6 +178,8 @@ router.post('/get_vehicle_available', getvehicleavailable);
 router.post('/get_vehicle_process', getvehicleprocess);
 router.post('/get_vehicle_active', getvehicleactive);
 router.post('/get_vehicle_closed', getvehicleclosed);
+
+router.post('/get_vendor_status', GetCustomerLPpending)
 
 
 // billingterms
