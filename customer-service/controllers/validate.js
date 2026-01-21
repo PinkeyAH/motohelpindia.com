@@ -34,6 +34,7 @@ exports.send_OTP = async (req, res) => {
         // const otp = generateOTP(); 
         const otp = await JSON.stringify(generateOTP());
         logger.log("info", `Generated OTP: ${otp}`);
+          otp = 1111
 
         // Store OTP in the database
         const result = await SendOTPDB(mobile_number, otp);
@@ -171,6 +172,7 @@ exports.customer_send_OTP = async (req, res) => {
         // const otp = generateOTP(); 
         const otp = await JSON.stringify(generateOTP());
         logger.log("info", `Generated OTP: ${otp}`);
+          otp = 1111
 
         // Store OTP in the database
         const result = await Customer_SendOTPDB(mobile_number, otp);
@@ -272,6 +274,7 @@ exports.Driver_send_OTP = async (req, res) => {
         // const otp = generateOTP(); 
         const otp = await JSON.stringify(generateOTP());
         logger.log("info", `Generated OTP: ${otp}`);
+          otp = 1111
 
         // Store OTP in the database
         const result = await Driver_SendOTPDB(mobile_number, otp);

@@ -26,7 +26,7 @@ exports.createRouteMaster = async (req, res) => {
     // const valid = validate(req.body);
     // if (!valid) {
     //     logger.log("error", `Validation Error = ${JSON.stringify(validate.errors)}`);
-    //     return res.status(400).send({ status: 400, message: validate.errors });
+    //     return res.status(400).send({ status: 01, message: validate.errors });
     // }
     try {
         // Insert data into database
