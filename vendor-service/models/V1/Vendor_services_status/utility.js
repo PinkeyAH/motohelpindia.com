@@ -20,9 +20,9 @@ exports.GetCustomerLPpendingDB = async (data) => {
         request.input('VendorID', sql.VarChar(50), data.VendorID || null);
         request.input('DriverID', sql.VarChar(50), data.DriverID || null);
         request.input('LP_Status', sql.VarChar(100), data.LPStatus);
-        request.input('Search', sql.VarChar(100), data.Search);
-        request.input('pageNumber', sql.Int, data.pageNumber)
-        request.input('pageSize', sql.Int, data.pageSize)
+        request.input('Search', sql.VarChar(100), data.Search || null);
+        request.input('pageNumber', sql.Int, data.pageNumber || 10);
+        request.input('pageSize', sql.Int, data.pageSize || 10);
 
         // 📤 OUTPUT PARAMS (from SP)
         request.output('ResultStatus', sql.Int);
