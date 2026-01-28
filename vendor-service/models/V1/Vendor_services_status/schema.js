@@ -8,7 +8,7 @@ const customer_lp_loading_schema = {
         pageNumber: {type: "integer",minimum: 1},
         pageSize: {type: "integer",minimum: 1, maximum: 100}
     },
-    // required: ["],
+    // required: [""],
     additionalProperties: false
 };
 
