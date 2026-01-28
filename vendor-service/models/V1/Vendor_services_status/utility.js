@@ -9,9 +9,9 @@ exports.GetCustomerLPpendingDB = async (data) => {
         logger.info('[INFO]: Fetching Customer LP Pending data');
 
 
-        if (!data.LPStatus) {
-            return { status: "02", message: "LPStatus is required", data: [] };
-        }
+        // if (!data.LPStatus) {
+        //     return { status: "02", message: "LPStatus is required", data: [] };
+        // }
 
         const pool = await sql.connect(dbconfig.config);
         const request = pool.request();
