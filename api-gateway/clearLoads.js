@@ -60,6 +60,7 @@
 
 
 // clearAllData.js
+// clearAllData.js
 const Redis = require("ioredis");
 
 const redis = new Redis({
@@ -67,10 +68,9 @@ const redis = new Redis({
   port: 6379
 });
 
-// 🔁 Delete keys safely using SCAN (no blocking)
+// 🔁 SAFE DELETE USING SCAN
 async function deleteByPattern(pattern) {
   let cursor = "0";
-
   do {
     const [nextCursor, keys] = await redis.scan(
       cursor,
@@ -82,49 +82,54 @@ async function deleteByPattern(pattern) {
 
     cursor = nextCursor;
 
-    if (keys.length > 0) {
+    if (keys.length) {
       await redis.del(...keys);
-      console.log(`🗑 Deleted ${keys.length} keys → ${pattern}`);
+      console.log(`🗑 Deleted ${keys.length} → ${pattern}`);
     }
   } while (cursor !== "0");
 }
 
-// 🚨 MAIN CLEAN FUNCTION
 async function clearAllData() {
   try {
     console.log("\n🚨 STARTING REDIS CLEANUP...\n");
 
     // ===============================
-    // GEO DATA
+    // GEO
     // ===============================
     await redis.del("drivers:geo");
     await redis.del("loads:geo");
 
     // ===============================
-    // DRIVER DATA
+    // DRIVER
     // ===============================
     await deleteByPattern("driver:details:*");
     await deleteByPattern("driver:loads:*");
     await deleteByPattern("driver:active_load:*");
     await deleteByPattern("driver:vendor:*");
     await deleteByPattern("driver:expiry:*");
+    await deleteByPattern("driver:location:*");
+    await redis.del("driver:last_seen");
 
     // ===============================
-    // VENDOR DATA
+    // LOAD
+    // ===============================
+    await deleteByPattern("loads:data:*");
+    await deleteByPattern("loads:expiry:*");
+    await deleteByPattern("load:active_driver:*");
+    await redis.del("loads:status");
+    await redis.del("available_loads");
+
+    // ===============================
+    // VENDOR
     // ===============================
     await deleteByPattern("vendor:loads:*");
     await deleteByPattern("vendor:drivers:*");
 
     // ===============================
-    // LOAD DATA
+    // POSTS / ROOMS
     // ===============================
-    await deleteByPattern("loads:data:*");
-    await deleteByPattern("loads:expiry:*");
-    await redis.del("loads:status");
-
-    // ===============================
-    // POSTS / SOCKET ROOMS
-    // ===============================
+    await deleteByPattern("post:drivers:*");
+    await deleteByPattern("post:subscribers:*");
     await deleteByPattern("post:*");
 
     // ===============================
@@ -132,7 +137,7 @@ async function clearAllData() {
     // ===============================
     await deleteByPattern("lock:load:*");
 
-    console.log("\n✅ REDIS CLEANUP COMPLETED SUCCESSFULLY\n");
+    console.log("\n✅ REDIS 100% CLEAN SUCCESSFUL\n");
 
   } catch (err) {
     console.error("❌ Redis cleanup error:", err);
