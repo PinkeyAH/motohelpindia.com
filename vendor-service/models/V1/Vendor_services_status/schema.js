@@ -3,7 +3,7 @@ const customer_lp_loading_schema = {
     properties: {
         VendorID: { type: ["string", "null"] },
         DriverID: { type: ["string", "null"] },
-        LPStatus: { type: "string", minLength: 1 },
+        LPStatus: { type: ["string", "null"] },
          Search: { type: ["string", "null"] },
         pageNumber: {type: "integer",minimum: 1},
         pageSize: {type: "integer",minimum: 1, maximum: 100}
