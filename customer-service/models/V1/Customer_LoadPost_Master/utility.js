@@ -19,71 +19,77 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= CONSIGNER =================
             request.input('consigner_name', sql.NVarChar(150), data.consigner.consigner_name || null);
-            request.input('consigner_gst', sql.NVarChar(150), data.consigner.consigner_gst || null);
+           //request.input('consigner_gst', sql.NVarChar(150), data.consigner.consigner_gst || null);
             request.input('consigner_address', sql.NVarChar(150), data.consigner.consigner_address || null);
             request.input('consigner_pincode', sql.NVarChar(150), data.consigner.consigner_pincode || null);
             request.input('consigner_origin', sql.NVarChar(150), data.consigner.consigner_origin || null);
             request.input('consigner_state', sql.NVarChar(150), data.consigner.consigner_state || null);
 
             // ================= PICKUP ADDRESS (CustomerLoadPostAddress) =================
-            request.input('pickup_plot_unit', sql.NVarChar(100), data.pickup?.pickup_plot_unit );
-            request.input('pickup_area_street', sql.NVarChar(100), data.pickup?.pickup_area_street);
-            request.input('pickup_pincode', sql.NVarChar(100), data.pickup?.pickup_pincode );
-            request.input('pickup_state', sql.NVarChar(100), data.pickup?.pickup_state );
-            request.input('pickup_district', sql.NVarChar(100), data.pickup?.pickup_district );
-            request.input('pickup_taluka', sql.NVarChar(100), data.pickup?.pickup_taluka );
-            request.input('pickup_map_location', sql.NVarChar(100), data.pickup?.pickup_map_location );
-            request.input('pickup_Lat', sql.NVarChar(100), data.pickup?.pickup_Lat);
-            request.input('pickup_Lng', sql.NVarChar(100), data.pickup?.pickup_Lng);
+            // request.input('pickup_plot_unit', sql.NVarChar(100), data.pickup?.pickup_plot_unit );
+            // request.input('pickup_area_street', sql.NVarChar(100), data.pickup?.pickup_area_street);
+            // request.input('pickup_pincode', sql.NVarChar(100), data.pickup?.pickup_pincode );
+            // request.input('pickup_state', sql.NVarChar(100), data.pickup?.pickup_state );
+            // request.input('pickup_district', sql.NVarChar(100), data.pickup?.pickup_district );
+            // request.input('pickup_taluka', sql.NVarChar(100), data.pickup?.pickup_taluka );
+            // request.input('pickup_map_location', sql.NVarChar(100), data.pickup?.pickup_map_location );
+            // request.input('pickup_Lat', sql.NVarChar(100), data.pickup?.pickup_Lat);
+            // request.input('pickup_Lng', sql.NVarChar(100), data.pickup?.pickup_Lng);
 
 
             // ================= CONSIGNEE =================
             request.input('consignee_name', sql.NVarChar(150), data.consignee.consignee_name || null);
-            request.input('consignee_gst', sql.NVarChar(150), data.consignee.consignee_gst || null);
+            //request.input('consignee_gst', sql.NVarChar(150), data.consignee.consignee_gst || null);
             request.input('consignee_address', sql.NVarChar(150), data.consignee.consignee_address || null);
             request.input('consignee_pincode', sql.NVarChar(150), data.consignee.consignee_pincode || null);
             request.input('consignee_destination', sql.NVarChar(150), data.consignee.consignee_destination || null);
             request.input('consignee_state', sql.NVarChar(150), data.consignee.consignee_state || null);
 
             // ================= DELIVERY ADDRESS (CustomerLoadPostAddress) =================
-            request.input('drop_plot_unit', sql.NVarChar(100), data.drop?.drop_plot_unit );
-            request.input('drop_area_street', sql.NVarChar(100), data.drop?.drop_area_street );
-            request.input('drop_pincode', sql.NVarChar(100), data.drop?.drop_pincode );
-            request.input('drop_state', sql.NVarChar(100), data.drop?.drop_state );
-            request.input('drop_district', sql.NVarChar(100), data.drop?.drop_district );
-            request.input('drop_taluka', sql.NVarChar(100), data.drop?.drop_taluka );
-            request.input('drop_map_location', sql.NVarChar(100), data.drop?.drop_map_location );
-            request.input('drop_Lat', sql.NVarChar(100), data.drop?.drop_Lat);
-            request.input('drop_Lng',sql.NVarChar(100), data.drop?.drop_Lng);
+            // request.input('drop_plot_unit', sql.NVarChar(100), data.drop?.drop_plot_unit );
+            // request.input('drop_area_street', sql.NVarChar(100), data.drop?.drop_area_street );
+            // request.input('drop_pincode', sql.NVarChar(100), data.drop?.drop_pincode );
+            // request.input('drop_state', sql.NVarChar(100), data.drop?.drop_state );
+            // request.input('drop_district', sql.NVarChar(100), data.drop?.drop_district );
+            // request.input('drop_taluka', sql.NVarChar(100), data.drop?.drop_taluka );
+            // request.input('drop_map_location', sql.NVarChar(100), data.drop?.drop_map_location );
+            // request.input('drop_Lat', sql.NVarChar(100), data.drop?.drop_Lat);
+            // request.input('drop_Lng',sql.NVarChar(100), data.drop?.drop_Lng);
     
             
             // ================= CARGO =================
-            request.input('cargo_content', sql.NVarChar(100), data.cargo.cargo_content || null);
-            request.input('package_type', sql.NVarChar(100), data.cargo.package_type || null);
-            request.input('package_name', sql.NVarChar(100), data.cargo.package_name || null);
+            // request.input('cargo_content', sql.NVarChar(100), data.cargo.cargo_content || null);
+            // request.input('package_type', sql.NVarChar(100), data.cargo.package_type || null);
+            // request.input('package_name', sql.NVarChar(100), data.cargo.package_name || null);
 
             // ================= PO =================
-            request.input('po_number', sql.NVarChar(100), data.PO.po_number || null);
-            request.input('po_date', sql.NVarChar(100), data.PO.po_date || null);
+            // request.input('po_number', sql.NVarChar(100), data.PO.po_number || null);
+            // request.input('po_date', sql.NVarChar(100), data.PO.po_date || null);
 
             // ================= WEIGHT =================
-            request.input('No_of_package', sql.NVarChar(100), data.weight.No_of_package || null);
-            request.input('net_weight', sql.NVarChar(100), data.weight.net_weight || null);
-            request.input('approx_weight', sql.NVarChar(100), data.weight.approx_weight || null);
-            request.input('gross_weight', sql.NVarChar(100), data.weight.gross_weight || null);
+            // request.input('No_of_package', sql.NVarChar(100), data.weight.No_of_package || null);
+            // request.input('net_weight', sql.NVarChar(100), data.weight.net_weight || null);
+            // request.input('approx_weight', sql.NVarChar(100), data.weight.approx_weight || null);
+            // request.input('gross_weight', sql.NVarChar(100), data.weight.gross_weight || null);
 
             // ================= CHARGES (FIXED SPELLINGS) =================
-            request.input('freightAmount', sql.NVarChar(100), data.charges.freightAmount || null);
-            request.input('loadingcharge', sql.NVarChar(100), data.charges.loadingcharge || null);
-            request.input('unloadingcharge', sql.NVarChar(100), data.charges.unloadingcharge || null);
-            request.input('LRcharge', sql.NVarChar(100), data.charges.LRcharge || null);
-            request.input('othercharge', sql.NVarChar(100), data.charges.othercharge || null);
-            request.input('otherchargelabel', sql.NVarChar(100), data.charges.otherchargelabel || null);
-            request.input('Advance', sql.NVarChar(100), data.charges.Advance || null);
+            // request.input('freightAmount', sql.NVarChar(100), data.charges.freightAmount || null);
+            // request.input('loadingcharge', sql.NVarChar(100), data.charges.loadingcharge || null);
+            // request.input('unloadingcharge', sql.NVarChar(100), data.charges.unloadingcharge || null);
+            // request.input('LRcharge', sql.NVarChar(100), data.charges.LRcharge || null);
+            // request.input('othercharge', sql.NVarChar(100), data.charges.othercharge || null);
+            // request.input('otherchargelabel', sql.NVarChar(100), data.charges.otherchargelabel || null);
+            // request.input('Advance', sql.NVarChar(100), data.charges.Advance || null);
 
             // ================= LR =================
-            request.input('lr_no', sql.NVarChar(255), data.lr_no || null);
-            request.input('lr_date', sql.NVarChar(255), data.lr_date || null);
+            // request.input('lr_no', sql.NVarChar(255), data.lr_no || null);
+            // request.input('lr_date', sql.NVarChar(255), data.lr_date || null);
+            request.input('domestic_type', sql.NVarChar(255), data.domestic_type || null);
+            request.input('dom_declaration', sql.NVarChar(255), data.dom_declaration || null);
+            request.input('declaration', sql.NVarChar(255), data.declaration || null);
+            request.input('declaration_img', sql.NVarChar(sql.MAX), data.declaration_img || null);
+            
+
 
             // ================= TVP : INVOICE =================
             const INVD = new sql.Table('invoice_Details');
@@ -91,6 +97,12 @@ exports.customerloadpostmasterDB = (data) => {
             INVD.columns.add('invoice_date', sql.NVarChar(100));
             INVD.columns.add('Unit', sql.NVarChar(100));
             INVD.columns.add('quantity', sql.NVarChar(100));
+            INVD.columns.add('net_weight', sql.NVarChar(100));
+            INVD.columns.add('gross_weight', sql.NVarChar(100));
+            INVD.columns.add('package_type', sql.NVarChar(100));
+            INVD.columns.add('material_Type', sql.NVarChar(100));
+            INVD.columns.add('po_number', sql.NVarChar(100));
+            INVD.columns.add('po_date', sql.NVarChar(100));
             INVD.columns.add('value_amount', sql.NVarChar(100));
             INVD.columns.add('invoice_img', sql.NVarChar(sql.MAX));
             INVD.columns.add('remarks', sql.NVarChar(255));
@@ -101,6 +113,12 @@ exports.customerloadpostmasterDB = (data) => {
                     item.invoice_date,
                     item.Unit,
                     item.quantity,
+                    item.net_weight,
+                    item.gross_weight,
+                    item.package_type,
+                    item.material_Type,
+                    item.po_number,
+                    item.po_date,
                     item.value_amount,
                     item.invoice_img,
                     item.remarks
@@ -111,18 +129,30 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= TVP : CHALLAN =================
             const CHD = new sql.Table('Challan_Details');
-            CHD.columns.add('challan_number', sql.NVarChar(100));
-            CHD.columns.add('challan_date', sql.NVarChar(100));
-            CHD.columns.add('Unit', sql.NVarChar(100));
-            CHD.columns.add('quantity', sql.NVarChar(100));
-            CHD.columns.add('value_amount', sql.NVarChar(100));
-            CHD.columns.add('challan_img', sql.NVarChar(sql.MAX));
-            CHD.columns.add('remarks', sql.NVarChar(255));
+                CHD.columns.add('challan_number', sql.NVarChar(50));
+                CHD.columns.add('challan_date', sql.Date);
+                CHD.columns.add('net_weight', sql.NVarChar(50));
+                CHD.columns.add('package_type', sql.NVarChar(50));
+                CHD.columns.add('material_Type', sql.NVarChar(50));
+                CHD.columns.add('doc_no', sql.NVarChar(50));
+                CHD.columns.add('po_number', sql.NVarChar(50));
+                CHD.columns.add('po_date', sql.Date);
+                CHD.columns.add('Unit', sql.NVarChar(50));
+                CHD.columns.add('quantity', sql.NVarChar(50));
+                CHD.columns.add('value_amount', sql.NVarChar(50));
+                CHD.columns.add('challan_img', sql.NVarChar(sql.MAX));
+                CHD.columns.add('remarks', sql.NVarChar(255));
 
             (data.challanDetails || []).forEach(item => {
                 CHD.rows.add(
                     item.challan_number,
                     item.challan_date,
+                    item.net_weight,
+                    item.package_type,
+                    item.material_Type,
+                    item.doc_no,
+                    item.po_number,
+                    item.po_date,
                     item.Unit,
                     item.quantity,
                     item.value_amount,
@@ -133,21 +163,58 @@ exports.customerloadpostmasterDB = (data) => {
 
             request.input('challanDetails', sql.TVP, CHD);
 
+// ================= TVP : STOCK =================
+const STD = new sql.Table('Stock_Details');
+
+STD.columns.add('stock_number', sql.NVarChar(50));
+STD.columns.add('stock_date', sql.NVarChar(50));
+STD.columns.add('Unit', sql.NVarChar(50));
+STD.columns.add('net_weight', sql.NVarChar(50));
+STD.columns.add('gross_weight', sql.NVarChar(50));
+STD.columns.add('quantity', sql.NVarChar(50));
+STD.columns.add('value_amount', sql.NVarChar(50));
+STD.columns.add('from_location', sql.NVarChar(500));
+STD.columns.add('to_location', sql.NVarChar(500));
+STD.columns.add('material', sql.NVarChar(500));
+STD.columns.add('stock_img', sql.NVarChar(sql.MAX));
+STD.columns.add('remarks', sql.NVarChar(255));
+
+(data.stockDetails || []).forEach(item => {
+    STD.rows.add(
+        item.stock_number,
+        item.stock_date,
+        item.Unit,
+        item.net_weight,
+        item.gross_weight,
+        item.quantity,
+        item.value_amount,
+        item.from_location,
+        item.to_location,
+        item.material,
+        item.stock_img,
+        item.remarks
+    );
+});
+
+// ✅ PASS THE CORRECT TVP
+request.input('stockDetails', sql.TVP, STD);
+
+
             // ================= TVP : FREIGHT =================
-                const FRT = new sql.Table('freight_Details');
-                FRT.columns.add('charge_type', sql.NVarChar(100));
-                FRT.columns.add('amount', sql.NVarChar(100));
-                FRT.columns.add('remarks', sql.NVarChar(255));
+                // const FRT = new sql.Table('freight_Details');
+                // FRT.columns.add('charge_type', sql.NVarChar(100));
+                // FRT.columns.add('amount', sql.NVarChar(100));
+                // FRT.columns.add('remarks', sql.NVarChar(255));
 
-                (data.freightDetails || []).forEach(item => {
-                FRT.rows.add(
-                item.charge_type,
-                item.amount,
-                item.remarks
-                );
-                });
+                // (data.freightDetails || []).forEach(item => {
+                // FRT.rows.add(
+                // item.charge_type,
+                // item.amount,
+                // item.remarks
+                // );
+                // });
 
-                request.input('freightDetails', sql.TVP, FRT);
+                // request.input('freightDetails', sql.TVP, FRT);
 
                 // ================= TVP : BILL =================
                 const BLD = new sql.Table('Bill_Details');
@@ -155,6 +222,8 @@ exports.customerloadpostmasterDB = (data) => {
                 BLD.columns.add('Bill_Entry_date', sql.NVarChar(100));
                 BLD.columns.add('Shipper_name', sql.NVarChar(150));
                 BLD.columns.add('Country', sql.NVarChar(100));
+                BLD.columns.add('buyer_name', sql.NVarChar(100));
+                BLD.columns.add('destination', sql.NVarChar(100));
                 BLD.columns.add('Currency', sql.NVarChar(50));
                 BLD.columns.add('Value', sql.NVarChar(100));
                 BLD.columns.add('Material_type', sql.NVarChar(100));
@@ -168,6 +237,8 @@ exports.customerloadpostmasterDB = (data) => {
                 item.Bill_Entry_date,
                 item.Shipper_name,
                 item.Country,
+                item.buyer_name,
+                item.destination,
                 item.Currency,
                 item.Value,
                 item.Material_type,
@@ -200,6 +271,138 @@ exports.customerloadpostmasterDB = (data) => {
         }
     });
 };
+
+// exports.customerloadpostmasterDB = async (data) => {
+//   try {
+//     const poolConn = await sql.connect(pool);
+//     const request = poolConn.request();
+
+//     // ================= BASIC =================
+//     request.input('LoadPostID', sql.NVarChar(50), data.LoadPostID);
+//     request.input('CustomerID', sql.NVarChar(50), data.CustomerID);
+
+//     // ================= TVP HELPER =================
+//     const makeTVP = (typeName, cols, rows) => {
+//       const t = new sql.Table(typeName);
+//       cols.forEach(c => t.columns.add(c.name, c.type));
+//       rows.forEach(r => t.rows.add(...cols.map(c => r[c.name] ?? null)));
+//       return t;
+//     };
+
+//     // ================= INVOICE =================
+//     request.input(
+//       'invoiceDetails',
+//       makeTVP(
+//         'invoice_Details',
+//         [
+//           { name: 'invoice_number', type: sql.NVarChar(100) },
+//           { name: 'invoice_date', type: sql.Date },
+//           { name: 'Unit', type: sql.NVarChar(50) },
+//           { name: 'quantity', type: sql.NVarChar(50) },
+//           { name: 'net_weight', type: sql.NVarChar(50) },
+//           { name: 'gross_weight', type: sql.NVarChar(50) },
+//           { name: 'package_type', type: sql.NVarChar(50) },
+//           { name: 'material_Type', type: sql.NVarChar(50) },
+//           { name: 'po_number', type: sql.NVarChar(50) },
+//           { name: 'po_date', type: sql.Date },
+//           { name: 'value_amount', type: sql.NVarChar(50) },
+//           { name: 'invoice_img', type: sql.NVarChar(sql.MAX) },
+//           { name: 'remarks', type: sql.NVarChar(255) }
+//         ],
+//         data.invoiceDetails || []
+//       )
+//     );
+
+//     // ================= CHALLAN =================
+//     request.input(
+//       'challanDetails',
+//       makeTVP(
+//         'Challan_Details',
+//         [
+//           { name: 'challan_number', type: sql.NVarChar(50) },
+//           { name: 'challan_date', type: sql.Date },
+//           { name: 'net_weight', type: sql.NVarChar(50) },
+//           { name: 'package_type', type: sql.NVarChar(50) },
+//           { name: 'material_Type', type: sql.NVarChar(50) },
+//           { name: 'doc_no', type: sql.NVarChar(50) },
+//           { name: 'po_number', type: sql.NVarChar(50) },
+//           { name: 'po_date', type: sql.Date },
+//           { name: 'Unit', type: sql.NVarChar(50) },
+//           { name: 'quantity', type: sql.NVarChar(50) },
+//           { name: 'value_amount', type: sql.NVarChar(50) },
+//           { name: 'challan_img', type: sql.NVarChar(sql.MAX) },
+//           { name: 'remarks', type: sql.NVarChar(255) }
+//         ],
+//         data.challanDetails || []
+//       )
+//     );
+
+//     // ================= STOCK =================
+//     request.input(
+//       'stockDetails',
+//       makeTVP(
+//         'Stock_Details',
+//         [
+//           { name: 'stock_number', type: sql.NVarChar(50) },
+//           { name: 'stock_date', type: sql.Date },
+//           { name: 'Unit', type: sql.NVarChar(50) },
+//           { name: 'net_weight', type: sql.NVarChar(50) },
+//           { name: 'gross_weight', type: sql.NVarChar(50) },
+//           { name: 'quantity', type: sql.NVarChar(50) },
+//           { name: 'value_amount', type: sql.NVarChar(50) },
+//           { name: 'from_location', type: sql.NVarChar(500) },
+//           { name: 'to_location', type: sql.NVarChar(500) },
+//           { name: 'material', type: sql.NVarChar(500) },
+//           { name: 'stock_img', type: sql.NVarChar(sql.MAX) },
+//           { name: 'remarks', type: sql.NVarChar(255) }
+//         ],
+//         data.stockDetails || []
+//       )
+//     );
+
+//     // ================= BILL =================
+//     request.input(
+//       'BillDetails',
+//       makeTVP(
+//         'Bill_Details',
+//         [
+//           { name: 'Bill_Entry_number', type: sql.NVarChar(50) },
+//           { name: 'Bill_Entry_date', type: sql.Date },
+//           { name: 'Shipper_name', type: sql.NVarChar(150) },
+//           { name: 'Country', type: sql.NVarChar(100) },
+//           { name: 'buyer_name', type: sql.NVarChar(100) },
+//           { name: 'destination', type: sql.NVarChar(100) },
+//           { name: 'Currency', type: sql.NVarChar(50) },
+//           { name: 'Value', type: sql.NVarChar(100) },
+//           { name: 'Material_type', type: sql.NVarChar(100) },
+//           { name: 'Package_type', type: sql.NVarChar(100) },
+//           { name: 'Bill_img', type: sql.NVarChar(sql.MAX) },
+//           { name: 'remarks', type: sql.NVarChar(255) }
+//         ],
+//         data.BillDetails || []
+//       )
+//     );
+
+//     // ================= OUTPUT =================
+//     request.output('load_master_id', sql.NVarChar(30));
+//     request.output('bstatus_code', sql.NVarChar(10));
+//     request.output('bmessage_desc', sql.NVarChar(255));
+
+//     const result = await request.execute('CustomerLoadPostMasterInsert');
+
+//     return {
+//       load_master_id: result.output.load_master_id,
+//       bstatus_code: result.output.bstatus_code,
+//       bmessage_desc: result.output.bmessage_desc
+//     };
+
+//   } catch (err) {
+//     logger.error('[SQL ERROR]', err);
+//     throw err;
+//   }
+// };
+
+
 
 exports.updatecustomerloadpostmasterDB = (customerloadpostmaster) => {
     logger.info(`[INFO]: Updating updatecustomerloadpostmasterDB record for LoadMasterID: ${customerloadpostmaster.load_master_id}`);
