@@ -19,7 +19,7 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= CONSIGNER =================
             request.input('consigner_name', sql.NVarChar(150), data.consigner.consigner_name || null);
-           //request.input('consigner_gst', sql.NVarChar(150), data.consigner.consigner_gst || null);
+            request.input('consigner_gst', sql.NVarChar(150), data.consigner.consigner_gst || null);
             request.input('consigner_address', sql.NVarChar(150), data.consigner.consigner_address || null);
             request.input('consigner_pincode', sql.NVarChar(150), data.consigner.consigner_pincode || null);
             request.input('consigner_origin', sql.NVarChar(150), data.consigner.consigner_origin || null);
@@ -39,7 +39,7 @@ exports.customerloadpostmasterDB = (data) => {
 
             // ================= CONSIGNEE =================
             request.input('consignee_name', sql.NVarChar(150), data.consignee.consignee_name || null);
-            //request.input('consignee_gst', sql.NVarChar(150), data.consignee.consignee_gst || null);
+            request.input('consignee_gst', sql.NVarChar(150), data.consignee.consignee_gst || null);
             request.input('consignee_address', sql.NVarChar(150), data.consignee.consignee_address || null);
             request.input('consignee_pincode', sql.NVarChar(150), data.consignee.consignee_pincode || null);
             request.input('consignee_destination', sql.NVarChar(150), data.consignee.consignee_destination || null);
