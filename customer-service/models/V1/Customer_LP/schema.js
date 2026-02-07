@@ -1,13 +1,17 @@
 const customer_lp_loading_schema = {
-    type: 'object',
+    type: "object",
     properties: {
-        CustomerID: { type: 'string', minLength: 1 },
-        LoadPostID: { type: 'string', nullable: true },
+        VendorID: { type: ["string", "null"] },
+        DriverID: { type: ["string", "null"] },
+        LPStatus: { type: "string", minLength: 1 },
+         Search: { type: ["string", "null"] },
+        pageNumber: {type: "integer",minimum: 1},
+        pageSize: {type: "integer",minimum: 1, maximum: 100}
     },
-    required: ['CustomerID'],
-    
+    required: ["LPStatus"],
     additionalProperties: false
 };
+
 
 const customer_lp_loading_schemaCompanyType = {
     type: 'object',

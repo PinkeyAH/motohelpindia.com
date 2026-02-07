@@ -21,6 +21,13 @@ exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
         request.input('PickupStreetArea', sql.NVarChar(200), data.pickup?.streetArea || '');
         request.input('PickupAddress', sql.NVarChar(sql.MAX), data.pickup?.googleAddress || data.pickup.origin?.address);
 
+        request.input('alternate_no', sql.NVarChar(50), data.load?.alternateNo || '');
+        request.input('material_name', sql.NVarChar(50), data.load?.materialName || '');
+        request.input('hazardous_declaration', sql.NVarChar(50), data.load?.hazardousDeclaration || '');
+        request.input('flammable_declaration', sql.NVarChar(50), data.load?.flammableDeclaration || '');
+        request.input('material_type', sql.NVarChar(50), data.load?.materialType || '');
+        request.input('hdescription', sql.NVarChar(50), data.load?.hdescription || '');
+
         // ================= DELIVERY (CustomerLoadPost) =================
         request.input('DeliveryContactPerson', sql.NVarChar(100), data.delivery?.consigneeName || '');
         request.input('DeliveryCompanyName', sql.NVarChar(150), data.delivery?.companyName || '');
@@ -37,6 +44,7 @@ exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
         request.input('cargo_type', sql.NVarChar(50), data.load?.cargoType || '');
         request.input('CargoContent', sql.NVarChar(100), data.load?.cargoContent || '');
         request.input('CargoPackageType', sql.NVarChar(150), data.load?.packageType || '');
+    
 
         request.input(
           'ExpectedAvailableTime',
@@ -554,6 +562,7 @@ SELECT TOP 50
     cla.DeliveryContactNumber,
     cla.DeliveryPlotBuilding,
     cla.DeliveryStreetArea,
+    cla.DeliveryAddress,
     cla.DeliveryCity,
     cla.DeliveryDistrict,
     cla.DeliveryTaluka,
@@ -583,7 +592,7 @@ SELECT TOP 50
     -- 📌 STATUS
     cps.LP_Status,
     cps.CustomerStatus,
- --   dlp.DriverStatus,
+    dlp.DriverStatus,
     dlp.VehicleStatus AS DriverVehicleStatus,
 
     -- ⏱ TIME
@@ -1579,8 +1588,7 @@ exports.VendorNearestCustomerPostDB = async (data) => {
         const result = await request.query(`SELECT TOP 50
                                     clp.LoadPostID AS Customer_LoadPostID,
                                     cps.CustomerID,
-                                    cla.PickupLat,
-                                    cla.PickupLng,
+                                
                                     -- ✅ Distance (Vendor → Customer Pickup)
                                     CAST(
                                         6371 * ACOS(
