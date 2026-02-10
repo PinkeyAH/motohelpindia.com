@@ -85,8 +85,9 @@ exports.customerloadpostmasterDB = (data) => {
             // request.input('lr_no', sql.NVarChar(255), data.lr_no || null);
             // request.input('lr_date', sql.NVarChar(255), data.lr_date || null);
             request.input('domestic_type', sql.NVarChar(255), data.domestic_type || null);
-            request.input('dom_declaration', sql.NVarChar(255), data.dom_declaration || null);
-            request.input('declaration', sql.NVarChar(255), data.declaration || null);
+            // request.input('dom_declaration', sql.NVarChar(255), data.dom_declaration || null);
+            request.input('dom_declaration', sql.NVarChar(sql.MAX),JSON.stringify(data.dom_declaration || []));
+            request.input('declaration', sql.NVarChar(255), data.isdeclaration || null);
             request.input('declaration_img', sql.NVarChar(sql.MAX), data.declaration_img || null);
             
 
@@ -271,6 +272,9 @@ request.input('stockDetails', sql.TVP, STD);
         }
     });
 };
+
+
+
 
 // exports.customerloadpostmasterDB = async (data) => {
 //   try {
