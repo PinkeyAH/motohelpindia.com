@@ -21,7 +21,8 @@ exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
         request.input('PickupStreetArea', sql.NVarChar(200), data.pickup?.streetArea || '');
         request.input('PickupAddress', sql.NVarChar(sql.MAX), data.pickup?.googleAddress || data.pickup.origin?.address);
 
-        request.input('alternate_no', sql.NVarChar(50), data.load?.alternateNo || '');
+        request.input('alternate_no', sql.NVarChar(50), data.pickup?.alternateNo || '');
+        request.input('AddressType', sql.NVarChar(150), data.pickup?.addressType || '');
         request.input('material_name', sql.NVarChar(50), data.load?.materialName || '');
         request.input('hazardous_declaration', sql.NVarChar(50), data.load?.hazardousDeclaration || '');
         request.input('flammable_declaration', sql.NVarChar(50), data.load?.flammableDeclaration || '');
@@ -42,8 +43,13 @@ exports.InsertcustomerloadpostDB = async (data, LoadPost_ID) => {
         request.input('Approximate_weight', sql.Int, data.vehicle?.approximateWeightKg || 0);
         request.input('BodyType', sql.NVarChar(100), data.load?.bodyType || '');
         request.input('cargo_type', sql.NVarChar(50), data.load?.cargoType || '');
+        request.input('cargo_name', sql.NVarChar(50), data.load?.cargoName || '');
         request.input('CargoContent', sql.NVarChar(100), data.load?.cargoContent || '');
         request.input('CargoPackageType', sql.NVarChar(150), data.load?.packageType || '');
+        request.input('PackageTypeName', sql.NVarChar(150), data.load?.packageTypeName || '');
+        request.input('PackageDescription', sql.NVarChar(150), data.load?.packageDescription || '');
+        request.input('PackageImg', sql.NVarChar(150), data.load?.packageImg || '');
+        
     
 
         request.input(
@@ -497,7 +503,7 @@ exports.getCargoTypesDB = async function (data) {
         if (!data) {
             result = await request.query('SELECT  DISTINCT  cargo_type , img FROM CargoTypes');
         } else {
-            result = await request.query('SELECT  DISTINCT  cargo_type , img , packaging_type  FROM cargopackag WHERE cargo_type = @data');
+            result = await request.query('SELECT  DISTINCT  cargo_type , packaging_type, img FROM cargopackag WHERE cargo_type = @data');
         }
         if (result.recordset.length > 0) {
             console.log(`[SUCCESS]: CargoTypes found for data: ${data}`);

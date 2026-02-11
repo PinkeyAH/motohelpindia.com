@@ -427,3 +427,37 @@ exports.CustomerReachedLoadPostsDB = async ({ load_master_id, LoadPostID }) => {
         return {status: "03",message: err.message};
     }
 };
+
+exports.CustomerVehicleDetailsDB = async ({ Weight }) => {
+    try {
+        logger.info('[INFO]: Fetching Reached Load Posts');
+
+        const pool = await sql.connect(dbconfig.config);
+        const request = pool.request();
+
+        // INPUT parameters
+        request.input('Weight', sql.NVarChar(50), Weight || null);
+        // request.input('LoadPostID', sql.NVarChar(50), LoadPostID || null);
+
+        // OUTPUT parameters
+        request.output('ResultStatus', sql.Int);
+        request.output('ResultMessage', sql.NVarChar(500));
+
+        const result = await request.execute('CustomerVehicleDetails');
+
+        const records = result.recordset || [];
+        const status = result.output.ResultStatus;
+        const message = result.output.ResultMessage;
+
+        if (status !== 1 || !records.length) {
+            return {status: "01", message: message || 'Data not found', count: 0, data: []
+            };
+        }
+
+        return {status: "00", message, count: records.length.toString(),data: records};
+
+    } catch (err) {
+        logger.error('[DB ERROR]:', err);
+        return {status: "03",message: err.message};
+    }
+};
