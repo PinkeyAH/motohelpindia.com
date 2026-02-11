@@ -20,7 +20,7 @@ const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
 const { Insertcustomeremployee, updatecustomeremployee, deletecustomeremployee, getcustomeremployee } = require('../controllers/V1/Customer_Employees.js');
 const { customerloadpostmaster, updatecustomerloadpostmaster, getcustomermaster, updatecustomerloadpostinvoice, getcustomerloadpostmaster} = require('../controllers/V1/Customer_LoadPost_Master.js');        
 const { getCustomerLPLoading, GetCustomerLPProgress, GetCustomerLPReached, GetCustomerLPLoaded, GetCustomerLPHold, GetCustomerLPpending, GetCustomerLPCompleted,GetCustomerLPCharges, GetCustomerLoadPostLR,GetCustomerAddress, getCargoType, getPackageType,
-    CustomerReachedLoadPosts} = require('../controllers/V1/Customer_LP.js');
+    CustomerReachedLoadPosts, CustomerVehicleDetails} = require('../controllers/V1/Customer_LP.js');
 // ---------------------------
 // Customer Logs Routes
 // ---------------------------
@@ -144,6 +144,7 @@ router.post('/Customer_Address', GetCustomerAddress)
 router.post('/getCargoType', getCargoType)
 router.post('/getPackageType', getPackageType)
 router.post('/Customer_ReachedLoadPosts', CustomerReachedLoadPosts)
+router.post('/Customer_Vehicle_Details', CustomerVehicleDetails)
 
 
 

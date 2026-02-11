@@ -6,7 +6,7 @@ const logger = require('../../log/logger');
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const { customer_lp_loading_schema, customer_lp_loading_schemaLR, customer_lp_loading_schemaCompanyType } = require('../../models/V1/Customer_LP/schema.js');
-const{ getCustomerLPLoadingDB, GetCustomerLPProgressDB, GetCustomerLPReachedDB, GetCustomerLPLoadedDB, GetCustomerLPHoldDB, GetCustomerLPpendingDB, GetCustomerLPCompletedDB, GetCustomerLPChargesDB, GetCustomerLoadPostLRDB, GetCustomerAddressDB, getCargoTypeDB, getPackageTypeDB, CustomerReachedLoadPostsDB} = require('../../models/V1/Customer_LP/utility.js');
+const{ getCustomerLPLoadingDB, GetCustomerLPProgressDB, GetCustomerLPReachedDB, GetCustomerLPLoadedDB, GetCustomerLPHoldDB, GetCustomerLPpendingDB, GetCustomerLPCompletedDB, GetCustomerLPChargesDB, GetCustomerLoadPostLRDB, GetCustomerAddressDB, getCargoTypeDB, getPackageTypeDB, CustomerReachedLoadPostsDB, CustomerVehicleDetailsDB} = require('../../models/V1/Customer_LP/utility.js');
 
 // exports.GetCustomerLPpending = async (req, res) => {
 //     try {
@@ -247,6 +247,33 @@ exports.CustomerReachedLoadPosts = async (req, res) => {
         });
     }
 };
+
+exports.CustomerVehicleDetails = async (req, res) => {
+    try {
+        const { Weight } = req.body;
+
+        const result = await CustomerVehicleDetailsDB({
+            Weight,
+        });
+
+        logger.info(`CustomerVehicleDetails result: ${JSON.stringify(result)}`);
+
+        return res.status(200).json({
+            status: result.status,
+            message: result.message,
+            count: result.count,
+            data: result.data
+        });
+
+    } catch (error) {
+        logger.error(`CustomerVehicleDetails Error: ${error.message}`);
+        return res.status(500).json({
+            status: "03",
+            message: error.message
+        });
+    }
+};
+
 
 
 
