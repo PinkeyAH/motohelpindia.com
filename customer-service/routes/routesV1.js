@@ -13,7 +13,7 @@ const { Insertcustomerpost, updateCustomerPost, deleteCustomerPost, getCustomerP
 const { getDistanceBetweenTwoPincodes, getCheckDistance } = require('../controllers/V1/Map.js');
 const { auth_vaildation } = require('../../KYC_Verification/controllers/V1/auth_vaildation.js');
 const { Pancard , GST, DrivingLicense, Aadhaargenerateotp,Aadhaarverifyotp, Vehicle} = require('../../KYC_Verification/controllers/V1/KYC_Verification.js');
-const { Insertcustomerloadpost, updatecustomerloadpost, getcustomerloadpost, deletecustomerloadpost, getVehicle_Details, getCargoTypes,getCustomerLoadPostViews,
+const { Insertcustomerloadpost, updatecustomerloadpost, getcustomerloadpost, deletecustomerloadpost, getVehicle_Details,getVehicle_Details_weightRange, getCargoTypes,getCustomerLoadPostViews,
         getNearestCustomerpost ,CustomerPostStatus, getcustomerprocess ,getcustomeractive, getcustomercompleted, getNearestDrivers, CargoTypeBodyTypeHistory} = require('../controllers/V1/Customer_Load_Post.js');
 const { getActiveLoadPostWebAPI } = require('../controllers/V1/Customer_Load_Post_web.js');
 const { getCustomerCounts } = require('../controllers/V1/GetCustomerCounts.js');
@@ -88,6 +88,7 @@ router.post('/update_customer_load_post', updatecustomerloadpost);
 router.post('/get_customer_load_post', getcustomerloadpost);
 router.post('/delete_customer_load_post', deletecustomerloadpost);
 router.post('/get_Vehicle_Details', getVehicle_Details);
+router.post('/get_Vehicle_Details_weightRange', getVehicle_Details_weightRange);
 router.post('/get_CargoTypes', getCargoTypes);
 router.post('/get_customer_load_post_views', getCustomerLoadPostViews);
 router.post('/Customer_PostStatus', CustomerPostStatus);

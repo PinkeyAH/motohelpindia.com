@@ -5,7 +5,7 @@ addFormats(ajv);
 const logger = require('../../log/logger');
 const { getRandomSixDigitNumber, getDistanceFromLatLonInKm } = require("../../common/common");
 
-const { InsertcustomerloadpostDB, updatecustomerloadpostDB, getcustomerloadpostDB, deletecustomerloadpostDB, getVehicle_DetailsDB,
+const { InsertcustomerloadpostDB, updatecustomerloadpostDB, getcustomerloadpostDB, deletecustomerloadpostDB, getVehicle_DetailsDB,getVehicle_Details_weightRangeDB,
     getCargoTypesDB, getCustomerLoadPostViewsDB, getNearestCustomerposttDB, CustomerPostStatusDB, getcustomerprocessDB, getcustomeractiveDB,
     getcustomercompletedDB, getNearestDriversDB, VendorNearestCustomerPostDB, CargoTypeBodyTypeHistoryDB } = require('../../models/V1/Customer_Load_Post/utility');
 // const { customerLoadPostSchema, updateCustomerLoadPostSchema } = require('../../models/V1/Customer_Load_Post/schema');
@@ -136,6 +136,19 @@ exports.getVehicle_Details = async (req, res) => {
 
     } catch (error) {
         logger.log("error", `getVehicle_Details Error: ${error.message}`);
+        return res.status(500).json({ status: "99", message: "Internal server error" });
+    }
+}
+
+exports.getVehicle_Details_weightRange = async (req, res) => {
+    try {
+        const { weightRange, vehicleType, BodyType } = req.body;
+        const result = await getVehicle_Details_weightRangeDB(weightRange, vehicleType, BodyType);
+        logger.log("info", `getVehicle_Details_weightRange result: ${JSON.stringify(result)}`);
+        return res.status(200).send({ status: result.status, message: result.message, data: result.data });
+
+    } catch (error) {
+        logger.log("error", `getVehicle_Details_weightRange Error: ${error.message}`);
         return res.status(500).json({ status: "99", message: "Internal server error" });
     }
 }
