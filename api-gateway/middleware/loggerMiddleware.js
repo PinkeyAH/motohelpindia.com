@@ -27,22 +27,18 @@
 //   next();
 // };
 
-
 const { APIHitinglogger } = require('../log/logger');
 
 module.exports = (req, res, next) => {
 
-  const message = `
-[API HIT]
-Method: ${req.method}
-URL: ${req.originalUrl}
-Query: ${JSON.stringify(req.query)}
-Params: ${JSON.stringify(req.params)}
-Body: ${JSON.stringify(req.body)}
-`;
+  console.log("------------ NEW REQUEST ------------");
+  console.log("Method:", req.method);
+  console.log("URL:", req.originalUrl);
+  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+  console.log("------------------------------------");
 
-  console.log(message);
-
+  const message = `[API HIT] ${req.method} ${req.originalUrl} Body: ${JSON.stringify(req.body)}`;
   APIHitinglogger.info(message);
 
   next();
