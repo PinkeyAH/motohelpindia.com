@@ -27,6 +27,7 @@ app.use(cors);
 // ✅ BODY PARSER FIRST
 app.use(express.json({ limit: "500mb" }));
 app.use(express.urlencoded({ limit: "500mb", extended: true }));
+// app.use(express.text({ type: "*/*" }));
 
 // ✅ THEN LOGGER
 app.use(requestLogger);
@@ -54,13 +55,25 @@ const createProxy = (target, prefix) => {
     changeOrigin: true,
     pathRewrite: { [`^/${prefix}`]: "" },
 
-    onProxyReq: (proxyReq, req, res) => {
-      if (req.body && Object.keys(req.body).length) {
-        const bodyData = JSON.stringify(req.body);
+    onProxyReq: (proxyReq, req) => {
+      if (!req.body) return;
+
+      let bodyData;
+
+      // ✅ If JSON object
+      if (typeof req.body === "object") {
+        bodyData = JSON.stringify(req.body);
         proxyReq.setHeader("Content-Type", "application/json");
+      } 
+      // ✅ If string (APK text/plain case)
+      else if (typeof req.body === "string") {
+        bodyData = req.body;
+      }
+
+      if (bodyData) {
         proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
         proxyReq.write(bodyData);
-        proxyReq.end();  // ✅ VERY IMPORTANT
+        proxyReq.end();
       }
 
       console.log(
