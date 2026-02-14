@@ -461,3 +461,37 @@ exports.CustomerVehicleDetailsDB = async ({ Weight }) => {
         return {status: "03",message: err.message};
     }
 };
+
+exports.GetPackageMaterialTypeDB = async (PackageType) => {
+    try {
+        logger.info('[INFO]: Fetching Package Material Data');
+
+        const pool = await sql.connect(dbconfig.config);
+        const request = pool.request();
+
+        let query = '';
+
+        if (!PackageType) {
+            // If PackageType not provided → Get distinct Package Types
+            query = `SELECT DISTINCT PackageType FROM PackageMaterialType`;
+        } else {
+            request.input('PackageType', sql.NVarChar(100), PackageType);
+
+            query = `SELECT MaterialType FROM PackageMaterialType WHERE PackageType = @PackageType`;
+        }
+
+        const result = await request.query(query);
+        const records = result.recordset || [];
+
+        if (!records.length) {
+        return {status: "01", message: "Data not found", count: 0, data: []};
+        }
+        return {status: "00", message: "Success", count: records.length.toString(), data: records};
+        } catch (err) {
+        logger.error('[DB ERROR]:', err);
+        return {
+        status: "03",
+        message: err.message
+        };
+    }
+};
