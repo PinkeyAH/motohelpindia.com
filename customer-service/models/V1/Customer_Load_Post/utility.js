@@ -514,7 +514,7 @@ exports.getVehicle_Details_weightRangeDB = function (weightRange, vehicleType, B
                 request.input('MaxWeight', sql.Int, maxWeight);
 
                 result = await request.query(`
-                    SELECT VehicleType, 
+                    SELECT  DISTINCT VehicleType, 
                   -- BodyType,
                   -- WeightRange,
                      img
@@ -550,7 +550,7 @@ exports.getVehicle_Details_weightRangeDB = function (weightRange, vehicleType, B
                 request.input('BodyType', sql.NVarChar(100), BodyType);
 
                 let query = `
-                    SELECT 
+                    SELECT DISTINCT
                      --   VD.VehicleType,
                      --   VD.BodyType,
                      --   VD.img,
