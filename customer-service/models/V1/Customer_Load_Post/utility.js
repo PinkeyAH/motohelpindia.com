@@ -516,6 +516,7 @@ exports.getVehicle_Details_weightRangeDB = function (weightRange, vehicleType, B
                 result = await request.query(`
                     SELECT VehicleType, 
                   --  BodyType,
+                  WeightRange,
                      img
                     FROM Vehicle_Details
                     CROSS APPLY (
