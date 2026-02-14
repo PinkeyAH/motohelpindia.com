@@ -492,6 +492,116 @@ exports.getVehicle_DetailsDB = async function (vehicleType, weightRange) {
     }
 };
 
+// exports.getVehicle_Details_weightRangeDB = function (weightRange, vehicleType, BodyType) {
+//     return new Promise(async (resolve, reject) => {
+//         console.log(`[INFO]: Fetching vehicle data based on filters`);
+
+//         try {
+//             const poolConn = await sql.connect(pool);
+//             const request = poolConn.request();
+
+//             // Convert weightRange to number if needed
+//             const weight = parseInt(weightRange) || 0;
+//             const minWeight = weight - (weight * 0.10);
+//             const maxWeight = weight + (weight * 0.10);
+
+//             let result;
+
+//             // Case 1: Only weight range → return vehicle types
+//             if (!vehicleType && weightRange && !BodyType) {
+
+//                 request.input('MinWeight', sql.Int, minWeight);
+//                 request.input('MaxWeight', sql.Int, maxWeight);
+
+//                 result = await request.query(`
+//                     SELECT  DISTINCT VehicleType, 
+//                   -- BodyType,
+//                   -- WeightRange,
+//                      img
+//                     FROM Vehicle_Details
+//                     CROSS APPLY (
+//                         SELECT 
+//                             CAST(PARSENAME(REPLACE(REPLACE(WeightRange,'kg',''),'-','.'),2) AS INT) AS DB_Min,
+//                             CAST(PARSENAME(REPLACE(REPLACE(WeightRange,'kg',''),'-','.'),1) AS INT) AS DB_Max
+//                     ) AS R
+//                     WHERE
+//                         R.DB_Min <= @MaxWeight
+//                         AND R.DB_Max >= @MinWeight;
+//                 `);
+//             }
+
+//             // Case 2: VehicleType + weightRange → return body types
+//             else if (vehicleType && weightRange && !BodyType) {
+//                 request.input('VehicleType', sql.NVarChar(100), vehicleType);
+
+//                 result = await request.query(`
+//                     SELECT DISTINCT 
+//                  --   VehicleType, 
+//                     BodyType, img
+//                     FROM Vehicle_Details
+//                     WHERE VehicleType = @VehicleType;
+//                 `);
+//             }
+
+//             // Case 3: All filters
+//             else if (vehicleType && weightRange && BodyType) {
+//                 request.input('VehicleType', sql.NVarChar(100), vehicleType);
+//                 request.input('WeightRange', sql.NVarChar(50), weightRange);
+//                 request.input('BodyType', sql.NVarChar(100), BodyType);
+
+//                 let query = `
+//                     SELECT DISTINCT
+//                      --   VD.VehicleType,
+//                      --   VD.BodyType,
+//                      --   VD.img,
+//                         VWR.DhalaLength
+//                     FROM Vehicle_Details VD
+//                     JOIN VehicleWeightRange VWR 
+//                         ON VD.VehicleType = VWR.VehicleType
+//                     WHERE 
+//                         VD.VehicleType = @VehicleType
+//                     --    AND VWR.WeightRange = @WeightRange
+//                         AND VD.BodyType = @BodyType
+//                 `;
+
+//                 // Special cases
+//                 if (vehicleType === "Mini" && weightRange === "20-250kg") {
+//                     query += ` AND VD.VehicleName = 'Auto (3 Wheeler Cargo)'`;
+//                 } else if (
+//                     vehicleType === "Mini" &&
+//                     ["250-400kg", "400-600kg", "600-750kg"].includes(weightRange)
+//                 ) {
+//                     query += ` AND VD.VehicleName = '4 Tyre'`;
+//                 }
+
+//                 result = await request.query(query);
+//             }
+
+//             // Response handling
+//             if (result && result.recordset.length > 0) {
+//                 console.log(`[SUCCESS]: Records found`);
+//                 resolve({
+//                     status: "00",
+//                     message: "Records found",
+//                     data: result.recordset
+//                 });
+//             } else {
+//                 console.log(`[INFO]: No records found`);
+//                 resolve({
+//                     status: "01",
+//                     message: "No records found for the provided filters",
+//                     data: []
+//                 });
+//             }
+
+//         } catch (error) {
+//             reject({
+//                 status: "01",
+//                 message: 'SQL Error: ' + error.message
+//             });
+//         }
+//     });
+// };
 exports.getVehicle_Details_weightRangeDB = function (weightRange, vehicleType, BodyType) {
     return new Promise(async (resolve, reject) => {
         console.log(`[INFO]: Fetching vehicle data based on filters`);
@@ -500,96 +610,148 @@ exports.getVehicle_Details_weightRangeDB = function (weightRange, vehicleType, B
             const poolConn = await sql.connect(pool);
             const request = poolConn.request();
 
-            // Convert weightRange to number if needed
-            const weight = parseInt(weightRange) || 0;
-            const minWeight = weight - (weight * 0.10);
-            const maxWeight = weight + (weight * 0.10);
+            // Convert weightRange to number
+            let weight = parseInt(weightRange, 10);
+            if (isNaN(weight)) weight = 0;
+
+            request.input('Weight', sql.Int, weight);
 
             let result;
 
-            // Case 1: Only weight range → return vehicle types
+            // --------------------------------------------------
+            // Case 1: Only weight → return VehicleType
+            // --------------------------------------------------
             if (!vehicleType && weightRange && !BodyType) {
 
-                request.input('MinWeight', sql.Int, minWeight);
-                request.input('MaxWeight', sql.Int, maxWeight);
-
                 result = await request.query(`
-                    SELECT  DISTINCT VehicleType, 
-                  -- BodyType,
-                  -- WeightRange,
-                     img
-                    FROM Vehicle_Details
+                    SELECT 
+                        VT.VehicleType,
+                        VT.img,
+                        VT.WeightRange
+                    FROM Vehicle_Type VT
                     CROSS APPLY (
                         SELECT 
-                            CAST(PARSENAME(REPLACE(REPLACE(WeightRange,'kg',''),'-','.'),2) AS INT) AS DB_Min,
-                            CAST(PARSENAME(REPLACE(REPLACE(WeightRange,'kg',''),'-','.'),1) AS INT) AS DB_Max
+                            CASE 
+                                WHEN VT.WeightRange LIKE '%above%' 
+                                THEN CAST(REPLACE(REPLACE(REPLACE(VT.WeightRange,'kg-above',''),'kg',''),'–','') AS INT)
+                                ELSE CAST(
+                                    PARSENAME(
+                                        REPLACE(REPLACE(REPLACE(VT.WeightRange,'kg',''),'–','-'),'-','.'),
+                                    2) AS INT
+                                )
+                            END AS DB_Min,
+
+                            CASE 
+                                WHEN VT.WeightRange LIKE '%above%' 
+                                THEN 999999
+                                ELSE CAST(
+                                    PARSENAME(
+                                        REPLACE(REPLACE(REPLACE(VT.WeightRange,'kg',''),'–','-'),'-','.'),
+                                    1) AS INT
+                                )
+                            END AS DB_Max
                     ) AS R
-                    WHERE
-                        R.DB_Min <= @MaxWeight
-                        AND R.DB_Max >= @MinWeight;
+                    WHERE @Weight BETWEEN R.DB_Min AND R.DB_Max
+                    ORDER BY (R.DB_Max - R.DB_Min) ASC;
                 `);
             }
 
-            // Case 2: VehicleType + weightRange → return body types
+            // --------------------------------------------------
+            // Case 2: VehicleType + weight → return BodyType
+            // --------------------------------------------------
             else if (vehicleType && weightRange && !BodyType) {
+
                 request.input('VehicleType', sql.NVarChar(100), vehicleType);
 
                 result = await request.query(`
-                    SELECT DISTINCT 
-                 --   VehicleType, 
-                    BodyType, img
-                    FROM Vehicle_Details
-                    WHERE VehicleType = @VehicleType;
+                    SELECT DISTINCT
+                        VD.BodyType,
+                        VD.img
+                    FROM Vehicle_Details VD
+                    CROSS APPLY (
+                        SELECT 
+                            CASE 
+                                WHEN VD.WeightRange LIKE '%above%' 
+                                THEN CAST(REPLACE(REPLACE(REPLACE(VD.WeightRange,'kg-above',''),'kg',''),'–','') AS INT)
+                                ELSE CAST(
+                                    PARSENAME(
+                                        REPLACE(REPLACE(REPLACE(VD.WeightRange,'kg',''),'–','-'),'-','.'),
+                                    2) AS INT
+                                )
+                            END AS DB_Min,
+
+                            CASE 
+                                WHEN VD.WeightRange LIKE '%above%' 
+                                THEN 999999
+                                ELSE CAST(
+                                    PARSENAME(
+                                        REPLACE(REPLACE(REPLACE(VD.WeightRange,'kg',''),'–','-'),'-','.'),
+                                    1) AS INT
+                                )
+                            END AS DB_Max
+                    ) AS R
+                    WHERE 
+                        VD.VehicleType = @VehicleType
+                        AND @Weight BETWEEN R.DB_Min AND R.DB_Max;
                 `);
             }
 
-            // Case 3: All filters
+            // --------------------------------------------------
+            // Case 3: VehicleType + BodyType + weight → DhalaLength
+            // --------------------------------------------------
             else if (vehicleType && weightRange && BodyType) {
+
                 request.input('VehicleType', sql.NVarChar(100), vehicleType);
-                request.input('WeightRange', sql.NVarChar(50), weightRange);
                 request.input('BodyType', sql.NVarChar(100), BodyType);
 
-                let query = `
+                result = await request.query(`
                     SELECT DISTINCT
-                     --   VD.VehicleType,
-                     --   VD.BodyType,
-                     --   VD.img,
                         VWR.DhalaLength
                     FROM Vehicle_Details VD
                     JOIN VehicleWeightRange VWR 
                         ON VD.VehicleType = VWR.VehicleType
+                    CROSS APPLY (
+                        SELECT 
+                            CASE 
+                                WHEN VD.WeightRange LIKE '%above%' 
+                                THEN CAST(REPLACE(REPLACE(REPLACE(VD.WeightRange,'kg-above',''),'kg',''),'–','') AS INT)
+                                ELSE CAST(
+                                    PARSENAME(
+                                        REPLACE(REPLACE(REPLACE(VD.WeightRange,'kg',''),'–','-'),'-','.'),
+                                    2) AS INT
+                                )
+                            END AS DB_Min,
+
+                            CASE 
+                                WHEN VD.WeightRange LIKE '%above%' 
+                                THEN 999999
+                                ELSE CAST(
+                                    PARSENAME(
+                                        REPLACE(REPLACE(REPLACE(VD.WeightRange,'kg',''),'–','-'),'-','.'),
+                                    1) AS INT
+                                )
+                            END AS DB_Max
+                    ) AS R
                     WHERE 
                         VD.VehicleType = @VehicleType
-                    --    AND VWR.WeightRange = @WeightRange
                         AND VD.BodyType = @BodyType
-                `;
-
-                // Special cases
-                if (vehicleType === "Mini" && weightRange === "20-250kg") {
-                    query += ` AND VD.VehicleName = 'Auto (3 Wheeler Cargo)'`;
-                } else if (
-                    vehicleType === "Mini" &&
-                    ["250-400kg", "400-600kg", "600-750kg"].includes(weightRange)
-                ) {
-                    query += ` AND VD.VehicleName = '4 Tyre'`;
-                }
-
-                result = await request.query(query);
+                        AND @Weight BETWEEN R.DB_Min AND R.DB_Max;
+                `);
             }
 
-            // Response handling
+            // --------------------------------------------------
+            // Response
+            // --------------------------------------------------
             if (result && result.recordset.length > 0) {
-                console.log(`[SUCCESS]: Records found`);
                 resolve({
                     status: "00",
                     message: "Records found",
                     data: result.recordset
                 });
             } else {
-                console.log(`[INFO]: No records found`);
                 resolve({
                     status: "01",
-                    message: "No records found for the provided filters",
+                    message: "No records found",
                     data: []
                 });
             }
