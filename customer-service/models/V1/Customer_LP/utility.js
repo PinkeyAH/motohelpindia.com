@@ -394,7 +394,7 @@ exports.getPackageTypeDB = async (data) => {
     }
 };
 
-exports.CustomerReachedLoadPostsDB = async ({ load_master_id, LoadPostID }) => {
+exports.CustomerReachedLoadPostsDB = async ({ CustomerID, LoadPostID }) => {
     try {
         logger.info('[INFO]: Fetching Reached Load Posts');
 
@@ -402,7 +402,7 @@ exports.CustomerReachedLoadPostsDB = async ({ load_master_id, LoadPostID }) => {
         const request = pool.request();
 
         // INPUT parameters
-        request.input('load_master_id', sql.NVarChar(50), load_master_id || null);
+        request.input('CustomerID', sql.NVarChar(50), CustomerID || null);
         request.input('LoadPostID', sql.NVarChar(50), LoadPostID || null);
 
         // OUTPUT parameters

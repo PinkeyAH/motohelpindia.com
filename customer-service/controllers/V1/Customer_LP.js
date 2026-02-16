@@ -223,10 +223,10 @@ exports.getPackageType = async (req, res) => {
 
 exports.CustomerReachedLoadPosts = async (req, res) => {
     try {
-        const { load_master_id, LoadPostID } = req.body;
+        const { CustomerID, LoadPostID } = req.body;
 
         const result = await CustomerReachedLoadPostsDB({
-            load_master_id,
+            CustomerID,
             LoadPostID
         });
 
