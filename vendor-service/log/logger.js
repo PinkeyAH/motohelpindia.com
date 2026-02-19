@@ -72,4 +72,18 @@ const logger = createLogger({
     ]
 });
 
-module.exports = logger;
+const APIHitinglogger = createLogger({
+    format: combine(
+        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        logFormat
+    ),
+
+    transports: [
+        new transports.Console(),
+        new transports.File({
+            filename: path.join(logDir, `server-${getDate()}.log`)
+        })]
+});
+
+
+module.exports = { logger, APIHitinglogger };
